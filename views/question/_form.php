@@ -14,7 +14,7 @@ $this->title = __('Question');
       <div class="row">
         <?php
         require_once('parts/info.php');
-        // require_once('parts/rich.php');
+        require_once('parts/options.php');
         ?>
       </div>
     </div>

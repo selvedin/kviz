@@ -2,11 +2,14 @@
 
 namespace app\controllers;
 
+use app\models\Options;
 use app\models\Question;
 use app\models\search\QuestionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use Yii;
+use yii\web\Response;
 
 /**
  * QuestionController implements the CRUD actions for Question model.
@@ -25,6 +28,7 @@ class QuestionController extends Controller
                     'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
+                        'delete-option' => ['POST'],
                     ],
                 ],
             ]
@@ -70,7 +74,10 @@ class QuestionController extends Controller
         $model = new Question();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
+            $data = $this->request->post();
+            if ($model->load($data) && $model->save()) {
+                if (isset($data['Question']['Options']))
+                    $this->addData($model->id, $data['Question']);
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
@@ -80,6 +87,26 @@ class QuestionController extends Controller
         return $this->render('_form', [
             'model' => $model,
         ]);
+    }
+
+    private function addData($id, $data)
+    {
+        $dataObjects = [
+            'Options' => 'addOptions',
+        ];
+        foreach ($dataObjects as $name => $method)
+            if (isset($data[$name]))
+                $this->$method($id, $data[$name]);
+    }
+
+    private function addOptions($id, $data)
+    {
+        foreach ($data as $d) {
+            if (!Options::find()->where(['question_id' => $id, 'content' => $d['content']])->exists()) {
+                $option = new Options(['question_id' => $id, 'content' => $d['content'], 'is_true' => (int)$d['is_true']]);
+                $option->save();
+            }
+        }
     }
 
     /**
@@ -130,5 +157,12 @@ class QuestionController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionDeleteOptions($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        Options::findOne($id)->delete();
+        return ['message' => __('Option deleted')];
     }
 }
