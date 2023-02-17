@@ -19,6 +19,7 @@ class m230217_135745_create_quiz_table extends Migration
             'duration' => $this->integer(11)->defaultValue(30),
             'grade' => $this->integer(11),
             'level' => $this->integer(11),
+            'status' => $this->integer(11),
             'school_id' => $this->integer(11),
             'moderator_id' => $this->integer(11),
             'created_at' => $this->integer(11),

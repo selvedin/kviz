@@ -37,21 +37,4 @@ class Options extends BaseModel
             [['content'], 'string', 'max' => 1024],
         ];
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'question_id' => 'Question ID',
-            'content' => 'Content',
-            'is_true' => 'Is True',
-            'created_at' => 'Created At',
-            'created_by' => 'Created By',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-        ];
-    }
 }

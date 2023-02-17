@@ -72,7 +72,7 @@ class QuestionController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Question();
+        $model = new Question(['status' => 0]);
 
         if ($this->request->isPost)
             $this->saveModel($model, $this->request->post());

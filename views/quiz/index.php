@@ -1,54 +1,39 @@
 <?php
 
-use app\models\Quiz;
-use yii\helpers\Html;
-use yii\helpers\Url;
+use app\helpers\Buttons;
+use app\models\Question;
+use app\widgets\CardView;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 
 /** @var yii\web\View $this */
-/** @var app\models\search\QuizSearch $searchModel */
+/** @var app\models\search\QuestionSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Quizzes';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Questions';
 ?>
-<div class="quiz-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Create Quiz', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <?= GridView::widget([
+<?= CardView::widget([
+    'title' => $this->title,
+    'buttons' => [Buttons::Create(), Buttons::ResetList()],
+    'content' => GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'tableOptions' => ['class' => 'table table-striped'],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
             'title',
             'num_of_questions',
             'duration',
-            'grade',
-            //'level',
-            //'school_id',
-            //'moderator_id',
-            //'created_at',
-            //'created_by',
-            //'updated_at',
-            //'updated_by',
+            ['attribute' => 'level', 'value' => function ($model) {
+                return $model->levelLabel;
+            }, 'filter' => Question::Levels()],
+            ['attribute' => 'grade', 'value' => function ($model) {
+                return $model->gradeLabel;
+            }, 'filter' => Question::Grades()],
             [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Quiz $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
+                'class' => ActionColumn::class,
             ],
         ],
-    ]); ?>
-
-
-</div>
+    ])
+]);

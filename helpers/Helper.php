@@ -47,7 +47,8 @@ class Helper
       [
         'icon' => 'home', 'title' => 'Početna', 'url' => null, 'visible' => $canSee,
         'items' => [
-          ['icon' => 'map', 'title' => 'Pitanja', 'url' => '/question', 'visible' => $canSee],
+          ['icon' => 'question-mark', 'title' => 'Pitanja', 'url' => '/question', 'visible' => $canSee],
+          ['icon' => 'tournament', 'title' => 'Kvizovi', 'url' => '/quiz', 'visible' => $canSee],
         ]
       ],
     ];

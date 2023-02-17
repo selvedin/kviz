@@ -17,7 +17,10 @@ class QuizSearch extends Quiz
     public function rules()
     {
         return [
-            [['id', 'num_of_questions', 'duration', 'grade', 'level', 'school_id', 'moderator_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [[
+                'id', 'num_of_questions', 'duration', 'grade', 'level', 'status',
+                'school_id', 'moderator_id', 'created_at', 'created_by', 'updated_at', 'updated_by'
+            ], 'integer'],
             [['title'], 'safe'],
         ];
     }
@@ -63,6 +66,7 @@ class QuizSearch extends Quiz
             'duration' => $this->duration,
             'grade' => $this->grade,
             'level' => $this->level,
+            'status' => $this->status,
             'school_id' => $this->school_id,
             'moderator_id' => $this->moderator_id,
             'created_at' => $this->created_at,

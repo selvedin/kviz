@@ -22,7 +22,7 @@ class QuizController extends Controller
             parent::behaviors(),
             [
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -67,7 +67,7 @@ class QuizController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Quiz();
+        $model = new Quiz(['status' => 0]);
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -77,7 +77,7 @@ class QuizController extends Controller
             $model->loadDefaultValues();
         }
 
-        return $this->render('create', [
+        return $this->render('_form', [
             'model' => $model,
         ]);
     }
@@ -97,7 +97,7 @@ class QuizController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->render('_form', [
             'model' => $model,
         ]);
     }

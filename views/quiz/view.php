@@ -1,47 +1,35 @@
 <?php
 
+use app\helpers\Buttons;
+use app\helpers\Icons;
+use app\models\Question;
+use app\widgets\CardView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
-/** @var app\models\Quiz $model */
+/** @var app\models\Question $model */
 
-$this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Quizzes', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = __('Question');
 \yii\web\YiiAsset::register($this);
-?>
-<div class="quiz-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'title',
-            'num_of_questions',
-            'duration',
-            'grade',
-            'level',
-            'school_id',
-            'moderator_id',
-            'created_at',
-            'created_by',
-            'updated_at',
-            'updated_by',
-        ],
-    ]) ?>
-
-</div>
+echo  CardView::begin([
+    'title' => $this->title,
+    'type' => 'info',
+    'buttons' => [
+        Buttons::List(),
+        __isUser(Buttons::Update('id', $model->id)),
+    ],
+]);
+echo DetailView::widget([
+    'model' => $model,
+    'attributes' => [
+        'title', 'num_of_questions', 'duration',
+        ['attribute' => 'status', 'value' => $model->statusLabel],
+        ['attribute' => 'grade', 'value' => $model->gradeLabel],
+        ['attribute' => 'level', 'value' => $model->levelLabel],
+        ['attribute' => 'moderator_id', 'value' => $model->moderator->name],
+    ],
+]);
+echo CardView::end();
+// require_once('view/options.php');
+// require_once('view/pairs.php');

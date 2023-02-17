@@ -80,12 +80,6 @@ class User extends BaseModel implements IdentityInterface
         return self::getStatuses()[$this->status];
     }
 
-    // public function getRole()
-    // {
-    //     return [1 => 'admin', 9 => 'user'];
-    // }
-
-
     public function getContact()
     {
         return $this->hasOne(Contact::class, ['id_user' => 'id']);
@@ -95,17 +89,6 @@ class User extends BaseModel implements IdentityInterface
     {
         return $this->first_name . ' ' . $this->last_name;
     }
-
-    // public static function getRoles()
-    // {
-    //     return [1 => 'admin', 9 => 'user'];
-    // }
-
-    // public static function getRolesNames()
-    // {
-    //     return ['admin' => 'admin', 'user' => 'user'];
-    // }
-
 
     public static function getAvailable($id)
     {
@@ -317,5 +300,10 @@ class User extends BaseModel implements IdentityInterface
     public static function getStatuses()
     {
         return [__('Deleted'), 9 => __('Inactive'), __('Active')];
+    }
+
+    public static function list()
+    {
+        return ArrayHelper::map(self::find()->where('status=10')->all(), 'id', 'first_name');
     }
 }
