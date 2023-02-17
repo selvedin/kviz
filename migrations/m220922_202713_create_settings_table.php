@@ -22,9 +22,9 @@ class m220922_202713_create_settings_table extends Migration
             'text_value' => $this->text(),
             'int_value' => $this->integer(),
             'decimal_value' => $this->decimal(10, 2),
-            'created_on' => $this->string(20),
+            'created_at' => $this->integer(11)->unsigned(),
             'created_by' => $this->integer(11)->unsigned(),
-            'updated_on' => $this->string(20),
+            'updated_at' => $this->integer(11)->unsigned(),
             'updated_by' => $this->integer(11)->unsigned(),
         ]);
     }

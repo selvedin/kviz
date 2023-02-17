@@ -16,9 +16,9 @@ class m220820_185544_create_perms_table extends Migration
             'id' => $this->primaryKey(),
             'object' => $this->string(256)->notNull(),
             'perms' => $this->text(),
-            'created_on' => $this->string(20),
+            'created_at' => $this->integer(11)->unsigned(),
             'created_by' => $this->integer(11)->unsigned(),
-            'updated_on' => $this->string(20),
+            'updated_at' => $this->integer(11)->unsigned(),
             'updated_by' => $this->integer(11)->unsigned(),
         ]);
     }

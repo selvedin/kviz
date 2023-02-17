@@ -70,15 +70,20 @@ class User extends BaseModel implements IdentityInterface
         ];
     }
 
+    public function getRole()
+    {
+        return $this->hasOne(Roles::class, ['id_role' => 'role_id']);
+    }
+
     public function getIsActive()
     {
         return self::getStatuses()[$this->status];
     }
 
-    public function getRole()
-    {
-        return [1 => 'admin', 9 => 'user'];
-    }
+    // public function getRole()
+    // {
+    //     return [1 => 'admin', 9 => 'user'];
+    // }
 
 
     public function getContact()
@@ -91,15 +96,15 @@ class User extends BaseModel implements IdentityInterface
         return $this->first_name . ' ' . $this->last_name;
     }
 
-    public static function getRoles()
-    {
-        return [1 => 'admin', 9 => 'user'];
-    }
+    // public static function getRoles()
+    // {
+    //     return [1 => 'admin', 9 => 'user'];
+    // }
 
-    public static function getRolesNames()
-    {
-        return ['admin' => 'admin', 'user' => 'user'];
-    }
+    // public static function getRolesNames()
+    // {
+    //     return ['admin' => 'admin', 'user' => 'user'];
+    // }
 
 
     public static function getAvailable($id)
@@ -282,12 +287,12 @@ class User extends BaseModel implements IdentityInterface
 
     public static function isAdmin()
     {
-        return Yii::$app->user?->identity?->roles == 'admin';
+        return Yii::$app->user?->identity?->role == 'admin';
     }
 
     public static function isUser()
     {
-        return Yii::$app->user?->identity?->roles == 'user';
+        return Yii::$app->user?->identity?->role == 'user';
     }
 
 

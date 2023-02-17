@@ -35,15 +35,12 @@ class AppAsset extends AssetBundle
         'vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css',
         'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css',
         'vendor/libs/sweetalert2/sweetalert2.css',
+        'vendor/libs/toastr/toastr.css',
         'vendor/css/pages/cards-advance.css',
         'css/demo.css',
         // 'css/custom.css',
     ];
     public $js = [
-        // 'vendor/js/helpers.js',
-        // 'vendor/js/template-customizer.js',
-        // 'js/config.js',
-        //end of body
         'vendor/libs/popper/popper.js',
         'vendor/js/bootstrap.js',
         'vendor/libs/perfect-scrollbar/perfect-scrollbar.js',
@@ -64,6 +61,7 @@ class AppAsset extends AssetBundle
         'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.js',
         'vendor/libs/jquery-sticky/jquery-sticky.js',
         'vendor/libs/sweetalert2/sweetalert2.js',
+        'vendor/libs/toastr/toastr.js',
         'js/main.js',
         'js/custom.js',
 
