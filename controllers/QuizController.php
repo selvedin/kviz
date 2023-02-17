@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Quiz;
+use app\models\QuizConfig;
 use app\models\search\QuizSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -69,13 +70,8 @@ class QuizController extends Controller
     {
         $model = new Quiz(['status' => 0]);
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
+        if ($this->request->isPost) $this->saveModel($model, $this->request->post());
+        else $model->loadDefaultValues();
 
         return $this->render('_form', [
             'model' => $model,
@@ -93,13 +89,45 @@ class QuizController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        if ($this->request->isPost) $this->saveModel($model, $this->request->post());
 
         return $this->render('_form', [
             'model' => $model,
         ]);
+    }
+
+    private function saveModel($model, $data)
+    {
+        if ($model->load($data) && $model->save()) {
+            if (isset($data['Quiz'])) $this->addData($model->id, $data['Quiz']);
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+    }
+
+    private function addData($id, $data)
+    {
+        $dataObjects = [
+            'QuizConfig' => 'addConfig',
+        ];
+        foreach ($dataObjects as $name => $method)
+            if (isset($data[$name])) $this->$method($id, $data[$name]);
+    }
+
+    private function addConfig($id, $data)
+    {
+
+        foreach ($data as $d) {
+            if (!QuizConfig::find()->where([
+                'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
+                'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
+            ])->exists()) {
+                $option = new QuizConfig([
+                    'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
+                    'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
+                ]);
+                $option->save();
+            }
+        }
     }
 
     /**

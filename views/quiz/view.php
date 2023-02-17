@@ -31,5 +31,4 @@ echo DetailView::widget([
     ],
 ]);
 echo CardView::end();
-// require_once('view/options.php');
-// require_once('view/pairs.php');
+require_once('view/config.php');

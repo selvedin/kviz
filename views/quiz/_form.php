@@ -14,6 +14,7 @@ $this->title = __('Quiz');
       <div class="row">
         <?php
         require_once('parts/info.php');
+        require_once('parts/config.php');
         ?>
       </div>
     </div>

@@ -46,6 +46,11 @@ class Quiz extends BaseModel
         ];
     }
 
+    public function getConfig()
+    {
+        return $this->hasMany(QuizConfig::class, ['quiz_id' => 'id']);
+    }
+
     public function getModerator()
     {
         return $this->hasOne(User::class, ['id' => 'id']);

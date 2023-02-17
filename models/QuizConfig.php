@@ -18,7 +18,7 @@ use Yii;
  * @property int|null $updated_at
  * @property int|null $updated_by
  */
-class QuizConfig extends \yii\db\ActiveRecord
+class QuizConfig extends BaseModel
 {
     /**
      * {@inheritdoc}
@@ -35,26 +35,25 @@ class QuizConfig extends \yii\db\ActiveRecord
     {
         return [
             [['quiz_id', 'num_of_questions', 'grade', 'level', 'category_id'], 'required'],
-            [['quiz_id', 'num_of_questions', 'grade', 'level', 'category_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [[
+                'quiz_id', 'num_of_questions', 'grade', 'level', 'category_id',
+                'created_at', 'created_by', 'updated_at', 'updated_by'
+            ], 'integer'],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+    public function getGradeLabel()
     {
-        return [
-            'id' => 'ID',
-            'quiz_id' => 'Quiz ID',
-            'num_of_questions' => 'Num Of Questions',
-            'grade' => 'Grade',
-            'level' => 'Level',
-            'category_id' => 'Category ID',
-            'created_at' => 'Created At',
-            'created_by' => 'Created By',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-        ];
+        return $this->grade > -1 ? Question::Grades()[$this->grade] : null;
+    }
+
+    public function getLevelLabel()
+    {
+        return $this->level ? Question::Levels()[$this->level] : null;
+    }
+
+    public function getCategory()
+    {
+        return $this->category_id ? Question::Categories()[$this->category_id] : null;
     }
 }
