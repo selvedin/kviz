@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Options;
+use app\models\Pairs;
 use app\models\Question;
 use app\models\search\QuestionSearch;
 use yii\web\Controller;
@@ -86,10 +87,10 @@ class QuestionController extends Controller
     {
         $dataObjects = [
             'Options' => 'addOptions',
+            'Pairs' => 'addPairs',
         ];
         foreach ($dataObjects as $name => $method)
-            if (isset($data[$name]))
-                $this->$method($id, $data[$name]);
+            if (isset($data[$name])) $this->$method($id, $data[$name]);
     }
 
     private function addOptions($id, $data)
@@ -97,6 +98,16 @@ class QuestionController extends Controller
         foreach ($data as $d) {
             if (!Options::find()->where(['question_id' => $id, 'content' => $d['content']])->exists()) {
                 $option = new Options(['question_id' => $id, 'content' => $d['content'], 'is_true' => (int)$d['is_true']]);
+                $option->save();
+            }
+        }
+    }
+
+    private function addPairs($id, $data)
+    {
+        foreach ($data as $d) {
+            if (!Pairs::find()->where(['question_id' => $id, 'one' => $d['one'], 'two' => $d['two']])->exists()) {
+                $option = new Pairs(['question_id' => $id, 'one' => $d['one'], 'two' => $d['two']]);
                 $option->save();
             }
         }
@@ -124,8 +135,7 @@ class QuestionController extends Controller
     private function saveModel($model, $data)
     {
         if ($model->load($data) && $model->save()) {
-            if (isset($data['Question']['Options']))
-                $this->addData($model->id, $data['Question']);
+            if (isset($data['Question'])) $this->addData($model->id, $data['Question']);
             return $this->redirect(['view', 'id' => $model->id]);
         }
     }
@@ -160,10 +170,11 @@ class QuestionController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionDeleteOptions($id)
+    public function actionDeleteOptions($id, $isPair = false)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        Options::findOne($id)->delete();
+        if ($isPair)  Pairs::findOne($id)->delete();
+        else Options::findOne($id)->delete();
         return ['message' => __('Option deleted')];
     }
 }

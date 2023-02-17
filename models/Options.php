@@ -16,7 +16,7 @@ use Yii;
  * @property int|null $updated_at
  * @property int|null $updated_by
  */
-class Options extends \yii\db\ActiveRecord
+class Options extends BaseModel
 {
     /**
      * {@inheritdoc}

@@ -47,6 +47,12 @@ class Question extends BaseModel
         return $this->hasMany(Options::class, ['question_id' => 'id']);
     }
 
+    public function getPairs()
+    {
+        return $this->hasMany(Pairs::class, ['question_id' => 'id']);
+    }
+
+
     public static function QuestionTypes()
     {
         return [1 => __('True/False'), __('Single choice'), __('Multiple choice'), __('Join pairs')];

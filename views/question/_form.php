@@ -15,6 +15,7 @@ $this->title = __('Question');
         <?php
         require_once('parts/info.php');
         require_once('parts/options.php');
+        require_once('parts/pairs.php');
         ?>
       </div>
     </div>

@@ -36,6 +36,7 @@ class AppAsset extends AssetBundle
         'vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css',
         'vendor/libs/sweetalert2/sweetalert2.css',
         'vendor/libs/toastr/toastr.css',
+        'vendor/libs/swiper/swiper.css',
         'vendor/css/pages/cards-advance.css',
         'css/demo.css',
         // 'css/custom.css',
@@ -62,6 +63,7 @@ class AppAsset extends AssetBundle
         'vendor/libs/jquery-sticky/jquery-sticky.js',
         'vendor/libs/sweetalert2/sweetalert2.js',
         'vendor/libs/toastr/toastr.js',
+        'vendor/libs/swiper/swiper.js',
         'js/main.js',
         'js/custom.js',
 

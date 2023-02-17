@@ -17,7 +17,7 @@ use Yii;
  * @property int|null $updated_at
  * @property int|null $updated_by
  */
-class QuizResults extends \yii\db\ActiveRecord
+class QuizResults extends BaseModel
 {
     /**
      * {@inheritdoc}

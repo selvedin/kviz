@@ -15,7 +15,7 @@ use Yii;
  * @property int|null $updated_at
  * @property int|null $updated_by
  */
-class TeamMembers extends \yii\db\ActiveRecord
+class TeamMembers extends BaseModel
 {
     /**
      * {@inheritdoc}

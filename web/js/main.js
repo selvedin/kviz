@@ -687,3 +687,20 @@ const numbersToArabic = s =>
 const toggleLoadingDiv = () => {
   $("#loading-div").toggleClass("d-none");
 };
+
+const swiperWithPagination = document.querySelector(
+  "#swiper-with-pagination-cards"
+);
+if (swiperWithPagination) {
+  new Swiper(swiperWithPagination, {
+    loop: true,
+    autoplay: {
+      delay: 2500,
+      disableOnInteraction: false,
+    },
+    pagination: {
+      clickable: true,
+      el: ".swiper-pagination",
+    },
+  });
+}
