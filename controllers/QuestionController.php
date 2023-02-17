@@ -22,7 +22,7 @@ class QuestionController extends Controller
             parent::behaviors(),
             [
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -77,7 +77,7 @@ class QuestionController extends Controller
             $model->loadDefaultValues();
         }
 
-        return $this->render('create', [
+        return $this->render('_form', [
             'model' => $model,
         ]);
     }
@@ -97,7 +97,7 @@ class QuestionController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->render('_form', [
             'model' => $model,
         ]);
     }

@@ -20,7 +20,7 @@ use Yii;
  * @property int|null $updated_at
  * @property int|null $updated_by
  */
-class Question extends \yii\db\ActiveRecord
+class Question extends BaseModel
 {
     /**
      * {@inheritdoc}
@@ -42,24 +42,63 @@ class Question extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
+    public static function QuestionTypes()
     {
-        return [
-            'id' => 'ID',
-            'content' => 'Content',
-            'question_type' => 'Question Type',
-            'content_type' => 'Content Type',
-            'category_id' => 'Category ID',
-            'status' => 'Status',
-            'grade' => 'Grade',
-            'level' => 'Level',
-            'created_at' => 'Created At',
-            'created_by' => 'Created By',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-        ];
+        return [1 => __('True/False'), __('Single choice'), __('Multiple choice'), __('Join pairs')];
+    }
+
+    public function getQuestionType()
+    {
+        return $this->question_type ? self::QuestionTypes()[$this->question_type] : null;
+    }
+
+    public static function ContentTypes()
+    {
+        return [1 => __('Text'), __('Image'), __('Audio'), __('Video')];
+    }
+
+    public function getContentType()
+    {
+        return $this->content_type ? self::ContentTypes()[$this->content_type] : null;
+    }
+
+    public static function Categories()
+    {
+        return [1 => __('Math'), __('Science'), __('Art'), __('Biology'), __('Chemistry')];
+    }
+
+    public function getCategory()
+    {
+        return $this->category_id ? self::Categories()[$this->category_id] : null;
+    }
+
+    public static function Statuses()
+    {
+        return [__('Pending'), __('Active'), __('Archived')];
+    }
+
+    public function getStatusLabel()
+    {
+        return $this->status > -1 ? self::Statuses()[$this->status] : null;
+    }
+
+    public static function Grades()
+    {
+        return ['1-3', '4-5', '6-7', '8-9', 'other'];
+    }
+
+    public function getGradeLabel()
+    {
+        return $this->grade > -1 ? self::Grades()[$this->grade] : null;
+    }
+
+    public static function Levels()
+    {
+        return [1 => __('Basic'), __('Regular'), __('Advances')];
+    }
+
+    public function getLevelLabel()
+    {
+        return $this->level ? self::Levels()[$this->level] : null;
     }
 }

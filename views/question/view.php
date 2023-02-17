@@ -1,47 +1,34 @@
 <?php
 
+use app\helpers\Buttons;
+use app\models\Question;
+use app\widgets\CardView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var app\models\Question $model */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Questions', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = __('Question');
 \yii\web\YiiAsset::register($this);
-?>
-<div class="question-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'content',
-            'question_type',
-            'content_type',
-            'category_id',
-            'status',
-            'grade',
-            'level',
-            'created_at',
-            'created_by',
-            'updated_at',
-            'updated_by',
-        ],
-    ]) ?>
-
-</div>
+echo  CardView::begin([
+    'title' => $this->title,
+    'type' => 'info',
+    'buttons' => [
+        Buttons::List(),
+        __isUser(Buttons::Update('id', $model->id)),
+    ],
+]);
+echo DetailView::widget([
+    'model' => $model,
+    'attributes' => [
+        'content',
+        ['attribute' => 'question_type', 'value' => $model->questionType],
+        ['attribute' => 'content_type', 'value' => $model->contentType],
+        ['attribute' => 'category_id', 'value' => $model->category],
+        ['attribute' => 'status', 'value' => $model->statusLabel],
+        ['attribute' => 'grade', 'value' => $model->gradeLabel],
+        ['attribute' => 'level', 'value' => $model->levelLabel],
+    ],
+]);
+echo CardView::end();

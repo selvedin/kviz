@@ -10,7 +10,6 @@ use yii\grid\GridView;
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = __('Blog');
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?= CardView::widget([
