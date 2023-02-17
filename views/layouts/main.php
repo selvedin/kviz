@@ -4,6 +4,7 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\widgets\ToastAlert;
 use yii\bootstrap5\Html;
 
 $url = Yii::getAlias('@web');
@@ -62,6 +63,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
+    <?= ToastAlert::widget() ?>
     <?php require_once('imageModal.php') ?>
 </body>
 

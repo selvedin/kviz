@@ -28,7 +28,7 @@ $defaultImage = "/img/nouser.png";
             <span class="fw-semibold d-block">
               <?= $isGuest ? 'Gost' : Yii::$app->user->identity->username; ?>
             </span>
-            <small class="text-muted"><?= $isGuest ? 'Gost' : Yii::$app->user->identity->roles ?></small>
+            <small class="text-muted"><?= $isGuest ? 'Gost' : Yii::$app->user->identity->role->name ?></small>
           </div>
         </div>
       </a>

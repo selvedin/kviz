@@ -18,13 +18,13 @@ class m220808_121651_create_comments_table extends Migration
             'object' => $this->string(512)->notNull(),
             'id_object' => $this->integer(11)->unsigned(),
             'id_parent' => $this->integer(11)->unsigned(),
-            'created_on' => $this->string(20),
+            'created_at' => $this->integer(11)->unsigned(),
             'created_by' => $this->integer(11)->unsigned(),
-            'updated_on' => $this->string(20),
+            'updated_at' => $this->integer(11)->unsigned(),
             'updated_by' => $this->integer(11)->unsigned(),
             'assigned_to' => $this->integer(11)->unsigned(),
             'deleted' => $this->integer(1)->unsigned(),
-            'deleted_on' => $this->string(20)
+            'deleted_at' => $this->integer(11)->unsigned()
         ]);
     }
 

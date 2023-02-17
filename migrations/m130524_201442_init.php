@@ -23,7 +23,7 @@ class m130524_201442_init extends Migration
             'email' => $this->string()->notNull()->unique(),
             'verification_token' => $this->string()->defaultValue(null),
             'status' => $this->smallInteger()->notNull()->defaultValue(9),
-            'role_id' => $this->string(128)->defaultValue("user"),
+            'role_id' => $this->integer(11)->unsigned(),
             'created_at' => $this->integer()->notNull(),
             'created_by' => $this->integer(11),
             'updated_at' => $this->integer()->notNull(),

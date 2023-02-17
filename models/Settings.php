@@ -17,9 +17,9 @@ use Yii;
  * @property string|null $text_value
  * @property int|null $int_value
  * @property float|null $decimal_value
- * @property string|null $created_on
+ * @property string|null $created_at
  * @property int|null $created_by
- * @property string|null $updated_on
+ * @property string|null $updated_at
  * @property int|null $updated_by
  */
 class Settings extends BaseModel
@@ -42,10 +42,9 @@ class Settings extends BaseModel
         return [
             [['name'], 'required'],
             [['text_value'], 'string'],
-            [['int_value', 'created_by', 'updated_by'], 'integer'],
+            [['int_value', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['decimal_value'], 'number'],
             [['name', 'title', 'str_value', 'type', 'parent'], 'string', 'max' => 512],
-            [['created_on', 'updated_on'], 'string', 'max' => 20],
         ];
     }
 

@@ -12,7 +12,6 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\PasswordResetRequestForm;
-use app\models\Places;
 use app\models\ResendVerificationEmailForm;
 use app\models\ResetPasswordForm;
 use app\models\Signup;
@@ -76,47 +75,9 @@ class SiteController extends Controller
 
     public function actionHome()
     {
-        $model = new Places(['visit_date' => date('d.m.Y.')]);
-        if ($this->request->isPost) {
-            $data = $this->request->post();
-            if ($data['Places']['id']) $model = Places::findOne((int)$data['Places']['id']);
-            $model->load($this->request->post());
-            if (!$model->save()) Yii::$app->session->setFlash('danger', json_encode($model->errors));
-        }
-        return $this->render(
-            'index',
-            [
-                'buttons' => $this->getButtons(),
-                'model' => $model,
-            ]
-        );
+        return $this->render('index');
     }
 
-    private function getButtons()
-    {
-        if (Yii::$app->user->isGuest) return [];
-        return [
-            Html::a(
-                Icons::faIcon('edit'),
-                'javascript:void(0)',
-                [
-                    'class' => 'btn btn-sm rounded-pill btn-icon btn-success text-white waves-effect mx-2',
-                    'title' => 'Izmijeni',
-                    'v-if' => 'location.title && !isEdit',
-                    '@click' => 'isEdit=true;',
-                ]
-            ),
-            Html::a(
-                Icons::faIcon('plus'),
-                'javascript:void(0)',
-                [
-                    'class' => 'btn btn-sm rounded-pill btn-icon btn-primary text-white waves-effect',
-                    'title' => 'Dodaj novo mjesto',
-                    '@click' => 'location={...emptyLocation};isEdit=false;',
-                ]
-            )
-        ];
-    }
     /**
      * Login action.
      *

@@ -60,8 +60,9 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
+            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
+        Yii::$app->session->setFlash('error', 'Korisničko ime ili šifra nisu ispravni');
         return false;
     }
 
