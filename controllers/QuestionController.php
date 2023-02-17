@@ -73,16 +73,9 @@ class QuestionController extends Controller
     {
         $model = new Question();
 
-        if ($this->request->isPost) {
-            $data = $this->request->post();
-            if ($model->load($data) && $model->save()) {
-                if (isset($data['Question']['Options']))
-                    $this->addData($model->id, $data['Question']);
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
+        if ($this->request->isPost)
+            $this->saveModel($model, $this->request->post());
+        else $model->loadDefaultValues();
 
         return $this->render('_form', [
             'model' => $model,
@@ -120,13 +113,21 @@ class QuestionController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        if ($this->request->isPost)
+            $this->saveModel($model, $this->request->post());
 
         return $this->render('_form', [
             'model' => $model,
         ]);
+    }
+
+    private function saveModel($model, $data)
+    {
+        if ($model->load($data) && $model->save()) {
+            if (isset($data['Question']['Options']))
+                $this->addData($model->id, $data['Question']);
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
     }
 
     /**
