@@ -51,6 +51,19 @@ class Quiz extends BaseModel
         return $this->hasMany(QuizConfig::class, ['quiz_id' => 'id']);
     }
 
+    public function getFields()
+    {
+        return [
+            // ['label' => __('Title'), 'value' => $this->title],
+            ['label' => __('Num Of Questions'), 'value' => $this->num_of_questions],
+            ['label' => __('Duration'), 'value' => $this->duration],
+            ['label' => __('Status'), 'value' => $this->statusLabel],
+            ['label' => __('Grade'), 'value' => $this->gradeLabel],
+            ['label' => __('Level'), 'value' => $this->levelLabel],
+            ['label' => __('Moderator'), 'value' => $this->moderator->name],
+        ];
+    }
+
     public function getModerator()
     {
         return $this->hasOne(User::class, ['id' => 'id']);

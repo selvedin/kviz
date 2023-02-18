@@ -61,6 +61,13 @@ class QuizController extends Controller
         ]);
     }
 
+    public function actionRun($id)
+    {
+        return $this->render('run', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
     /**
      * Creates a new Quiz model.
      * If creation is successful, the browser will be redirected to the 'view' page.

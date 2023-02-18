@@ -52,6 +52,19 @@ class Question extends BaseModel
         return $this->hasMany(Pairs::class, ['question_id' => 'id']);
     }
 
+    public function getFields()
+    {
+        return [
+            // ['label' => __('Content'), 'value' => $this->content],
+            ['label' => __('Question Type'), 'value' => $this->questionType],
+            ['label' => __('Content Type'), 'value' => $this->contentType],
+            ['label' => __('Category'), 'value' => $this->category],
+            ['label' => __('Status'), 'value' => $this->statusLabel],
+            ['label' => __('Grade'), 'value' => $this->gradeLabel],
+            ['label' => __('Level'), 'value' => $this->levelLabel],
+        ];
+    }
+
 
     public static function QuestionTypes()
     {

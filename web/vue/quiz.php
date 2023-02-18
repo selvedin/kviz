@@ -59,6 +59,9 @@ if ($model && !$isNewRecord) {
           }
         });
       },
+      runQuiz: function() {
+        alert('Running a quiz');
+      }
     },
     computed: {},
     watch: {}

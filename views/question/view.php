@@ -1,11 +1,7 @@
 <?php
 
 use app\helpers\Buttons;
-use app\helpers\Icons;
-use app\models\Question;
 use app\widgets\CardView;
-use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var app\models\Question $model */
@@ -20,18 +16,44 @@ echo  CardView::begin([
         __isUser(Buttons::Update('id', $model->id)),
     ],
 ]);
-echo DetailView::widget([
-    'model' => $model,
-    'attributes' => [
-        'content',
-        ['attribute' => 'question_type', 'value' => $model->questionType],
-        ['attribute' => 'content_type', 'value' => $model->contentType],
-        ['attribute' => 'category_id', 'value' => $model->category],
-        ['attribute' => 'status', 'value' => $model->statusLabel],
-        ['attribute' => 'grade', 'value' => $model->gradeLabel],
-        ['attribute' => 'level', 'value' => $model->levelLabel],
-    ],
-]);
-echo CardView::end();
-require_once('view/options.php');
-require_once('view/pairs.php');
+?>
+<br />
+<div class="row">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between">
+                <div class="card-title mb-0">
+                    <h5 class="mb-0"><?= __('Title') ?></h5>
+                    <small class="text-muted"></small>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul class="p-0 m-0">
+                    <?php
+                    foreach ($model->fields as $field) :
+                    ?>
+                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between w-100 flex-wrap">
+                                <h6 class="mb-0 ms-3">
+                                    <?= $field['label'] ?>
+                                </h6>
+                                <div class="d-flex">
+                                    <p class="mb-0 fw-semibold">
+                                        <?= $field['value'] ?>
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    <?php
+                    endforeach;
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <?php
+    require_once('view/options.php');
+    require_once('view/pairs.php');
+    ?>
+</div>
+<?= CardView::end() ?>
