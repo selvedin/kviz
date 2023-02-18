@@ -40,7 +40,7 @@ class Buttons
   {
     $title = __('Create');
     return Html::a(Icons::faIcon('plus') . Html::tag('span', $title, PADDING), ['create'], [
-      'class' => BUTTONS_CLASS . 'primary',
+      'class' => BUTTONS_CLASS . 'success',
       'title' => $title
     ]);
   }

@@ -15,12 +15,13 @@ $this->title = __('Quiz');
         'title' => $this->title,
         'type' => 'info',
         'buttons' => [
+            Buttons::Create(),
             Buttons::List(),
             __isUser(Buttons::Update('id', $model->id)),
             __isUser(Buttons::customButton(
                 Icons::faIcon('rocket') . ' ' . __('Run'),
-                'javascript:void(0)',
-                ['@click' => 'runQuiz()'],
+                ['player/view', 'id' => $model->id],
+                [],
                 'btn btn-sm rounded-pill mx-1 text-white btn-danger'
             )),
         ],

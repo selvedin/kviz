@@ -129,6 +129,7 @@ class Question extends BaseModel
     public function beforeDelete()
     {
         foreach ($this->options as $o) $o->delete();
+        foreach ($this->pairs as $p) $p->delete();
         return parent::beforeDelete();
     }
 }

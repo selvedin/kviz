@@ -270,14 +270,9 @@ class User extends BaseModel implements IdentityInterface
 
     public static function isAdmin()
     {
-        return Yii::$app->user?->identity?->role == 'admin';
+        return Yii::$app->user->id == 1;
+        // return Yii::$app->user?->identity?->role == 'admin';
     }
-
-    public static function isUser()
-    {
-        return Yii::$app->user?->identity?->role == 'user';
-    }
-
 
     public static function createUserWithDefaultPassword($username, $first_name, $last_name, $email)
     {

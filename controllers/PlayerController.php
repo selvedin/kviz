@@ -2,15 +2,15 @@
 
 namespace app\controllers;
 
-use app\models\Options;
+use app\models\Quiz;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * OptionsController implements the CRUD actions for Options model.
+ * PlayerController implements Quiz player model.
  */
-class OptionsController extends Controller
+class PlayerController extends Controller
 {
     /**
      * @inheritDoc
@@ -31,15 +31,27 @@ class OptionsController extends Controller
     }
 
     /**
-     * Finds the Options model based on its primary key value.
+     * Displays a single Quiz model.
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionView($id)
+    {
+        $model = $this->findModel($id);
+        return $this->render('view', ['model' => $model]);
+    }
+
+    /**
+     * Finds the Quiz model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Options the loaded model
+     * @return Quiz the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Options::findOne(['id' => $id])) !== null) {
+        if (($model = Quiz::findOne(['id' => $id])) !== null) {
             return $model;
         }
 

@@ -51,6 +51,13 @@ class Helper
           ['icon' => 'tournament', 'title' => 'Kvizovi', 'url' => '/quiz', 'visible' => $canSee],
         ]
       ],
+      [
+        'icon' => 'settings', 'title' => 'Podešavanja', 'url' => null, 'visible' => $canSee,
+        'items' => [
+          ['icon' => 'category', 'title' => 'Kategorije', 'url' => '/categories', 'visible' => $canSee],
+
+        ]
+      ],
     ];
   }
 }
