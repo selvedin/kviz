@@ -98,7 +98,7 @@ class QuestionController extends Controller
         foreach ($data as $d) {
             if (!Options::find()->where(['question_id' => $id, 'content' => $d['content']])->exists()) {
                 $option = new Options(['question_id' => $id, 'content' => $d['content'], 'is_true' => (int)$d['is_true']]);
-                $option->save();
+                if (!$option->save()) $this->showErrors($option);
             }
         }
     }
@@ -108,9 +108,16 @@ class QuestionController extends Controller
         foreach ($data as $d) {
             if (!Pairs::find()->where(['question_id' => $id, 'one' => $d['one'], 'two' => $d['two']])->exists()) {
                 $option = new Pairs(['question_id' => $id, 'one' => $d['one'], 'two' => $d['two']]);
-                $option->save();
+                if (!$option->save()) $this->showErrors($option);
             }
         }
+    }
+
+    private function showErrors($option)
+    {
+        $errors = "";
+        foreach ($option->errors as $error) $errors .= $error[0] . "\n";
+        Yii::$app->session->setFlash('error', $errors);
     }
 
     /**

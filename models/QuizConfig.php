@@ -34,12 +34,17 @@ class QuizConfig extends BaseModel
     public function rules()
     {
         return [
-            [['quiz_id', 'num_of_questions', 'grade', 'level', 'category_id'], 'required'],
+            [['quiz_id', 'num_of_questions', 'category_id'], 'required'],
             [[
                 'quiz_id', 'num_of_questions', 'grade', 'level', 'category_id',
                 'created_at', 'created_by', 'updated_at', 'updated_by'
             ], 'integer'],
         ];
+    }
+
+    public function getCategory()
+    {
+        return $this->hasOne(Categories::class, ['id' => 'category_id']);
     }
 
     public function getGradeLabel()
@@ -50,10 +55,5 @@ class QuizConfig extends BaseModel
     public function getLevelLabel()
     {
         return $this->level ? Question::Levels()[$this->level] : null;
-    }
-
-    public function getCategory()
-    {
-        return $this->category_id ? Question::Categories()[$this->category_id] : null;
     }
 }

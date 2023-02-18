@@ -1,6 +1,6 @@
 <?php
 
-
+use app\models\Categories;
 use app\models\Question;
 use app\widgets\CardView;
 use kartik\select2\Select2;
@@ -34,7 +34,7 @@ $content .= Html::tag('div', $form->field($model, 'content_type')->widget(
 $content .= Html::tag('div', $form->field($model, 'category_id')->widget(
   Select2::class,
   [
-    'data' => Question::Categories(),
+    'data' => Categories::getRoot(),
     'options' => ['placeholder' => __('Select category')],
     'pluginOptions' => [
       'allowClear' => true

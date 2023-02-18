@@ -33,7 +33,7 @@ if ($model->config) :
                     Html::tag('td', $conf->num_of_questions)
                     . Html::tag('td', $conf->gradeLabel)
                     . Html::tag('td', $conf->levelLabel)
-                    . Html::tag('td', $conf->category)
+                    . Html::tag('td', $conf->category?->name)
                 );
               ?>
             </tbody>

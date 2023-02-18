@@ -52,19 +52,23 @@ class Question extends BaseModel
         return $this->hasMany(Pairs::class, ['question_id' => 'id']);
     }
 
+    public function getCategory()
+    {
+        return $this->hasOne(Categories::class, ['id' => 'category_id']);
+    }
+
     public function getFields()
     {
         return [
             // ['label' => __('Content'), 'value' => $this->content],
             ['label' => __('Question Type'), 'value' => $this->questionType],
             ['label' => __('Content Type'), 'value' => $this->contentType],
-            ['label' => __('Category'), 'value' => $this->category],
+            ['label' => __('Category'), 'value' => $this->category?->name],
             ['label' => __('Status'), 'value' => $this->statusLabel],
             ['label' => __('Grade'), 'value' => $this->gradeLabel],
             ['label' => __('Level'), 'value' => $this->levelLabel],
         ];
     }
-
 
     public static function QuestionTypes()
     {
@@ -84,16 +88,6 @@ class Question extends BaseModel
     public function getContentType()
     {
         return $this->content_type ? self::ContentTypes()[$this->content_type] : null;
-    }
-
-    public static function Categories()
-    {
-        return [1 => __('Math'), __('Science'), __('Art'), __('Biology'), __('Chemistry')];
-    }
-
-    public function getCategory()
-    {
-        return $this->category_id ? self::Categories()[$this->category_id] : null;
     }
 
     public static function Statuses()

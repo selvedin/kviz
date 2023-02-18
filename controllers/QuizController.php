@@ -8,6 +8,8 @@ use app\models\search\QuizSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use Yii;
+use yii\web\Response;
 
 /**
  * QuizController implements the CRUD actions for Quiz model.
@@ -115,7 +117,6 @@ class QuizController extends Controller
 
     private function addConfig($id, $data)
     {
-
         foreach ($data as $d) {
             if (!QuizConfig::find()->where([
                 'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
@@ -125,7 +126,11 @@ class QuizController extends Controller
                     'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
                     'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
                 ]);
-                $option->save();
+                if (!$option->save()) {
+                    $errors = "";
+                    foreach ($option->errors as $error) $errors .= $error[0] . "\n";
+                    Yii::$app->session->setFlash('error', $errors);
+                }
             }
         }
     }
@@ -142,6 +147,13 @@ class QuizController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionDeleteConfig($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        QuizConfig::findOne($id)->delete();
+        return ['message' => __('Config deleted')];
     }
 
     /**

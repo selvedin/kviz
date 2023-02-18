@@ -1,6 +1,7 @@
 <?php
 
 use app\helpers\Buttons;
+use app\models\Categories;
 use app\models\Question;
 use app\widgets\CardView;
 use yii\grid\ActionColumn;
@@ -30,8 +31,8 @@ $this->title = 'Questions';
                 return $model->contentType;
             }, 'filter' => Question::ContentTypes()],
             ['attribute' => 'category_id', 'value' => function ($model) {
-                return $model->category;
-            }, 'filter' => Question::Categories()],
+                return $model->category?->name;
+            }, 'filter' => Categories::getRoot()],
             ['attribute' => 'level', 'value' => function ($model) {
                 return $model->levelLabel;
             }, 'filter' => Question::Levels()],

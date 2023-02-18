@@ -9,7 +9,16 @@ $model = $id ? Quiz::findOne($id) : null;
 $isNewRecord = isset($model) ? (int)$model->isNewRecord : true;
 $config =  [];
 if ($model && !$isNewRecord) {
-  foreach ($model->config as $conf) $config[] = ['id' => $conf->id, 'num_of_questions' => $conf->num_of_questions];
+  foreach ($model->config as $conf) $config[] = [
+    'id' => $conf->id,
+    'num_of_questions' => $conf->num_of_questions,
+    'grade' => $conf->grade,
+    'gradeLabel' => $conf->gradeLabel,
+    'level' => $conf->level,
+    'levelLabel' => $conf->levelLabel,
+    'category_id' => $conf->category_id,
+    'category' => $conf->category?->name
+  ];
 }
 ?>
 <script>

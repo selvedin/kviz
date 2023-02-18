@@ -15,8 +15,8 @@ $this->title = __('Quiz');
         'title' => $this->title,
         'type' => 'info',
         'buttons' => [
-            Buttons::Create(),
             Buttons::List(),
+            Buttons::Create(),
             __isUser(Buttons::Update('id', $model->id)),
             __isUser(Buttons::customButton(
                 Icons::faIcon('rocket') . ' ' . __('Run'),

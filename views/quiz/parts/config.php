@@ -1,6 +1,7 @@
 i<?php
 
   use app\helpers\Icons;
+  use app\models\Categories;
   use app\models\Question;
   use app\widgets\CardView;
   use kartik\select2\Select2;
@@ -61,7 +62,7 @@ i<?php
       Select2::widget(
         [
           'name' => 'QuizConfig[category]',
-          'data' => Question::Categories(),
+          'data' => Categories::getRoot(),
           'options' => ['id' => 'quiz-config-category', 'placeholder' => __('Select category')],
           'pluginOptions' => [
             'allowClear' => true

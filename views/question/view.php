@@ -12,8 +12,8 @@ echo  CardView::begin([
     'title' => $this->title,
     'type' => 'info',
     'buttons' => [
-        Buttons::Create(),
         Buttons::List(),
+        Buttons::Create(),
         __isUser(Buttons::Update('id', $model->id)),
     ],
 ]);
