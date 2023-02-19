@@ -89,6 +89,7 @@ class Quiz extends BaseModel
         $questions = [];
         foreach ($this->config as $conf) {
             $limit = $conf->num_of_questions;
+            // $where = "question_type = 3";
             $where = "category_id = $conf->category_id";
             if ($conf->grade) $where .= " AND grade=$conf->grade";
             if ($conf->level) $where .= " AND level=$conf->level";
@@ -104,6 +105,7 @@ class Quiz extends BaseModel
                 ];
             }
         }
+        shuffle($questions);
         return $questions;
     }
 }

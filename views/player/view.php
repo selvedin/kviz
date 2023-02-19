@@ -1,7 +1,5 @@
 <?php
 
-use yii\bootstrap5\Html;
-
 $this->title = __('Running') . '  ' . $model->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -19,7 +17,7 @@ $this->title = __('Running') . '  ' . $model->title;
                 <div v-if="question.question_type == 1" class="col-md-6 text-center">
                     <button @click="answerQuestion(0)" :disabled='!canAnswer' :class="[classObject, results.findIndex(r => r.q == question.id && r.a == 0) > -1 ? 'active':'']">
                         <?= __('False') ?>
-                        <svg v-if="!canAnswer && opt.is_true" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <svg v-if="!canAnswer && question.options[0].is_true == 0" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
                             <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
                             <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                         </svg>
@@ -28,7 +26,7 @@ $this->title = __('Running') . '  ' . $model->title;
                 <div v-if="question.question_type == 1" class="col-md-6 text-center">
                     <button @click="answerQuestion(1)" :disabled='!canAnswer' :class="[classObject, results.findIndex(r => r.q == question.id && r.a == 1) > -1 ? 'active':'']">
                         <?= __('True') ?>
-                        <svg v-if="!canAnswer && opt.is_true" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <svg v-if="!canAnswer && question.options[0].is_true == 1" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
                             <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
                             <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                         </svg>

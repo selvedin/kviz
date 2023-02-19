@@ -23,7 +23,7 @@ if ($model && !$isNewRecord) {
       config: <?= json_encode($config) ?>,
       questions: <?= json_encode($model->generateQuestions()) ?>,
       question: {},
-      questionTimeInSeconds: 10,
+      questionTimeInSeconds: 5,
       questionIsStarted: false,
       results: [],
       isPlaying: false,
@@ -31,7 +31,6 @@ if ($model && !$isNewRecord) {
       canAnswer: false,
     },
     mounted() {
-      this.question = this.questions.shift();
       $('#stopwatch').hide();
     },
     methods: {
@@ -61,7 +60,7 @@ if ($model && !$isNewRecord) {
       },
       stopQuestion: function() {
         $('#stopwatch').hide();
-        this.questionTimeInSeconds = 10;
+        // this.questionTimeInSeconds = 10;
         this.questionIsStarted = false;
         this.canAnswer = false;
       },
@@ -69,6 +68,12 @@ if ($model && !$isNewRecord) {
         const self = this;
         if ([1, 2].includes(self.question.question_type)) {
           self.results = self.results.filter(r => r.q != self.question.id && r.a != id);
+        } else if (self.question.question_type == 3) {
+          const existingIndex = self.results.findIndex(r => r.q == self.question.id && r.a == id);
+          if (existingIndex > -1) {
+            self.results.splice(existingIndex, 1);
+            return;
+          }
         }
 
         this.results.push({
