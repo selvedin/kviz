@@ -15,7 +15,7 @@ $this->title = __('Running') . '  ' . $model->title;
             </div>
             <div class='quiz-part h-50 row'>
                 <div v-if="question.question_type == 1" class="col-md-6 text-center">
-                    <button @click="answerQuestion(0)" :disabled='!canAnswer' :class="[classObject, results.findIndex(r => r.q == question.id && r.a == 0) > -1 ? 'active':'']">
+                    <button @click="answerQuestion(0, '<?= __('False') ?>')" :disabled='!canAnswer' :class="[classObject, results.findIndex(r => r.q == question.id && r.a == 0) > -1 ? 'active':'']">
                         <?= __('False') ?>
                         <svg v-if="!canAnswer && question.options[0].is_true == 0" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
                             <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
@@ -24,7 +24,7 @@ $this->title = __('Running') . '  ' . $model->title;
                     </button>
                 </div>
                 <div v-if="question.question_type == 1" class="col-md-6 text-center">
-                    <button @click="answerQuestion(1)" :disabled='!canAnswer' :class="[classObject, results.findIndex(r => r.q == question.id && r.a == 1) > -1 ? 'active':'']">
+                    <button @click="answerQuestion(1, '<?= __('True') ?>')" :disabled='!canAnswer' :class="[classObject, results.findIndex(r => r.q == question.id && r.a == 1) > -1 ? 'active':'']">
                         <?= __('True') ?>
                         <svg v-if="!canAnswer && question.options[0].is_true == 1" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
                             <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
@@ -33,7 +33,7 @@ $this->title = __('Running') . '  ' . $model->title;
                     </button>
                 </div>
                 <div v-else v-for="(opt, index) in question.options" class="col-md-6 text-center">
-                    <button @click="answerQuestion(opt.id)" :disabled='!canAnswer' :class="[classObject, results.findIndex(r => r.q == question.id && r.a == opt.id) > -1 ? 'active':'']">
+                    <button @click="answerQuestion(opt.id, opt.content)" :disabled='!canAnswer' :class="[classObject, results.findIndex(r => r.q == question.id && r.a == opt.id) > -1 ? 'active':'']">
                         {{String.fromCharCode(65+index) + ': ' + opt.content}}
                         <svg v-if="!canAnswer && opt.is_true" class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
                             <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
@@ -43,9 +43,49 @@ $this->title = __('Running') . '  ' . $model->title;
                 </div>
             </div>
         </div>
-        <div v-if="showResults && isPlaying" class='text-center w-100 h-100'>
-            <h4 v-for="result in results">{{result.q + " - " + result.a}}</h4>
-            <a href='javascript:void(0)' @click='stopQuiz()' :class="classObject">
+        <div v-if="showResults && !questions.length" class='text-center w-100 h-100'>
+            <div class="card">
+                <div class="card-body">
+                    <table class='table text-start'>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th><?= __('Question') ?></th>
+                                <th><?= __('Correct answer') ?></th>
+                                <th><?= __('Your answer') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(q, ind) in summary">
+                                <td>{{ind+1}}.</td>
+                                <td>{{q.label}}</td>
+                                <td>
+                                    <span>
+                                        {{q.correct}},
+                                    </span>
+                                </td>
+                                <td>
+                                    <span :class="q.isCorrect?'text-success':'text-danger'">
+                                        {{q.answer}},
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan='3'><?= __('Summary') ?></td>
+                                <td>
+                                    <h4>
+                                        {{ totalCorrect}}/{{ allQuestions.length}}
+                                        [{{ totalPercentage }}%]
+                                    </h4>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <a href='javascript:void(0)' @click='stopQuiz()' :class="classObject" style="margin-top:40px;">
                 <?= __('End') ?>
             </a>
         </div>

@@ -21,11 +21,15 @@ if ($model && !$isNewRecord) {
       title: '<?= __('Player') ?>',
       isNewRecord: <?= $isNewRecord ?>,
       config: <?= json_encode($config) ?>,
+      allQuestions: <?= json_encode($model->generateQuestions()) ?>,
       questions: <?= json_encode($model->generateQuestions()) ?>,
       question: {},
-      questionTimeInSeconds: 5,
+      questionTimeInSeconds: 3,
       questionIsStarted: false,
       results: [],
+      totalCorrect: 0,
+      totalPercentage: 0,
+      summary: [],
       isPlaying: false,
       showResults: false,
       canAnswer: false,
@@ -43,6 +47,7 @@ if ($model && !$isNewRecord) {
       stopQuiz: function() {
         document.exitFullscreen();
         this.isPlaying = false;
+        this.showResults = false;
         $('#stopwatch').hide();
       },
       startQuestion: function() {
@@ -64,12 +69,12 @@ if ($model && !$isNewRecord) {
         this.questionIsStarted = false;
         this.canAnswer = false;
       },
-      answerQuestion: function(id) {
+      answerQuestion: function(a, t) {
         const self = this;
         if ([1, 2].includes(self.question.question_type)) {
-          self.results = self.results.filter(r => r.q != self.question.id && r.a != id);
+          self.results = self.results.filter(r => r.q != self.question.id && r.a != a);
         } else if (self.question.question_type == 3) {
-          const existingIndex = self.results.findIndex(r => r.q == self.question.id && r.a == id);
+          const existingIndex = self.results.findIndex(r => r.q == self.question.id && r.a == a);
           if (existingIndex > -1) {
             self.results.splice(existingIndex, 1);
             return;
@@ -78,11 +83,67 @@ if ($model && !$isNewRecord) {
 
         this.results.push({
           q: this.question.id,
-          a: id
+          a,
+          t
         });
 
         $(document).focus();
       },
+      summarize: function() {
+        const self = this;
+        let correctAnswers = [];
+        let userAnswers = [];
+        let correctTitle = '';
+        let answerTitle = '';
+        self.allQuestions.forEach(q => {
+          switch (+q.question_type) {
+            case 1:
+              correctTitle = q.options[0].is_true ? '<?= __('True') ?>' : '<?= __('False') ?>';
+              answerTitle = self.results.find(r => r.q == q.id).t;
+              self.summary.push({
+                id: q.id,
+                label: `[${q.id}]` + q.content,
+                correct: correctTitle,
+                answer: answerTitle,
+                isCorrect: correctTitle == answerTitle
+              })
+              break;
+            case 2:
+              correctAnswers = [];
+              q.options.filter(o => o.is_true).forEach(o => correctAnswers.push(o.content));
+              correctTitle = correctAnswers.join(', ');
+              answerTitle = self.results.find(r => r.q == q.id).t;
+              self.summary.push({
+                id: q.id,
+                label: `[${q.id}]` + q.content,
+                correct: correctTitle,
+                answer: answerTitle,
+                isCorrect: correctTitle == answerTitle
+              })
+              break;
+            case 3:
+              correctAnswers = [];
+              userAnswers = [];
+              q.options.filter(o => o.is_true).forEach(o => correctAnswers.push(o.content));
+              self.results.filter(r => r.q == q.id).forEach(r => userAnswers.push(r.t));
+              correctAnswers.sort();
+              userAnswers.sort();
+              correctTitle = correctAnswers.join(', ');
+              answerTitle = userAnswers.join(', ');
+
+              self.summary.push({
+                id: q.id,
+                label: `[${q.id}]` + q.content,
+                correct: correctTitle,
+                answer: answerTitle,
+                isCorrect: correctTitle == answerTitle
+              })
+              break;
+            default:
+              break;
+          }
+        });
+      }
     },
     computed: {
       classObject() {
@@ -95,7 +156,15 @@ if ($model && !$isNewRecord) {
         }
       }
     },
-    watch: {},
+    watch: {
+      showResults: function(val) {
+        if (val) this.summarize();
+      },
+      summary: function(val) {
+        this.totalCorrect = this.summary.filter(s => s.isCorrect).length;
+        this.totalPercentage = Math.round(this.totalCorrect / this.allQuestions.length * 100);
+      },
+    },
   });
 
   $(document).on('keyup', function(e) {
