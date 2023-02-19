@@ -83,4 +83,25 @@ class Quiz extends BaseModel
     {
         return $this->level ? Question::Levels()[$this->level] : null;
     }
+
+    public function generateQuestions()
+    {
+        $questions = [];
+        foreach ($this->config as $conf) {
+            $limit = $conf->num_of_questions;
+            $where = "category_id = $conf->category_id";
+            if ($conf->grade) $where .= " AND grade=$conf->grade";
+            if ($conf->level) $where .= " AND level=$conf->level";
+            foreach (Question::find()->where($where)
+                ->select(['id', 'content', 'question_type'])
+                ->limit($limit)->all() as $q) {
+                $questions[] = [
+                    'id' => $q->id, 'content' => $q->content, 'question_type' => $q->question_type,
+                    'options' => $q->OptionsAsArray(),
+                    'pairs' => $q->PairsAsArray(),
+                ];
+            }
+        }
+        return $questions;
+    }
 }

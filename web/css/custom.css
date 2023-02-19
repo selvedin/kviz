@@ -186,3 +186,33 @@ body {
   padding-right: 20px !important;
   padding-left: auto !important;
 }
+
+.card-quiz {
+  background: rgb(0, 17, 37);
+  background: linear-gradient(
+    335deg,
+    rgba(0, 17, 37, 1) 0%,
+    rgba(0, 68, 103, 1) 100%
+  );
+}
+
+.quiz-question-title {
+  padding: 2rem;
+  font-size: 3.5rem;
+  color: ghostwhite;
+  /* border: 2px solid #006b95;  */
+  border-radius: 20%;
+  box-shadow: 0px 0 10px #0ff;
+}
+
+.quiz-part {
+  border-color: #006b95;
+  /* border-color: #16cde1; */
+}
+
+.btn-quiz {
+  padding: 1rem 3rem;
+  width: 33vw;
+  font-size: 3.5rem;
+  color: ghostwhite;
+}

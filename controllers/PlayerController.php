@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Question;
 use app\models\Quiz;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -38,8 +39,7 @@ class PlayerController extends Controller
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
-        return $this->render('view', ['model' => $model]);
+        return $this->render('view', ['model' =>  $this->findModel($id)]);
     }
 
     /**

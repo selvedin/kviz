@@ -21,14 +21,32 @@ if ($model && !$isNewRecord) {
       title: '<?= __('Player') ?>',
       isNewRecord: <?= $isNewRecord ?>,
       config: <?= json_encode($config) ?>,
-      isPlaying: false
+      questions: <?= json_encode($model->generateQuestions()) ?>,
+      question: {},
+      results: [],
+      isPlaying: true,
+      showResults: false
     },
-    mounted() {},
+    mounted() {
+      this.question = this.questions.shift();
+    },
     methods: {
       runQuiz: function() {
         const elem = document.getElementById("mainApp");
         openFullscreen(elem);
         this.isPlaying = true;
+      },
+      answerQuestion: function(id) {
+        this.results.push({
+          q: this.question.id,
+          a: id
+        });
+        if (this.questions.length) {
+          this.question = this.questions.shift();
+          return;
+        }
+        this.showResults = true;
+        this.question = {};
       }
     },
     computed: {},

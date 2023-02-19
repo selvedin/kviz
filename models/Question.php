@@ -120,6 +120,20 @@ class Question extends BaseModel
         return $this->level ? self::Levels()[$this->level] : null;
     }
 
+    public function OptionsAsArray()
+    {
+        $options = [];
+        foreach ($this->options as $o) $options[] = ['id' => $o->id, 'content' => $o->content, 'is_true' => $o->is_true];
+        return $options;
+    }
+
+    public function PairsAsArray()
+    {
+        $pairs = [];
+        foreach ($this->pairs as $p) $pairs[] = ['id' => $p->id, 'one' => $p->one, 'two' => $p->two];
+        return $pairs;
+    }
+
     public function beforeDelete()
     {
         foreach ($this->options as $o) $o->delete();
