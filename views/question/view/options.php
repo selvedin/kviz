@@ -18,18 +18,32 @@ if ($model->options) {
           <table class="table">
             <tbody class="table-border-bottom-0">
               <?php
-              foreach ($model->options as $opt)
-                echo Html::tag(
-                  'tr',
-                  Html::tag('td', $opt->content) .
-                    Html::tag(
-                      'td',
-                      ($opt->is_true
-                        ? Icons::faIcon('check text-success')
-                        : Icons::faIcon('times text-danger')),
-                      ['class' => 'text-end']
-                    )
-                );
+              foreach ($model->options as $opt) {
+                if ($opt->content == 'tf') {
+                  echo Html::tag(
+                    'tr',
+                    Html::tag('td', __('True')) .
+                      Html::tag(
+                        'td',
+                        ($opt->is_true
+                          ? Icons::faIcon('check text-success')
+                          : Icons::faIcon('times text-danger')),
+                        ['class' => 'text-end']
+                      )
+                  );
+                } else
+                  echo Html::tag(
+                    'tr',
+                    Html::tag('td', $opt->content) .
+                      Html::tag(
+                        'td',
+                        ($opt->is_true
+                          ? Icons::faIcon('check text-success')
+                          : Icons::faIcon('times text-danger')),
+                        ['class' => 'text-end']
+                      )
+                  );
+              }
               ?>
             </tbody>
           </table>

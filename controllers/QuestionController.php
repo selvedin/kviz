@@ -95,6 +95,15 @@ class QuestionController extends Controller
 
     private function addOptions($id, $data)
     {
+        if (isset($data['is_true'])) {
+            $model = Options::find()->where(['question_id' => $id, 'content' => 'tf'])->one();
+            if (isset($model)) $model->is_true = $data['is_true'];
+            else {
+                $model = new Options(['question_id' => $id, 'content' => 'tf', 'is_true' => $data['is_true']]);
+            }
+            $model->save();
+            return;
+        }
         foreach ($data as $d) {
             if (!Options::find()->where(['question_id' => $id, 'content' => $d['content']])->exists()) {
                 $option = new Options(['question_id' => $id, 'content' => $d['content'], 'is_true' => (int)$d['is_true']]);
