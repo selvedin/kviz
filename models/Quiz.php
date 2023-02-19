@@ -96,7 +96,9 @@ class Quiz extends BaseModel
                 ->select(['id', 'content', 'question_type'])
                 ->limit($limit)->all() as $q) {
                 $questions[] = [
-                    'id' => $q->id, 'content' => $q->content, 'question_type' => $q->question_type,
+                    'id' => $q->id,
+                    'content' => $q->content,
+                    'question_type' => $q->question_type,
                     'options' => $q->OptionsAsArray(),
                     'pairs' => $q->PairsAsArray(),
                 ];

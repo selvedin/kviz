@@ -1,5 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto&family=Teko:wght@300&display=swap");
 
 .bg-home:before {
   content: " ";
@@ -19,13 +18,7 @@
 }
 
 body {
-  font-family: Tajawal;
-}
-.amiri {
-  /* font-family: 'Amiri Quran' !important; */
-  font-family: "Amiri" !important;
-  font-size: larger;
-  line-height: 2.6em;
+  font-family: "Roboto";
 }
 
 .cursor {
@@ -211,8 +204,131 @@ body {
 }
 
 .btn-quiz {
+  display: block;
+  border: 3px solid #006b95;
   padding: 1rem 3rem;
-  width: 33vw;
+  width: 75%;
   font-size: 3.5rem;
+  background-color: transparent;
   color: ghostwhite;
+}
+.btn-quiz:hover {
+  box-shadow: 0px 0 10px #0ff;
+  color: ghostwhite;
+}
+.btn-quiz:disabled {
+  background-color: gray;
+  color: lightgray;
+}
+
+.btn-quiz.active {
+  background-color: #006b95;
+}
+
+.base-timer {
+  position: absolute;
+  top: 0px;
+  right: 20px;
+  font-family: "Teko", Courier, monospace;
+  font-size: 7rem;
+  color: ghostwhite;
+  width: 200px;
+  height: 200px;
+}
+
+.base-timer__svg {
+  transform: scaleX(-1);
+}
+
+.base-timer__circle {
+  fill: none;
+  stroke: none;
+}
+
+.base-timer__path-elapsed {
+  stroke-width: 7px;
+  stroke: grey;
+}
+
+.base-timer__path-remaining {
+  stroke-width: 7px;
+  stroke-linecap: round;
+  transform: rotate(90deg);
+  transform-origin: center;
+  transition: 1s linear all;
+  fill-rule: nonzero;
+  stroke: currentColor;
+}
+
+.base-timer__path-remaining.green {
+  color: rgb(65, 184, 131);
+}
+
+.base-timer__path-remaining.orange {
+  color: orange;
+}
+
+.base-timer__path-remaining.red {
+  color: red;
+}
+
+.base-timer__label {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #7ac142;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: inline-block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px #7ac142;
+  animation: fill 0.4s ease-in-out 0.4s forwards,
+    scale 0.3s ease-in-out 0.9s both;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #7ac142;
+  }
 }

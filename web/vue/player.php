@@ -23,33 +23,80 @@ if ($model && !$isNewRecord) {
       config: <?= json_encode($config) ?>,
       questions: <?= json_encode($model->generateQuestions()) ?>,
       question: {},
+      questionTimeInSeconds: 10,
+      questionIsStarted: false,
       results: [],
-      isPlaying: true,
-      showResults: false
+      isPlaying: false,
+      showResults: false,
+      canAnswer: false,
     },
     mounted() {
       this.question = this.questions.shift();
+      $('#stopwatch').hide();
     },
     methods: {
       runQuiz: function() {
         const elem = document.getElementById("mainApp");
         openFullscreen(elem);
+        this.startQuestion();
         this.isPlaying = true;
       },
+      stopQuiz: function() {
+        document.exitFullscreen();
+        this.isPlaying = false;
+        $('#stopwatch').hide();
+      },
+      startQuestion: function() {
+        $('#stopwatch').show();
+        if (this.questions.length) {
+          this.question = this.questions.shift();
+          this.questionIsStarted = true;
+          startTimer(this.questionTimeInSeconds);
+          this.canAnswer = true;
+          return;
+        }
+        this.canAnswer = false;
+        this.showResults = true;
+        this.question = {};
+      },
+      stopQuestion: function() {
+        $('#stopwatch').hide();
+        this.questionTimeInSeconds = 10;
+        this.questionIsStarted = false;
+        this.canAnswer = false;
+      },
       answerQuestion: function(id) {
+        const self = this;
+        if ([1, 2].includes(self.question.question_type)) {
+          self.results = self.results.filter(r => r.q != self.question.id && r.a != id);
+        }
+
         this.results.push({
           q: this.question.id,
           a: id
         });
-        if (this.questions.length) {
-          this.question = this.questions.shift();
-          return;
+
+        $(document).focus();
+      },
+    },
+    computed: {
+      classObject() {
+        return {
+          active: false,
+          'ms-auto': true,
+          'me-auto': true,
+          'rounded-pill': true,
+          'btn-quiz': true,
         }
-        this.showResults = true;
-        this.question = {};
       }
     },
-    computed: {},
-    watch: {}
+    watch: {},
+  });
+
+  $(document).on('keyup', function(e) {
+    if (e.key === 'Space' || e.keyCode === 32) {
+      if (mainApp.questionIsStarted) return;
+      else mainApp.startQuestion();
+    }
   });
 </script>
