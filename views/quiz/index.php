@@ -12,28 +12,30 @@ use yii\grid\GridView;
 
 $this->title = __('Quizes');
 ?>
-
-<?= CardView::widget([
-    'title' => $this->title,
-    'buttons' => [Buttons::Create(), Buttons::ResetList()],
-    'content' => GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'tableOptions' => ['class' => 'table table-striped'],
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            'title',
-            'num_of_questions',
-            'duration',
-            ['attribute' => 'level', 'value' => function ($model) {
-                return $model->levelLabel;
-            }, 'filter' => Question::Levels()],
-            ['attribute' => 'grade', 'value' => function ($model) {
-                return $model->gradeLabel;
-            }, 'filter' => Question::Grades()],
-            [
-                'class' => ActionColumn::class,
+<div id='quizApp'>
+    <?= CardView::widget([
+        'title' => $this->title,
+        'buttons' => [Buttons::Create(), Buttons::ResetList()],
+        'content' => GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'tableOptions' => ['class' => 'table table-striped'],
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                'title',
+                'num_of_questions',
+                'duration',
+                ['attribute' => 'level', 'value' => function ($model) {
+                    return $model->levelLabel;
+                }, 'filter' => Question::Levels()],
+                ['attribute' => 'grade', 'value' => function ($model) {
+                    return $model->gradeLabel;
+                }, 'filter' => Question::Grades()],
+                [
+                    'class' => ActionColumn::class,
+                ],
             ],
-        ],
-    ])
-]);
+        ])
+    ]);
+    ?>
+</div>

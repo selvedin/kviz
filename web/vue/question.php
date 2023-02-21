@@ -19,7 +19,7 @@ if ($model && !$isNewRecord) {
     data: {
       title: '<?= __('Question') ?>',
       isNewRecord: <?= $isNewRecord ?>,
-      questionType: <?= $model ? (int)$model->question_type : 0 ?>,
+      questionType: <?= $model ? (int)$model->question_type : 1 ?>,
       contentType: <?= $model ? (int)$model->content_type : 0 ?>,
       options: <?= json_encode($options) ?>,
       pairs: <?= json_encode($pairs) ?>,

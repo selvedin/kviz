@@ -209,8 +209,10 @@ body {
   padding: 1rem 3rem;
   width: 75%;
   font-size: 3.5rem;
-  background-color: transparent;
   color: ghostwhite;
+}
+.btn-quiz-active {
+  background-color: transparent;
 }
 .btn-quiz:hover {
   box-shadow: 0px 0 10px #0ff;

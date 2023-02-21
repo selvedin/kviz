@@ -80,7 +80,7 @@ class QuestionController extends Controller
     {
         $perms = new Perms();
         if (!$perms->canCreate('Question')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        $model = new Question(['status' => 0]);
+        $model = new Question(['status' => 0, 'question_type' => 1]);
 
         if ($this->request->isPost)
             $this->saveModel($model, $this->request->post());
@@ -114,7 +114,7 @@ class QuestionController extends Controller
         }
         foreach ($data as $d) {
             if (!Options::find()->where(['question_id' => $id, 'content' => $d['content']])->exists()) {
-                $option = new Options(['question_id' => $id, 'content' => $d['content'], 'is_true' => (int)$d['is_true']]);
+                $option = new Options(['question_id' => $id, 'content' => $d['content'], 'is_true' => 1]);
                 if (!$option->save()) $this->showErrors($option);
             }
         }

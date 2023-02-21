@@ -72,7 +72,14 @@ class Question extends BaseModel
 
     public static function QuestionTypes()
     {
-        return [1 => __('True/False'), __('Single choice'), __('Multiple choice'), __('Join pairs')];
+        return [
+            1 => __('True/False'),
+            2 => __('Single choice'),
+            3 => __('Multiple choice'),
+            4 => __('Join pairs'),
+            5 => __('Input result'),
+            6 => __('Essai')
+        ];
     }
 
     public function getQuestionType()
@@ -131,7 +138,10 @@ class Question extends BaseModel
     {
         $pairs = [];
         foreach ($this->pairs as $p) $pairs[] = ['id' => $p->id, 'one' => $p->one, 'two' => $p->two];
-        return $pairs;
+        $data['left'] = $pairs;
+        shuffle($pairs);
+        $data['right'] = $pairs;
+        return $data;
     }
 
     public function beforeDelete()
