@@ -10,7 +10,7 @@ use yii\grid\GridView;
 /** @var app\models\search\QuestionSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Questions';
+$this->title = __('Quizes');
 ?>
 
 <?= CardView::widget([
