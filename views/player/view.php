@@ -9,7 +9,8 @@ $this->title = __('Running') . '  ' . $model->title;
         </div>
         <div v-if="isPlaying && !showResults" class='w-100 h-100'>
             <div class="question-part h-50  ">
-                <h1 class='quiz-question-title ms-auto me-auto w-75 mt-5'>
+                <h1 class='quiz-question-title text-center ms-auto me-auto w-75 mt-5'>
+                    {{pastQuestions.length}}/{{allQuestions.length}}<br />
                     {{question.content}}
                 </h1>
             </div>
@@ -46,7 +47,7 @@ $this->title = __('Running') . '  ' . $model->title;
         <div v-if="showResults && !questions.length" class='text-center w-100 h-100'>
             <div class="card">
                 <div class="card-body">
-                    <table class='table text-start'>
+                    <table class='table text-start' style="font-size:1.3rem;">
                         <thead>
                             <tr>
                                 <th>#</th>

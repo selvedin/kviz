@@ -11,7 +11,7 @@ $url = Yii::getAlias('@web');
 $path = Yii::$app->basePath;
 $controller = Yii::$app->controller->id;
 $action = Yii::$app->controller->action->id;
-$isLogin = in_array($action, ['login', 'request-password-reset', 'reset-password']);
+$isLogin = in_array($action, ['login', 'signup', 'request-password-reset', 'reset-password']);
 
 AppAsset::register($this);
 

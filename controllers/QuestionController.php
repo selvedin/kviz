@@ -4,12 +4,14 @@ namespace app\controllers;
 
 use app\models\Options;
 use app\models\Pairs;
+use app\models\Perms;
 use app\models\Question;
 use app\models\search\QuestionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use Yii;
+use yii\web\HttpException;
 use yii\web\Response;
 
 /**
@@ -43,6 +45,8 @@ class QuestionController extends Controller
      */
     public function actionIndex()
     {
+        $perms = new Perms();
+        if (!$perms->canList('Question')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $searchModel = new QuestionSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -60,6 +64,8 @@ class QuestionController extends Controller
      */
     public function actionView($id)
     {
+        $perms = new Perms();
+        if (!$perms->canView('Question')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -72,6 +78,8 @@ class QuestionController extends Controller
      */
     public function actionCreate()
     {
+        $perms = new Perms();
+        if (!$perms->canCreate('Question')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = new Question(['status' => 0]);
 
         if ($this->request->isPost)
@@ -139,6 +147,9 @@ class QuestionController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $perms = new Perms();
+        if (!$perms->canUpdate('Question') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
 
         if ($this->request->isPost)
             $this->saveModel($model, $this->request->post());
@@ -165,7 +176,11 @@ class QuestionController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $perms = new Perms();
+        if (!$perms->canDelete('Question') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model->delete();
 
         return $this->redirect(['index']);
     }
@@ -188,9 +203,20 @@ class QuestionController extends Controller
 
     public function actionDeleteOptions($id, $isPair = false)
     {
+        $model = Options::findOne($id);
+        $perms = new Perms();
+        if (!$perms->canDelete('Question') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         Yii::$app->response->format = Response::FORMAT_JSON;
         if ($isPair)  Pairs::findOne($id)->delete();
         else Options::findOne($id)->delete();
         return ['message' => __('Option deleted')];
+    }
+
+    private function isPrivate($creator)
+    {
+        if (Yii::$app->user->identity->role->private)
+            if ($creator != Yii::$app->user->id) return true;
+        return false;
     }
 }

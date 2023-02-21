@@ -25,6 +25,7 @@ define("BARCODE", "barode");
 define("MAP", "map");
 define("PRINT_EN", "prints/print");
 define("PRINT_AR", "prints/print_ar");
+define('PERMISSION_LEVELS', ['none', 'index', 'view', 'create', 'update', 'delete']);
 class AdminController extends Controller
 {
     /**
@@ -56,7 +57,11 @@ class AdminController extends Controller
         $searchModel = $this->getSearchModel();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination->pageSize = 15;
-        return $this->render(INDEX, ['searchModel' => $searchModel, 'dataProvider' => $dataProvider, "model" => $model]);
+        return $this->render(INDEX, [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            "model" => $model
+        ]);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Perms;
 use app\models\search\UserSearch;
 use Yii;
 use app\models\Signup;
@@ -10,6 +11,7 @@ use app\models\SignupForm;
 use app\models\VerifyEmailForm;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -43,6 +45,8 @@ class UserController extends Controller
      */
     public function actionIndex()
     {
+        $perms = new Perms();
+        if (!$perms->canList('User')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -60,7 +64,9 @@ class UserController extends Controller
      */
     public function actionActivate($id)
     {
-        if (!User::isAdmin()) return $this->redirect($this->request->referrer);
+
+        $perms = new Perms();
+        if (!$perms->canDelete('User')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = $this->findModel($id);
         $verify = new VerifyEmailForm($model->verification_token);
         if (!$verify->verifyEmail()) {
@@ -80,6 +86,8 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
+        $perms = new Perms();
+        if (!$perms->canView('User')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -94,6 +102,8 @@ class UserController extends Controller
      */
     public function actionUpdate($id)
     {
+        $perms = new Perms();
+        if (!$perms->canUpdate('User')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -107,6 +117,8 @@ class UserController extends Controller
 
     public function actionSendSignup()
     {
+        $perms = new Perms();
+        if (!$perms->canCreate('User')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = new Signup();
         if (Yii::$app->request->post()) {
             $model->load(Yii::$app->request->post());
@@ -133,6 +145,8 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
+        $perms = new Perms();
+        if (!$perms->canCreate('User')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = new SignupForm();
 
         if ($this->request->isPost) {
@@ -155,10 +169,12 @@ class UserController extends Controller
 
     public function actionImportUsers()
     {
-        if (Yii::$app->user->identity->username == 'admin') {
-            $odlUsers = Yii::$app->db->createCommand("SELECT * from wp_users")->queryAll();
-            return $this->render('import', ['old' => $odlUsers]);
-        }
+        $perms = new Perms();
+        if (!$perms->canDelete('User')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+
+        $odlUsers = Yii::$app->db->createCommand("SELECT * from wp_users")->queryAll();
+        return $this->render('import', ['old' => $odlUsers]);
+
         throw new NotFoundHttpException("Page does not exist!");
     }
 

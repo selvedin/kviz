@@ -23,8 +23,10 @@ if ($model && !$isNewRecord) {
       config: <?= json_encode($config) ?>,
       allQuestions: <?= json_encode($model->generateQuestions()) ?>,
       questions: <?= json_encode($model->generateQuestions()) ?>,
+      pastQuestions: [],
       question: {},
-      questionTimeInSeconds: 3,
+      duration: <?= $model->duration * 60 ?>,
+      questionTimeInSeconds: 5,
       questionIsStarted: false,
       results: [],
       totalCorrect: 0,
@@ -36,6 +38,7 @@ if ($model && !$isNewRecord) {
     },
     mounted() {
       $('#stopwatch').hide();
+      this.questionTimeInSeconds = Math.round(this.duration / this.allQuestions.length);
     },
     methods: {
       runQuiz: function() {
@@ -54,6 +57,7 @@ if ($model && !$isNewRecord) {
         $('#stopwatch').show();
         if (this.questions.length) {
           this.question = this.questions.shift();
+          this.pastQuestions.push(this.question);
           this.questionIsStarted = true;
           startTimer(this.questionTimeInSeconds);
           this.canAnswer = true;
@@ -102,7 +106,7 @@ if ($model && !$isNewRecord) {
               answerTitle = self.results.find(r => r.q == q.id).t;
               self.summary.push({
                 id: q.id,
-                label: `[${q.id}]` + q.content,
+                label: q.content,
                 correct: correctTitle,
                 answer: answerTitle,
                 isCorrect: correctTitle == answerTitle
@@ -115,7 +119,7 @@ if ($model && !$isNewRecord) {
               answerTitle = self.results.find(r => r.q == q.id).t;
               self.summary.push({
                 id: q.id,
-                label: `[${q.id}]` + q.content,
+                label: q.content,
                 correct: correctTitle,
                 answer: answerTitle,
                 isCorrect: correctTitle == answerTitle
@@ -133,7 +137,7 @@ if ($model && !$isNewRecord) {
 
               self.summary.push({
                 id: q.id,
-                label: `[${q.id}]` + q.content,
+                label: q.content,
                 correct: correctTitle,
                 answer: answerTitle,
                 isCorrect: correctTitle == answerTitle

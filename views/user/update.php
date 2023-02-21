@@ -1,6 +1,7 @@
 <?php
 
 use app\helpers\Buttons;
+use app\models\Roles;
 use app\models\User;
 use app\widgets\CardView;
 use yii\bootstrap5\ActiveForm;
@@ -31,7 +32,7 @@ $this->title = __('Update') . ' ' . $model->name;
                 <?= $form->field($model, 'status')->dropdownList(User::getStatuses()) ?>
             </div>
             <div class="col-md-6">
-                <?= $form->field($model, 'roles')->dropdownList(User::getRolesNames()) ?>
+                <?= $form->field($model, 'role_id')->dropdownList(Roles::getNames()) ?>
             </div>
         </div>
         <?= CardView::end() ?>

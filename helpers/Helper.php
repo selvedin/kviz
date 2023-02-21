@@ -2,6 +2,7 @@
 
 namespace app\helpers;
 
+use app\models\Perms;
 use Yii;
 
 class Helper
@@ -41,21 +42,30 @@ class Helper
 
   public static function Menus()
   {
-    $isGuest = Yii::$app->user->isGuest;
-    $canSee = true;
+    $perms = new Perms();
+    $canSeeHome = $perms->canList('Question') || $perms->canList('Quiz');
+    $canSeeSettings = $perms->canList('Categories');
     return [
       [
-        'icon' => 'home', 'title' => 'Početna', 'url' => null, 'visible' => $canSee,
+        'icon' => 'home', 'title' => 'Početna', 'url' => null, 'visible' => $canSeeHome,
         'items' => [
-          ['icon' => 'question-mark', 'title' => 'Pitanja', 'url' => '/question', 'visible' => $canSee],
-          ['icon' => 'tournament', 'title' => 'Kvizovi', 'url' => '/quiz', 'visible' => $canSee],
+          ['icon' => 'question-mark', 'title' => 'Pitanja', 'url' => '/question', 'visible' => $perms->canList('Question')],
+          ['icon' => 'tournament', 'title' => 'Kvizovi', 'url' => '/quiz', 'visible' => $perms->canList('Quiz')],
         ]
       ],
       [
-        'icon' => 'settings', 'title' => 'Podešavanja', 'url' => null, 'visible' => $canSee,
+        'icon' => 'settings', 'title' => 'Podešavanja', 'url' => null, 'visible' => $canSeeSettings,
         'items' => [
-          ['icon' => 'category', 'title' => 'Kategorije', 'url' => '/categories', 'visible' => $canSee],
+          ['icon' => 'category', 'title' => 'Kategorije', 'url' => '/categories', 'visible' => $perms->canList('Categories')],
 
+        ]
+      ],
+      [
+        'icon' => 'lock', 'title' => 'Pristup', 'url' => null, 'visible' => $perms->canList('User'),
+        'items' => [
+          ['icon' => 'users', 'title' => 'Korisnici', 'url' => '/user', 'visible' => $perms->canList('User')],
+          ['icon' => 'lock-off', 'title' => 'Korisničke uloge', 'url' => '/roles', 'visible' => $perms->canList('Roles')],
+          ['icon' => 'lock-off', 'title' => 'Permisije', 'url' => '/perms', 'visible' => $perms->canList('Perms')],
         ]
       ],
     ];

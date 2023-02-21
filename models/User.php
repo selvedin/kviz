@@ -20,7 +20,7 @@ use yii\web\IdentityInterface;
  * @property string $email
  * @property string $auth_key
  * @property integer $status
- * @property string $roles
+ * @property integer $role_id
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
@@ -48,25 +48,9 @@ class User extends BaseModel implements IdentityInterface
     {
         return [
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
-            [['roles'], 'string'],
+            [['role_id'], 'integer'],
             [['first_name', 'last_name'], 'string', 'max' => 128],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'first_name' => __('First Name'),
-            'last_name' => __('Last Name'),
-            'username' => __('Username'),
-            'email' => __('Email'),
-            'password' => __('Password'),
-            'status' => __('Status'),
-            'roles' => __('Role')
         ];
     }
 
@@ -270,8 +254,8 @@ class User extends BaseModel implements IdentityInterface
 
     public static function isAdmin()
     {
-        return Yii::$app->user->id == 1;
-        // return Yii::$app->user?->identity?->role == 'admin';
+        // return Yii::$app->user->id == 1;
+        return Yii::$app->user?->identity?->role_id == 1;
     }
 
     public static function createUserWithDefaultPassword($username, $first_name, $last_name, $email)

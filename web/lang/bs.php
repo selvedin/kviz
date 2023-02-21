@@ -41,6 +41,7 @@ return [
   'Error on deleting file. Please try again' => 'Desila se greška prilikom brisanja fajla. Pokušajte ponovo.',
   'Allowed files up to' => 'Dozvoljena veličina fajla do',
   'True/False' => 'Tačno/Netačno',
+  'False' => 'Netačno',
   'Single choice' => 'Jedan tačan odgovor',
   'Multiple choice' => 'Više tačnih odgovora',
   'Join pairs' => 'Spoji parove',

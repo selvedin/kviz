@@ -3,8 +3,8 @@
 use app\models\Perms;
 use app\models\Roles;
 use kartik\select2\Select2;
-use yii\bootstrap4\ActiveForm;
-use yii\bootstrap4\Html;
+use yii\bootstrap5\ActiveForm;
+use yii\bootstrap5\Html;
 
 $this->title = __("Permissions");
 $roles = Roles::getNames();

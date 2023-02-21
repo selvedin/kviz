@@ -141,10 +141,10 @@ class Perms extends BaseModel
             return false;
         }
 
-        if (!$user->roles) return false;
+        if (!$user->role_id) return false;
 
-        if (isset($data[$objectName][$user->roles]) && is_array($data[$objectName][$user->roles]))
-            return $level <= (int)$data[$objectName][$user->roles][0];
+        if (isset($data[$objectName][$user->role_id]) && is_array($data[$objectName][$user->role_id]))
+            return $level <= (int)$data[$objectName][$user->role_id][0];
         return false;
     }
 

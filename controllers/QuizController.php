@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Perms;
 use app\models\Quiz;
 use app\models\QuizConfig;
 use app\models\search\QuizSearch;
@@ -9,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use Yii;
+use yii\web\HttpException;
 use yii\web\Response;
 
 /**
@@ -41,6 +43,8 @@ class QuizController extends Controller
      */
     public function actionIndex()
     {
+        $perms = new Perms();
+        if (!$perms->canList('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $searchModel = new QuizSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -58,6 +62,8 @@ class QuizController extends Controller
      */
     public function actionView($id)
     {
+        $perms = new Perms();
+        if (!$perms->canView('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -70,6 +76,8 @@ class QuizController extends Controller
      */
     public function actionCreate()
     {
+        $perms = new Perms();
+        if (!$perms->canCreate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = new Quiz(['status' => 0]);
 
         if ($this->request->isPost) $this->saveModel($model, $this->request->post());
@@ -90,6 +98,9 @@ class QuizController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $perms = new Perms();
+        if (!$perms->canUpdate('Quiz') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
 
         if ($this->request->isPost) $this->saveModel($model, $this->request->post());
 
@@ -118,10 +129,7 @@ class QuizController extends Controller
     private function addConfig($id, $data)
     {
         foreach ($data as $d) {
-            if (!QuizConfig::find()->where([
-                'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
-                'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
-            ])->exists()) {
+            if (!QuizConfig::find()->where($this->getWhere($id, $d))->exists()) {
                 $option = new QuizConfig([
                     'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
                     'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
@@ -135,6 +143,16 @@ class QuizController extends Controller
         }
     }
 
+    private function getWhere($id, $d)
+    {
+        $where = "quiz_id=$id";
+        if (!empty($d['num_of_questions'])) $where .= " AND num_of_questions=" . $d['num_of_questions'];
+        if (!empty($d['grade'])) $where .= " AND grade=" . $d['grade'];
+        if (!empty($d['level'])) $where .= " AND level=" . $d['level'];
+        if (!empty($d['category_id'])) $where .= " AND category_id=" . $d['category_id'];
+        return $where;
+    }
+
     /**
      * Deletes an existing Quiz model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -144,15 +162,23 @@ class QuizController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $perms = new Perms();
+        if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model->delete();
 
         return $this->redirect(['index']);
     }
 
     public function actionDeleteConfig($id)
     {
+        $model = QuizConfig::findOne($id);
+        $perms = new Perms();
+        if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         Yii::$app->response->format = Response::FORMAT_JSON;
-        QuizConfig::findOne($id)->delete();
+        $model->delete();
         return ['message' => __('Config deleted')];
     }
 
@@ -170,5 +196,12 @@ class QuizController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function isPrivate($creator)
+    {
+        if (Yii::$app->user->identity->role->private)
+            if ($creator != Yii::$app->user->id) return true;
+        return false;
     }
 }

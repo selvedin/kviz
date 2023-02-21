@@ -1,6 +1,7 @@
 <?php
 
 use app\helpers\Buttons;
+use app\models\Roles;
 use app\models\User;
 use yii\bootstrap5\Html;
 use yii\grid\ActionColumn;
@@ -41,7 +42,9 @@ $signuUpForm = Html::beginForm(['/user/send-signup'], 'post', ['class' => 'd-fle
                         'username',
                         'email:email',
                         ['attribute' => 'isActive', 'label' => __('Active'), 'filter' => User::getStatuses()],
-                        ['attribute' => 'roles', 'label' => __('Roles'), 'filter' => User::getRolesNames()],
+                        ['attribute' => 'role_id', 'label' => __('Role'), 'value' => function ($model) {
+                            return $model->role?->name;
+                        }, 'filter' => Roles::getNames()],
                         [
                             'class' => ActionColumn::class,
                             'urlCreator' => function ($action, User $model, $key, $index, $column) {

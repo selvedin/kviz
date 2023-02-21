@@ -60,7 +60,7 @@ class Quiz extends BaseModel
             ['label' => __('Status'), 'value' => $this->statusLabel],
             ['label' => __('Grade'), 'value' => $this->gradeLabel],
             ['label' => __('Level'), 'value' => $this->levelLabel],
-            ['label' => __('Moderator'), 'value' => $this->moderator->name],
+            ['label' => __('Moderator'), 'value' => $this->moderator?->name],
         ];
     }
 
@@ -95,6 +95,7 @@ class Quiz extends BaseModel
             if ($conf->level) $where .= " AND level=$conf->level";
             foreach (Question::find()->where($where)
                 ->select(['id', 'content', 'question_type'])
+                ->orderBy('RAND()')
                 ->limit($limit)->all() as $q) {
                 $questions[] = [
                     'id' => $q->id,

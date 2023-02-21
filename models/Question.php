@@ -49,12 +49,12 @@ class Question extends BaseModel
 
     public function getPairs()
     {
-        return $this->hasMany(Pairs::class, ['question_id' => 'id']);
+        return $this->hasMany(Pairs::class, ['question_id' => 'id'])->orderBy('RAND()');
     }
 
     public function getCategory()
     {
-        return $this->hasOne(Categories::class, ['id' => 'category_id']);
+        return $this->hasOne(Categories::class, ['id' => 'category_id'])->orderBy('RAND()');
     }
 
     public function getFields()
