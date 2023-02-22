@@ -1,9 +1,13 @@
 <?php
 
 use app\helpers\Buttons;
+use app\models\Categories;
+use app\models\Perms;
+use app\models\Roles;
 use app\models\SignupForm;
 use app\models\User;
 use app\widgets\CardView;
+use kartik\select2\Select2;
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
@@ -11,6 +15,7 @@ use yii\bootstrap5\Html;
 /** @var app\models\User $model */
 /** @var yii\widgets\ActiveForm $form */
 $this->title = __('User');
+$perms = new Perms();
 $passwordButton = null;
 if ($model instanceof User)
     $passwordButton = $model->status == 10 ? Html::a(
@@ -40,6 +45,55 @@ if ($model instanceof User)
     <?= Html::tag('div', $form->field($model, 'last_name')->textInput(), ['class' => 'col-md-6']) ?>
     <?= Html::tag('div', $form->field($model, 'email')->textInput(), ['class' => 'col-md-6']) ?>
     <?= Html::tag('div', $form->field($model, 'username')->textInput(['autocomplete' => 'new-password']), ['class' => 'col-md-6']) ?>
+    <?= Html::tag(
+        'div',
+        $form->field($model, 'role_id')->widget(
+            Select2::class,
+            [
+                'data' => Roles::getRoles(),
+                'options' => ['placeholder' => __('Select a role')],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ]
+            ]
+        )->label(__('Role')),
+        ['class' => 'col-md-6']
+    ) ?>
+    <?php
+    if ($perms->canUpdate('UserStatus'))
+        echo Html::tag(
+            'div',
+            $form->field($model, 'status')->widget(
+                Select2::class,
+                [
+                    'data' => User::getStatuses(),
+                    'options' => ['placeholder' => __('Select a status')],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ]
+                ]
+            ),
+            ['class' => 'col-md-6']
+        ) ?>
+    <?php
+    if ($model instanceof User && $perms->canUpdate('UserSubject'))
+        echo Html::tag(
+            'div',
+            $form->field($model, 'subjectList')->widget(
+                Select2::class,
+                [
+                    'data' => Categories::getRoot(),
+                    'options' => [
+                        'placeholder' => __('Select a subject'),
+                        'multiple' => true
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ]
+                ]
+            ),
+            ['class' => 'col-md-6']
+        ) ?>
     <?php
     if ($model instanceof SignupForm) {
         echo Html::tag('div', $form->field($model, 'password')->passwordInput(['autocomplete' => 'new-password']), ['class' => 'col-md-6']);

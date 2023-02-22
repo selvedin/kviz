@@ -12,6 +12,8 @@ if ($model && !$isNewRecord) {
   foreach ($model->config as $conf) $config[] = [
     'id' => $conf->id,
     'num_of_questions' => $conf->num_of_questions,
+    'question_type' => $conf->question_type,
+    'questionType' => $conf->questionType,
     'grade' => $conf->grade,
     'gradeLabel' => $conf->gradeLabel?->title,
     'level' => $conf->level,

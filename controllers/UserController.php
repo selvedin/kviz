@@ -147,7 +147,7 @@ class UserController extends Controller
     {
         $perms = new Perms();
         if (!$perms->canCreate('User')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        $model = new SignupForm();
+        $model = new SignupForm(['status' => User::STATUS_INACTIVE, 'role_id' => Yii::$app->params['userDefaultRole']]);
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->signup()) {

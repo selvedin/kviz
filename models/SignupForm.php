@@ -16,6 +16,8 @@ class SignupForm extends Model
     public $first_name;
     public $last_name;
     public $email;
+    public $role_id;
+    public $status;
     public $password;
     public $password_repeat;
 
@@ -28,6 +30,7 @@ class SignupForm extends Model
         return [
             ['username', 'trim'],
             [['username', 'email'], 'required'],
+            [['role_id', 'status'], 'integer'],
             ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => __('This username has already been taken') . '.'],
             [['username', 'first_name', 'last_name'], 'string', 'min' => 2, 'max' => 255],
 
@@ -73,7 +76,8 @@ class SignupForm extends Model
         $user->first_name = $this->first_name;
         $user->last_name = $this->last_name;
         $user->email = $this->email;
-        $user->role_id = Yii::$app->params['userDefaultRole'];
+        $user->role_id = $this->role_id ? $this->role_id : Yii::$app->params['userDefaultRole'];
+        $user->status = $this->status ? $this->status : User::STATUS_INACTIVE;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();

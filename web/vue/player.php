@@ -42,7 +42,7 @@ if ($model && !$isNewRecord) {
     },
     mounted() {
       $('#stopwatch').hide();
-      this.questionTimeInSeconds = Math.round(this.duration / this.totalQuestions);
+      this.questionTimeInSeconds = Math.round(this.duration / this.questions.length);
     },
     methods: {
       runQuiz: function() {
@@ -82,24 +82,36 @@ if ($model && !$isNewRecord) {
           console.log(res.leftContent, res.rightContent);
         })
       },
-      answerQuestion: function(answer, content) {
+      answerQuestion: function(answer, content = '') {
         const self = this;
         if ([1, 2].includes(self.question.question_type)) {
-          self.results = self.results.filter(res => res.question != self.question.id && r.answer != answer);
+          self.results = self.results.filter(res => res.question != self.question.id);
         } else if (self.question.question_type == 3) {
-          const existingIndex = self.results.findIndex(r => r.question == self.question.id && r.answer == answer);
+          const existingIndex = self.results.findIndex(res => res.question == self.question.id && res.answer == answer);
           if (existingIndex > -1) {
             self.results.splice(existingIndex, 1);
             return;
           }
+        } else if (self.question.question_type == 5) { //input result
+          const existing = self.results.findIndex(res => res.question = self.question.id);
+          if (existing) {
+            self.results[existing].answer = answer.target.value;
+            self.results[existing].content = answer.target.value;
+            return;
+          }
+          self.results.push({
+            question: self.question.id,
+            answer: answer.target.value,
+            content: answer.target.value
+          });
+          return;
         }
-
-        this.results.push({
-          question: this.question.id,
+        const newAnswer = {
+          question: self.question.id,
           answer,
           content
-        });
-
+        };
+        self.results.push(newAnswer);
         $(document).focus();
       },
       addPair: function(id, cont, el, isRight = false) {

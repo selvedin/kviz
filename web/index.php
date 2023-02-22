@@ -64,6 +64,11 @@ function __isUser($content)
   return Yii::$app->user->isGuest ? null : $content;
 }
 
+function set($model, $field)
+{
+  return isset($model[$field]) ? $model[$field] : null;
+}
+
 function fileSizeFormat($bytes)
 {
   if ($bytes >= 1073741824) return number_format($bytes / 1073741824, 2) . ' GB';

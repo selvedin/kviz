@@ -46,9 +46,8 @@ class LoginForm extends Model
     {
         if (!$this->hasErrors()) {
             $user = $this->getUser();
-
             if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+                $this->addError($attribute, __('Incorrect username or password.'));
             }
         }
     }
@@ -60,9 +59,14 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            $user = $this->getUser();
+            if ($user->status != User::STATUS_ACTIVE) {
+                Yii::$app->session->setFlash('error', __('The Account is not activated yet.'));
+                return false;
+            }
+            return Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
-        Yii::$app->session->setFlash('error', 'Korisničko ime ili šifra nisu ispravni');
+        Yii::$app->session->setFlash('error', __('Username or password are not correct.'));
         return false;
     }
 
@@ -76,7 +80,6 @@ class LoginForm extends Model
         if ($this->_user === false) {
             $this->_user = User::findByUsername($this->username);
         }
-
         return $this->_user;
     }
 }

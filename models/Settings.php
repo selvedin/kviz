@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\helpers\CacheHelper;
 use Yii;
+use yii\rbac\Role;
 
 /**
  * This is the model class for table "settings".
@@ -117,6 +118,8 @@ class Settings extends BaseModel
             self::GENERAL_SETTING_KEY => [
                 'check_email_notification' => __('Email notifications are turned on'),
                 'number_message_duration' => __('Message duration [sec]'),
+                'select_teacher_role' => ['title' => __('Teacher role'), 'data' => Roles::getRoles()],
+                'select_competitor_role' => ['title' => __('Competitor role'), 'data' => Roles::getRoles()]
             ]
         ];
         return isset($type, $all[$type]) ? $all[$type] : null;
