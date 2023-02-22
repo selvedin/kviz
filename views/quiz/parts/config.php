@@ -2,6 +2,7 @@ i<?php
 
   use app\helpers\Icons;
   use app\models\Categories;
+  use app\models\Grade;
   use app\models\Question;
   use app\widgets\CardView;
   use kartik\select2\Select2;
@@ -30,7 +31,7 @@ i<?php
       Select2::widget(
         [
           'name' => 'QuizConfig[grade]',
-          'data' => Question::Grades(),
+          'data' => Grade::list(),
           'options' => ['id' => 'quiz-config-grade', 'placeholder' => __('Select grade')],
           'pluginOptions' => [
             'allowClear' => true

@@ -49,7 +49,7 @@ class QuizConfig extends BaseModel
 
     public function getGradeLabel()
     {
-        return $this->grade > -1 ? Question::Grades()[$this->grade] : null;
+        return $this->hasOne(Grade::class, ['id' => 'grade']);
     }
 
     public function getLevelLabel()

@@ -13,7 +13,7 @@ if ($model && !$isNewRecord) {
     'id' => $conf->id,
     'num_of_questions' => $conf->num_of_questions,
     'grade' => $conf->grade,
-    'gradeLabel' => $conf->gradeLabel,
+    'gradeLabel' => $conf->gradeLabel?->title,
     'level' => $conf->level,
     'levelLabel' => $conf->levelLabel,
     'category_id' => $conf->category_id,

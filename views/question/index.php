@@ -37,7 +37,7 @@ $this->title = __('Questions');
                     return $model->levelLabel;
                 }, 'filter' => Question::Levels()],
                 ['attribute' => 'grade', 'value' => function ($model) {
-                    return $model->gradeLabel;
+                    return $model->gradeLabel?->title;
                 }, 'filter' => Question::Grades()],
                 ['attribute' => 'status', 'value' => function ($model) {
                     return $model->statusLabel;
