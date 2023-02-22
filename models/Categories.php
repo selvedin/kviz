@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii;
 use app\helpers\UtilHelper;
 use yii\helpers\ArrayHelper;
 
@@ -71,7 +72,14 @@ class Categories extends BaseModel
 
     public static function getRoot()
     {
-        return ArrayHelper::map(self::find()->where("parent is NULL")->select(["id", "name"])->all(), "id", "name");
+        $where = "parent is NULL";
+        $subjects = Yii::$app->user->identity->subjectList;
+        if (is_array($subjects) && count($subjects)) {
+            $where .= " AND id IN (" . implode(",", $subjects) . ")";
+        }
+        return ArrayHelper::map(self::find()
+            ->where($where)
+            ->select(["id", "name"])->all(), "id", "name");
     }
 
     public static function getChildrenForSelect($id)
