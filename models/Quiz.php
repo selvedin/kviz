@@ -90,7 +90,8 @@ class Quiz extends BaseModel
         foreach ($this->config as $conf) {
             $limit = $conf->num_of_questions;
             // $where = "question_type = 3";
-            $where = "category_id = $conf->category_id";
+            $where = "status = 1 AND category_id = $conf->category_id";
+            if ($conf->question_type) $where .= " AND question_type=$conf->question_type";
             if ($conf->grade) $where .= " AND grade=$conf->grade";
             if ($conf->level) $where .= " AND level=$conf->level";
             foreach (Question::find()->where($where)
@@ -108,5 +109,19 @@ class Quiz extends BaseModel
         }
         shuffle($questions);
         return $questions;
+    }
+
+    public function getConfigNumber()
+    {
+        $total = 0;
+        foreach ($this->config as $conf) $total += $conf->num_of_questions;
+        return $total;
+    }
+
+    public function beforeSave($insert)
+    {
+        $this->num_of_questions = $this->configNumber ? $this->configNumber : $this->num_of_questions;
+
+        return parent::beforeSave($insert);
     }
 }

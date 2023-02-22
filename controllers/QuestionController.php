@@ -31,6 +31,7 @@ class QuestionController extends Controller
                     'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
+                        'activate' => ['POST'],
                         'delete-option' => ['POST'],
                     ],
                 ],
@@ -194,6 +195,18 @@ class QuestionController extends Controller
         $model->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionActivate($id)
+    {
+        $perms = new Perms();
+        if (!$perms->canUpdate('Question')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model = $this->findModel($id);
+        $model->status = 1; //active
+        $model->save();
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
     }
 
     /**

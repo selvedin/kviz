@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use app\models\Question;
+use Yii;
 use app\models\Quiz;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -39,7 +39,13 @@ class PlayerController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', ['model' =>  $this->findModel($id)]);
+        $model =  $this->findModel($id);
+        if (!$model->generateQuestions())
+            Yii::$app->session->setFlash(
+                'error',
+                __('There are no questions satisfying the quiz criteria. The question has to be in an Active state to be ready for the quiz.')
+            );
+        return $this->render('view', ['model' => $model]);
     }
 
     /**

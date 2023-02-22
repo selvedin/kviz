@@ -138,6 +138,9 @@ class QuizController extends Controller
                     $errors = "";
                     foreach ($option->errors as $error) $errors .= $error[0] . "\n";
                     Yii::$app->session->setFlash('error', $errors);
+                } else {
+                    $model = Quiz::findOne($id);
+                    $model->save();
                 }
             }
         }
@@ -175,11 +178,13 @@ class QuizController extends Controller
     public function actionDeleteConfig($id)
     {
         $model = QuizConfig::findOne($id);
+        $quiz = Quiz::findOne($model->quiz_id);
         $perms = new Perms();
         if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model->delete();
+        $quiz->save();
         return ['message' => __('Config deleted')];
     }
 

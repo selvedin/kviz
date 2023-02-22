@@ -14,7 +14,13 @@ echo  CardView::begin([
     'buttons' => [
         Buttons::List(),
         Buttons::Create(),
-        __isUser(Buttons::Update('id', $model->id)),
+        Buttons::Update('id', $model->id),
+        Buttons::customButton(
+            __('Activate'),
+            ['question/activate', 'id' => $model->id],
+            ['data-method' => 'POST', 'data-confirm' => __('Are You sure?')],
+            'warning'
+        ),
     ],
 ]);
 ?>
