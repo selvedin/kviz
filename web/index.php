@@ -1,8 +1,13 @@
 <?php
 
 // comment out the following two lines when deployed to production
-defined('YII_DEBUG') or define('YII_DEBUG', true);
-defined('YII_ENV') or define('YII_ENV', 'dev');
+if ($_SERVER['SERVER_NAME'] == 'localhost' || isset($_GET['log'])) {
+  defined('YII_DEBUG') or define('YII_DEBUG', true);
+  defined('YII_ENV') or define('YII_ENV', 'dev');
+} else {
+  defined('YII_DEBUG') or define('YII_DEBUG', false);
+  defined('YII_ENV') or define('YII_ENV', 'production');
+}
 
 
 require __DIR__ . '/../vendor/autoload.php';

@@ -29,7 +29,7 @@ $this->title = __('Reset password');
                 </div>
                 <!-- /Logo -->
 
-                <h3 class="mb-4 fw-bold">إدارة <?= Yii::$app->name ?></h3>
+                <h3 class="mb-4 fw-bold"><?= Yii::$app->name ?></h3>
                 <p class="mb-4 <?= empty($hasError) ? 'd-none' : ' text-danger' ?>">
                     <strong><?= $hasError ?></strong>
                 </p>

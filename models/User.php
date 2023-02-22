@@ -20,7 +20,7 @@ use yii\web\IdentityInterface;
  * @property string $email
  * @property string $auth_key
  * @property integer $status
- * @property string $roles
+ * @property integer $role_id
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
@@ -48,25 +48,9 @@ class User extends BaseModel implements IdentityInterface
     {
         return [
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
-            [['roles'], 'string'],
+            [['role_id'], 'integer'],
             [['first_name', 'last_name'], 'string', 'max' => 128],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'first_name' => __('First Name'),
-            'last_name' => __('Last Name'),
-            'username' => __('Username'),
-            'email' => __('Email'),
-            'password' => __('Password'),
-            'status' => __('Status'),
-            'roles' => __('Role')
         ];
     }
 
@@ -80,12 +64,6 @@ class User extends BaseModel implements IdentityInterface
         return self::getStatuses()[$this->status];
     }
 
-    // public function getRole()
-    // {
-    //     return [1 => 'admin', 9 => 'user'];
-    // }
-
-
     public function getContact()
     {
         return $this->hasOne(Contact::class, ['id_user' => 'id']);
@@ -95,17 +73,6 @@ class User extends BaseModel implements IdentityInterface
     {
         return $this->first_name . ' ' . $this->last_name;
     }
-
-    // public static function getRoles()
-    // {
-    //     return [1 => 'admin', 9 => 'user'];
-    // }
-
-    // public static function getRolesNames()
-    // {
-    //     return ['admin' => 'admin', 'user' => 'user'];
-    // }
-
 
     public static function getAvailable($id)
     {
@@ -287,14 +254,9 @@ class User extends BaseModel implements IdentityInterface
 
     public static function isAdmin()
     {
-        return Yii::$app->user?->identity?->role == 'admin';
+        // return Yii::$app->user->id == 1;
+        return Yii::$app->user?->identity?->role_id == 1;
     }
-
-    public static function isUser()
-    {
-        return Yii::$app->user?->identity?->role == 'user';
-    }
-
 
     public static function createUserWithDefaultPassword($username, $first_name, $last_name, $email)
     {
@@ -317,5 +279,10 @@ class User extends BaseModel implements IdentityInterface
     public static function getStatuses()
     {
         return [__('Deleted'), 9 => __('Inactive'), __('Active')];
+    }
+
+    public static function list()
+    {
+        return ArrayHelper::map(self::find()->where('status=10')->all(), 'id', 'first_name');
     }
 }

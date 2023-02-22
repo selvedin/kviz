@@ -40,9 +40,9 @@ $defaultImage = "/img/nouser.png";
         <div class="dropdown-divider"></div>
       </li>
       <li>
-        <a class="dropdown-item" href="<?= Url::to(['user/index']) ?>">
-          <i class="ti ti-users me-2 ti-sm"></i>
-          <span class="align-middle"><?= __('Users') ?></span>
+        <a class="dropdown-item" href="<?= Url::to(['home', 'lang' => 'bs']) ?>">
+          <i class="ti ti-flag me-2 ti-sm"></i>
+          <span class="align-middle">Bosanski jezik</span>
         </a>
       </li>
     <?php endif; ?>

@@ -2,7 +2,8 @@
 
 namespace app\models;
 
-use ReflectionClass;
+use Yii;
+use yii\base\ModelEvent;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
@@ -24,16 +25,25 @@ class BaseModel extends ActiveRecord
     ];
   }
 
-  // public function visit()
-  // {
-  //   $reflect = new ReflectionClass($this);
-  //   $model = Visits::find()->where(['object' => $reflect->getShortName(), 'id_object' => $this->id, 'year' => date('Y'), 'month' => date('m'), 'day' => date('d')])->one();
-  //   if (isset($model)) {
-  //     $model->updateCounters(['views' => 1]);
-  //     return;
-  //   }
-  //   $model = new Visits(['object' => $reflect->getShortName(), 'id_object' => $this->id, 'year' => date('Y'), 'month' => date('m'), 'day' => date('d'), 'views' => 1]);
-  //   $model->save();
-  //   $this->updateCounters(['views' => 1]);
-  // }
+  public function attributeLabels()
+  {
+    $all = [];
+    foreach ($this->getTableSchema()->columnNames as $value)
+      $all[$value] = __(ucwords(str_replace("_", " ", $value)));
+
+    return $all;
+  }
+
+  public function beforeSave($insert)
+  {
+    $event = new ModelEvent();
+    $this->trigger($insert ? self::EVENT_BEFORE_INSERT : self::EVENT_BEFORE_UPDATE, $event);
+    if ($this->isNewRecord && $this->hasAttribute('created_by')) {
+      $this->created_by = Yii::$app->user->id;
+    } else if ($this->hasAttribute('updated_by')) {
+      $this->updated_by = Yii::$app->user->id;
+    }
+
+    return $event->isValid;
+  }
 }

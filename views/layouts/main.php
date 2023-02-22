@@ -11,7 +11,7 @@ $url = Yii::getAlias('@web');
 $path = Yii::$app->basePath;
 $controller = Yii::$app->controller->id;
 $action = Yii::$app->controller->action->id;
-$isLogin = in_array($action, ['login', 'request-password-reset', 'reset-password']);
+$isLogin = in_array($action, ['login', 'signup', 'request-password-reset', 'reset-password']);
 
 AppAsset::register($this);
 
@@ -46,7 +46,6 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="<?= $url ?>/vendor/libs/jquery/jquery.js"></script>
     <script src="<?= $url ?>/vendor/js/helpers.js"></script>
-    <!-- <script src="<?= $url ?>/vendor/js/template-customizer.js"></script> -->
     <script src="<?= $url ?>/js/hijri.js"></script>
     <script src="<?= $url ?>/js/config.js"></script>
 </head>

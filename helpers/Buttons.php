@@ -4,7 +4,7 @@ namespace app\helpers;
 
 use yii\bootstrap5\Html;
 
-define('BUTTONS_CLASS', 'card-buttons btn btn-sm rounded-pill waves-effect mx-1 btn-outline-');
+define('BUTTONS_CLASS', 'btn btn-sm rounded-pill mx-1 text-white btn-');
 define('PADDING', ['style' => 'padding:0 5px;']);
 class Buttons
 {
@@ -40,7 +40,7 @@ class Buttons
   {
     $title = __('Create');
     return Html::a(Icons::faIcon('plus') . Html::tag('span', $title, PADDING), ['create'], [
-      'class' => BUTTONS_CLASS . 'primary',
+      'class' => BUTTONS_CLASS . 'success',
       'title' => $title
     ]);
   }

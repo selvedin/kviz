@@ -1,0 +1,207 @@
+<?php
+
+namespace app\controllers;
+
+use app\models\Perms;
+use app\models\Quiz;
+use app\models\QuizConfig;
+use app\models\search\QuizSearch;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use Yii;
+use yii\web\HttpException;
+use yii\web\Response;
+
+/**
+ * QuizController implements the CRUD actions for Quiz model.
+ */
+class QuizController extends Controller
+{
+    /**
+     * @inheritDoc
+     */
+    public function behaviors()
+    {
+        return array_merge(
+            parent::behaviors(),
+            [
+                'verbs' => [
+                    'class' => VerbFilter::class,
+                    'actions' => [
+                        'delete' => ['POST'],
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * Lists all Quiz models.
+     *
+     * @return string
+     */
+    public function actionIndex()
+    {
+        $perms = new Perms();
+        if (!$perms->canList('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $searchModel = new QuizSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Displays a single Quiz model.
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionView($id)
+    {
+        $perms = new Perms();
+        if (!$perms->canView('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Creates a new Quiz model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return string|\yii\web\Response
+     */
+    public function actionCreate()
+    {
+        $perms = new Perms();
+        if (!$perms->canCreate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model = new Quiz(['status' => 0]);
+
+        if ($this->request->isPost) $this->saveModel($model, $this->request->post());
+        else $model->loadDefaultValues();
+
+        return $this->render('_form', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Updates an existing Quiz model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param int $id ID
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        $perms = new Perms();
+        if (!$perms->canUpdate('Quiz') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+
+        if ($this->request->isPost) $this->saveModel($model, $this->request->post());
+
+        return $this->render('_form', [
+            'model' => $model,
+        ]);
+    }
+
+    private function saveModel($model, $data)
+    {
+        if ($model->load($data) && $model->save()) {
+            if (isset($data['Quiz'])) $this->addData($model->id, $data['Quiz']);
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+    }
+
+    private function addData($id, $data)
+    {
+        $dataObjects = [
+            'QuizConfig' => 'addConfig',
+        ];
+        foreach ($dataObjects as $name => $method)
+            if (isset($data[$name])) $this->$method($id, $data[$name]);
+    }
+
+    private function addConfig($id, $data)
+    {
+        foreach ($data as $d) {
+            if (!QuizConfig::find()->where($this->getWhere($id, $d))->exists()) {
+                $option = new QuizConfig([
+                    'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
+                    'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
+                ]);
+                if (!$option->save()) {
+                    $errors = "";
+                    foreach ($option->errors as $error) $errors .= $error[0] . "\n";
+                    Yii::$app->session->setFlash('error', $errors);
+                }
+            }
+        }
+    }
+
+    private function getWhere($id, $d)
+    {
+        $where = "quiz_id=$id";
+        if (!empty($d['num_of_questions'])) $where .= " AND num_of_questions=" . $d['num_of_questions'];
+        if (!empty($d['grade'])) $where .= " AND grade=" . $d['grade'];
+        if (!empty($d['level'])) $where .= " AND level=" . $d['level'];
+        if (!empty($d['category_id'])) $where .= " AND category_id=" . $d['category_id'];
+        return $where;
+    }
+
+    /**
+     * Deletes an existing Quiz model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param int $id ID
+     * @return \yii\web\Response
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+        $perms = new Perms();
+        if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model->delete();
+
+        return $this->redirect(['index']);
+    }
+
+    public function actionDeleteConfig($id)
+    {
+        $model = QuizConfig::findOne($id);
+        $perms = new Perms();
+        if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
+            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model->delete();
+        return ['message' => __('Config deleted')];
+    }
+
+    /**
+     * Finds the Quiz model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param int $id ID
+     * @return Quiz the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Quiz::findOne(['id' => $id])) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function isPrivate($creator)
+    {
+        if (Yii::$app->user->identity->role->private)
+            if ($creator != Yii::$app->user->id) return true;
+        return false;
+    }
+}

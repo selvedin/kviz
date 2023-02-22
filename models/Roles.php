@@ -28,16 +28,8 @@ class Roles extends BaseModel
             [['name'], 'required'],
             [['name'], 'string', 'max' => 256],
             [['description'], 'string', 'max' => 1000],
-            [['created_at', 'updated_at', 'updated_on', 'updated_by', 'private'], 'integer'],
+            [['created_at', 'created_by', 'updated_at', 'updated_by', 'private'], 'integer'],
         ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return $this->getLabels();
     }
 
     public function getIsPrivate()
@@ -81,6 +73,7 @@ class Roles extends BaseModel
         else
             return ArrayHelper::map(Roles::findOne($id), 'id_role', 'name');
     }
+
 
     public static function getRoles($id = 0)
     {

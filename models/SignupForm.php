@@ -73,7 +73,7 @@ class SignupForm extends Model
         $user->first_name = $this->first_name;
         $user->last_name = $this->last_name;
         $user->email = $this->email;
-        $user->roles = Yii::$app->params['userDefaultRole'];
+        $user->role_id = Yii::$app->params['userDefaultRole'];
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();

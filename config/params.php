@@ -8,7 +8,7 @@ return [
     'bsDependencyEnabled' => false,
     'cleanKey' => 'samoSelveMore11',
     'passwordMinLength' => 8,
-    'userDefaultRole' => 'user',
+    'userDefaultRole' => 2,
     'userDefaultPassword' => 'Travel56',
     'passwordResetTokenExpire' => 3600,
     'fileFormName' => 'fileUpload',
