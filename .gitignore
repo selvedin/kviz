@@ -48,8 +48,7 @@ tests/_support/_generated
 /data
 /docs
 /uploads
-db.php
-web.php
+db_live.php
 *_old.php
 *_live.php
 error.log
