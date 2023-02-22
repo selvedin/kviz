@@ -63,6 +63,7 @@ $allQuestions = $model->generateQuestions();
       },
       startQuestion: function() {
         $('#stopwatch').show();
+        $('#input-result-text').val(null);
         if (this.questions.length) {
           this.question = this.questions.shift();
           this.pastQuestions.push(this.question);
@@ -79,12 +80,6 @@ $allQuestions = $model->generateQuestions();
         $('#stopwatch').hide();
         this.questionIsStarted = false;
         this.canAnswer = false;
-        // this.printResults();
-      },
-      printResults: function() {
-        this.results.forEach(res => {
-          console.log(res.leftContent, res.rightContent);
-        })
       },
       answerQuestion: function(answer, content = '') {
         const self = this;
@@ -99,11 +94,10 @@ $allQuestions = $model->generateQuestions();
             return;
           }
         } else if (self.question.question_type == 5) { //input result
-          const existing = self.results.findIndex(res => res.question = self
-            .question.id);
+          const existing = self.results.find(res => res.question == self.question.id);
           if (existing) {
-            self.results[existing].answer = answer.target.value;
-            self.results[existing].content = answer.target.value;
+            existing.answer = answer.target.value;
+            existing.content = answer.target.value;
             return;
           }
           self.results.push({
@@ -289,7 +283,7 @@ $allQuestions = $model->generateQuestions();
                 isCorrect: correctTitle == answerTitle
               })
               break;
-            case 4:
+            case 4: // JOIN
               correctAnswers = [];
               userAnswers = [];
               result = self.results.filter(res => res.question == question.id);
@@ -310,6 +304,16 @@ $allQuestions = $model->generateQuestions();
                 correct: correctTitle,
                 answer: answerTitle,
                 isCorrect: correctTitle == answerTitle
+              })
+              break;
+            case 5: //INPUT
+              result = self.results.find(res => res.question == question.id);
+              self.summary.push({
+                id: question.id,
+                label: question.content,
+                correct: question.options[0].content,
+                answer: result.answer,
+                isCorrect: (question.options[0].content).trim() == (result.answer).trim()
               })
               break;
             default:
