@@ -324,7 +324,9 @@ class User extends BaseModel implements IdentityInterface
     {
         parent::afterSave($insert, $changedAttributes);
         foreach ($this->subjects as $subject)
-            if (!in_array($subject->subject_id, $this->subjectList))
-                $subject->delete();
+            if (is_array($this->subjectList)) {
+                if (!in_array($subject->subject_id, $this->subjectList))
+                    $subject->delete();
+            } else $subject->delete();
     }
 }
