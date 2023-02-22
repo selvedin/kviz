@@ -87,26 +87,17 @@ class Quiz extends BaseModel
     public function generateQuestions()
     {
         $questions = [];
-        foreach ($this->config as $conf) {
-            $limit = $conf->num_of_questions;
-            // $where = "question_type = 3";
-            $where = "status = 1 AND category_id = $conf->category_id";
-            if ($conf->question_type) $where .= " AND question_type=$conf->question_type";
-            if ($conf->grade) $where .= " AND grade=$conf->grade";
-            if ($conf->level) $where .= " AND level=$conf->level";
-            foreach (Question::find()->where($where)
-                ->select(['id', 'content', 'question_type'])
-                ->orderBy('RAND()')
-                ->limit($limit)->all() as $q) {
-                $questions[] = [
-                    'id' => $q->id,
-                    'content' => $q->content,
-                    'question_type' => $q->question_type,
-                    'options' => $q->OptionsAsArray(),
-                    'pairs' => $q->PairsAsArray(),
-                ];
+        if (!count($this->config))
+            $questions = Question::generateGuestions("", $this->num_of_questions);
+        else
+            foreach ($this->config as $conf) {
+                $limit = $conf->num_of_questions;
+                $where = "status = 1 AND category_id = $conf->category_id";
+                if ($conf->question_type) $where .= " AND question_type=$conf->question_type";
+                if ($conf->grade) $where .= " AND grade=$conf->grade";
+                if ($conf->level) $where .= " AND level=$conf->level";
+                $questions = Question::generateGuestions($where, $limit);
             }
-        }
         shuffle($questions);
         return $questions;
     }

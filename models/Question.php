@@ -160,6 +160,24 @@ class Question extends BaseModel
         return $data;
     }
 
+    public static function generateGuestions($where, $limit)
+    {
+        $questions = [];
+        foreach (self::find()->where($where)
+            ->select(['id', 'content', 'question_type'])
+            ->orderBy('RAND()')
+            ->limit($limit)->all() as $q) {
+            $questions[] = [
+                'id' => $q->id,
+                'content' => $q->content,
+                'question_type' => $q->question_type,
+                'options' => $q->OptionsAsArray(),
+                'pairs' => $q->PairsAsArray(),
+            ];
+        }
+        return $questions;
+    }
+
     public function beforeDelete()
     {
         foreach ($this->options as $o) $o->delete();

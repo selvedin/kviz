@@ -2,6 +2,7 @@
 
 use app\helpers\Icons;
 use app\widgets\CardView;
+use app\widgets\SwitchInput;
 use yii\bootstrap5\Html;
 
 $optionLabel = __('Option');
@@ -13,14 +14,14 @@ $options = Html::tag('div', Html::label($optionLabel, 'options-content', ['class
   Html::textInput('Options[content]', '', ['id' => 'options-content', 'class' => 'form-control']), ['class' => 'col-sm-12 col-md-8 col-lg-10']);
 $options .= Html::tag(
   'div',
-  Html::label($trueLabel) .
-    Html::tag(
-      'div',
-      Html::label($trueLabel, 'options-is_true', ['class' => 'control-label']) .
-        Html::checkbox('Options[is_true]', '', ['id' => 'options-is_true', 'class' => 'form-check-input']),
-      ['class' => 'form-check form-switch field-options-is_true mt-1']
-    ),
-  ['class' => 'col-sm-6 col-md-2 col-lg-1']
+  SwitchInput::widget([
+    'name' => 'Options[is_true]',
+    'label' => $trueLabel,
+    'value' => 1,
+    'checked' => false,
+    'id' => 'options-is_true'
+  ]),
+  ['class' => 'col-sm-6 col-md-2 col-lg-1 pt-4']
 );
 
 $options .= Html::tag('div', Html::a(

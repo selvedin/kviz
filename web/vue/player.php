@@ -12,6 +12,7 @@ if ($model && !$isNewRecord) {
     'num_of_questions' => $conf->num_of_questions
   ];
 }
+$allQuestions = $model->generateQuestions();
 ?>
 <script>
   //VUE APP
@@ -22,11 +23,11 @@ if ($model && !$isNewRecord) {
       COLORS: ['btn-primary', 'btn-danger', 'btn-info', 'btn-warning', 'btn-success', 'btn-dark'],
       isNewRecord: <?= $isNewRecord ?>,
       config: <?= json_encode($config) ?>,
-      allQuestions: <?= json_encode($model->generateQuestions()) ?>,
-      questions: <?= json_encode($model->generateQuestions()) ?>,
+      allQuestions: <?= json_encode($allQuestions) ?>,
+      questions: <?= json_encode($allQuestions) ?>,
       pastQuestions: [],
       question: {},
-      duration: <?= $model->duration * 60 ?>,
+      duration: <?= $model->duration * (isset($_GET['test']) ? 10 : 60) ?>,
       questionTimeInSeconds: 5,
       questionIsStarted: false,
       results: [],
@@ -114,7 +115,7 @@ if ($model && !$isNewRecord) {
         self.results.push(newAnswer);
         $(document).focus();
       },
-      addPair: function(id, cont, el, isRight = false) {
+      addPair: function(id, cont, el, isRight = false) { //question_type = 4 - JOIN PAIRS
         const self = this;
         if (isRight) { // ADDING RIGHT PAIR
           if (self.lastAdded) { // adding process has been started
@@ -215,11 +216,14 @@ if ($model && !$isNewRecord) {
         let userAnswers = [];
         let correctTitle = '';
         let answerTitle = '';
+        let result;
         self.allQuestions.forEach(question => {
-          switch (+question.question_type) {
+          result = null;
+          switch (question.question_type) {
             case 1:
+              result = self.results.find(res => res.question == question.id);
               correctTitle = question.options[0].is_true ? '<?= __('True') ?>' : '<?= __('False') ?>';
-              answerTitle = self.results.find(res => res.question == question.id)?.content;
+              answerTitle = result?.content;
               self.summary.push({
                 id: question.id,
                 label: question.content,
@@ -229,23 +233,24 @@ if ($model && !$isNewRecord) {
               })
               break;
             case 2:
+              result = self.results.find(res => res.question == question.id);
               correctAnswers = [];
-              question.options.filter(option => option.is_true).forEach(option => correctAnswers.push(option.content));
-              correctTitle = correctAnswers.join(', ');
-              answerTitle = self.results.find(res => res.question == question.id)?.content;
+              correctAnswers = question.options.find(option => option.is_true)?.content;
+              answerTitle = result?.content;
               self.summary.push({
                 id: question.id,
                 label: question.content,
-                correct: correctTitle,
+                correct: correctAnswers,
                 answer: answerTitle,
-                isCorrect: correctTitle == answerTitle
+                isCorrect: correctAnswers == answerTitle
               })
               break;
             case 3:
+              result = self.results.filter(res => res.question == question.id);
               correctAnswers = [];
               userAnswers = [];
               question.options.filter(option => option.is_true).forEach(option => correctAnswers.push(option.content));
-              self.results.filter(res => res.question == question.id).forEach(res => userAnswers.push(res.content));
+              result.forEach(res => userAnswers.push(res.content));
               correctAnswers.sort();
               userAnswers.sort();
               correctTitle = correctAnswers.join(', ');
@@ -258,6 +263,10 @@ if ($model && !$isNewRecord) {
                 answer: answerTitle,
                 isCorrect: correctTitle == answerTitle
               })
+              break;
+            case 4:
+              console.log(question);
+              console.log(result);
               break;
             default:
               break;
