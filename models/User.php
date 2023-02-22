@@ -265,7 +265,7 @@ class User extends BaseModel implements IdentityInterface
         $user->first_name = $first_name;
         $user->last_name = $last_name;
         $user->email = $email;
-        $user->roles = Yii::$app->params['userDefaultRole'];
+        $user->role_id = Yii::$app->params['userDefaultRole'];
         $user->setPassword(Yii::$app->params['userDefaultPassword']);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();

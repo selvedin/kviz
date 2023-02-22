@@ -1,9 +1,11 @@
 <?php
 
 use app\helpers\Buttons;
+use app\models\Roles;
 use app\models\SignupForm;
 use app\models\User;
 use app\widgets\CardView;
+use kartik\select2\Select2;
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
@@ -40,6 +42,34 @@ if ($model instanceof User)
     <?= Html::tag('div', $form->field($model, 'last_name')->textInput(), ['class' => 'col-md-6']) ?>
     <?= Html::tag('div', $form->field($model, 'email')->textInput(), ['class' => 'col-md-6']) ?>
     <?= Html::tag('div', $form->field($model, 'username')->textInput(['autocomplete' => 'new-password']), ['class' => 'col-md-6']) ?>
+    <?= Html::tag(
+        'div',
+        $form->field($model, 'role_id')->widget(
+            Select2::class,
+            [
+                'data' => Roles::getRoles(),
+                'options' => ['placeholder' => __('Select a role')],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ]
+            ]
+        )->label(__('Role')),
+        ['class' => 'col-md-6']
+    ) ?>
+    <?= Html::tag(
+        'div',
+        $form->field($model, 'status')->widget(
+            Select2::class,
+            [
+                'data' => User::getStatuses(),
+                'options' => ['placeholder' => __('Select a status')],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ]
+            ]
+        ),
+        ['class' => 'col-md-6']
+    ) ?>
     <?php
     if ($model instanceof SignupForm) {
         echo Html::tag('div', $form->field($model, 'password')->passwordInput(['autocomplete' => 'new-password']), ['class' => 'col-md-6']);
