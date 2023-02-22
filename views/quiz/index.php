@@ -29,7 +29,7 @@ $this->title = __('Quizes');
                     return $model->levelLabel;
                 }, 'filter' => Question::Levels()],
                 ['attribute' => 'grade', 'value' => function ($model) {
-                    return $model->gradeLabel;
+                    return $model->gradeLabel?->title;
                 }, 'filter' => Question::Grades()],
                 [
                     'class' => ActionColumn::class,

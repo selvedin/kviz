@@ -51,6 +51,11 @@ class Quiz extends BaseModel
         return $this->hasMany(QuizConfig::class, ['quiz_id' => 'id']);
     }
 
+    public function getGradeLabel()
+    {
+        return $this->hasOne(Grade::class, ['id' => 'grade']);
+    }
+
     public function getFields()
     {
         return [
@@ -58,7 +63,7 @@ class Quiz extends BaseModel
             ['label' => __('Num Of Questions'), 'value' => $this->num_of_questions],
             ['label' => __('Duration'), 'value' => $this->duration],
             ['label' => __('Status'), 'value' => $this->statusLabel],
-            ['label' => __('Grade'), 'value' => $this->gradeLabel],
+            ['label' => __('Grade'), 'value' => $this->gradeLabel?->title],
             ['label' => __('Level'), 'value' => $this->levelLabel],
             ['label' => __('Moderator'), 'value' => $this->moderator?->name],
         ];
@@ -72,11 +77,6 @@ class Quiz extends BaseModel
     public function getStatusLabel()
     {
         return $this->status > -1 ? Question::Statuses()[$this->status] : null;
-    }
-
-    public function getGradeLabel()
-    {
-        return $this->grade > -1 ? Question::Grades()[$this->grade] : null;
     }
 
     public function getLevelLabel()

@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Categories;
+use app\models\Grade;
 use app\models\Question;
 use app\widgets\CardView;
 use kartik\select2\Select2;
@@ -54,7 +55,7 @@ $content .= Html::tag('div', $form->field($model, 'status')->widget(
 $content .= Html::tag('div', $form->field($model, 'grade')->widget(
   Select2::class,
   [
-    'data' => Question::Grades(),
+    'data' => Grade::list(),
     'options' => ['placeholder' => __('Select grade')],
     'pluginOptions' => [
       'allowClear' => true

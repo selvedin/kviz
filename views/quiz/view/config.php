@@ -31,7 +31,7 @@ if ($model->config) :
                   'tr',
                   Html::tag('td', $k + 1 . '.') .
                     Html::tag('td', $conf->num_of_questions)
-                    . Html::tag('td', $conf->gradeLabel)
+                    . Html::tag('td', $conf->gradeLabel?->title)
                     . Html::tag('td', $conf->levelLabel)
                     . Html::tag('td', $conf->category?->name)
                 );

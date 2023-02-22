@@ -44,7 +44,7 @@ class Question extends BaseModel
 
     public function getOptions()
     {
-        return $this->hasMany(Options::class, ['question_id' => 'id']);
+        return $this->hasMany(Options::class, ['question_id' => 'id'])->orderBy('RAND()');
     }
 
     public function getPairs()
@@ -54,7 +54,12 @@ class Question extends BaseModel
 
     public function getCategory()
     {
-        return $this->hasOne(Categories::class, ['id' => 'category_id'])->orderBy('RAND()');
+        return $this->hasOne(Categories::class, ['id' => 'category_id']);
+    }
+
+    public function getGradeLabel()
+    {
+        return $this->hasOne(Grade::class, ['id' => 'grade']);
     }
 
     public function getFields()
@@ -65,7 +70,7 @@ class Question extends BaseModel
             ['label' => __('Content Type'), 'value' => $this->contentType],
             ['label' => __('Category'), 'value' => $this->category?->name],
             ['label' => __('Status'), 'value' => $this->statusLabel],
-            ['label' => __('Grade'), 'value' => $this->gradeLabel],
+            ['label' => __('Grade'), 'value' => $this->gradeLabel?->title],
             ['label' => __('Level'), 'value' => $this->levelLabel],
         ];
     }
@@ -109,12 +114,7 @@ class Question extends BaseModel
 
     public static function Grades()
     {
-        return ['1-3', '4-5', '6-7', '8-9', 'other'];
-    }
-
-    public function getGradeLabel()
-    {
-        return $this->grade > -1 ? self::Grades()[$this->grade] : null;
+        return Grade::list();
     }
 
     public static function Levels()

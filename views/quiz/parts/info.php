@@ -1,6 +1,6 @@
 <?php
 
-
+use app\models\Grade;
 use app\models\Question;
 use app\models\User;
 use app\widgets\CardView;
@@ -21,7 +21,7 @@ $content .= Html::tag('div', $form->field($model, 'moderator_id')->widget(Select
 $content .= Html::tag('div', $form->field($model, 'grade')->widget(
   Select2::class,
   [
-    'data' => Question::Grades(),
+    'data' => Grade::list(),
     'options' => ['placeholder' => __('Select grade')],
     'pluginOptions' => [
       'allowClear' => true
