@@ -31,6 +31,7 @@ class QuestionController extends Controller
                     'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
+                        'activate' => ['POST'],
                         'delete-option' => ['POST'],
                     ],
                 ],
@@ -82,13 +83,32 @@ class QuestionController extends Controller
         if (!$perms->canCreate('Question')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = new Question(['status' => 0, 'question_type' => 1]);
 
-        if ($this->request->isPost)
-            $this->saveModel($model, $this->request->post());
+        if ($this->request->isPost) $this->saveModel($model, $this->request->post());
         else $model->loadDefaultValues();
 
         return $this->render('_form', [
             'model' => $model,
         ]);
+    }
+
+    private function saveModel($model, $data)
+    {
+        if ($model->load($data) && $model->save()) {
+
+            if (isset($data['Question'])) {
+                if ($model->question_type == Question::TYPE_INPUT) $this->addOption($model->id, $data['Question']);
+                else $this->addData($model->id, $data['Question']);
+            }
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+    }
+    private function addOption($id, $data)
+    {
+        $option = Options::find()->where(['question_id' => $id])->one();
+        if (isset($option) && isset($data['Options'])) $option->content = $data['Options'][0]['content'];
+        else $option = new Options(['question_id' => $id, 'content' => $data['Options'][0]['content'], 'is_true' => 1]);
+        $option->save();
     }
 
     private function addData($id, $data)
@@ -159,14 +179,6 @@ class QuestionController extends Controller
         ]);
     }
 
-    private function saveModel($model, $data)
-    {
-        if ($model->load($data) && $model->save()) {
-            if (isset($data['Question'])) $this->addData($model->id, $data['Question']);
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-    }
-
     /**
      * Deletes an existing Question model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -183,6 +195,18 @@ class QuestionController extends Controller
         $model->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionActivate($id)
+    {
+        $perms = new Perms();
+        if (!$perms->canUpdate('Question')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model = $this->findModel($id);
+        $model->status = 1; //active
+        $model->save();
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
     }
 
     /**

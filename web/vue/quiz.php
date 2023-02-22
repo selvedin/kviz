@@ -35,6 +35,8 @@ if ($model && !$isNewRecord) {
       addConfig: function() {
         const num_of_questions = $('#quiz-config-num_of_questions').val();
         const grade = $('#quiz-config-grade').val();
+        const question_type = $('#quiz-config-question_type').val();
+        const questionType = $('#quiz-config-question_type  option:selected').text();
         const gradeLabel = $('#quiz-config-grade option:selected').text();
         const level = $('#quiz-config-level').val();
         const levelLabel = $('#quiz-config-level option:selected').text();
@@ -43,6 +45,8 @@ if ($model && !$isNewRecord) {
         if (num_of_questions)
           this.config.push({
             num_of_questions,
+            question_type,
+            questionType,
             grade,
             gradeLabel,
             level,
@@ -50,10 +54,7 @@ if ($model && !$isNewRecord) {
             category_id,
             category
           });
-        $('#quiz-config-num_of_questions').val(null);
-        $('#quiz-config-grade').val(null);
-        $('#quiz-config-level').val(null);
-        $('#quiz-config-category').val(null);
+        $('#quiz-config-num_of_questions, #quiz-config-question_type, #quiz-config-grade, #quiz-config-level, #quiz-config-category').val(null);
       },
       removeConfig: function(id) {
         const self = this;

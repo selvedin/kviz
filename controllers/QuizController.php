@@ -131,13 +131,16 @@ class QuizController extends Controller
         foreach ($data as $d) {
             if (!QuizConfig::find()->where($this->getWhere($id, $d))->exists()) {
                 $option = new QuizConfig([
-                    'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
+                    'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'], 'question_type' => $d['question_type'],
                     'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
                 ]);
                 if (!$option->save()) {
                     $errors = "";
                     foreach ($option->errors as $error) $errors .= $error[0] . "\n";
                     Yii::$app->session->setFlash('error', $errors);
+                } else {
+                    $model = Quiz::findOne($id);
+                    $model->save();
                 }
             }
         }
@@ -147,6 +150,7 @@ class QuizController extends Controller
     {
         $where = "quiz_id=$id";
         if (!empty($d['num_of_questions'])) $where .= " AND num_of_questions=" . $d['num_of_questions'];
+        if (!empty($d['question_type'])) $where .= " AND question_type=" . $d['question_type'];
         if (!empty($d['grade'])) $where .= " AND grade=" . $d['grade'];
         if (!empty($d['level'])) $where .= " AND level=" . $d['level'];
         if (!empty($d['category_id'])) $where .= " AND category_id=" . $d['category_id'];
@@ -174,11 +178,13 @@ class QuizController extends Controller
     public function actionDeleteConfig($id)
     {
         $model = QuizConfig::findOne($id);
+        $quiz = Quiz::findOne($model->quiz_id);
         $perms = new Perms();
         if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model->delete();
+        $quiz->save();
         return ['message' => __('Config deleted')];
     }
 

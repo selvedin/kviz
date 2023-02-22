@@ -16,6 +16,7 @@ class m230217_225712_create_quiz_config_table extends Migration
             'id' => $this->primaryKey(),
             'quiz_id' => $this->integer(11)->notNull(),
             'num_of_questions' => $this->integer(11)->notNull(),
+            'question_type' => $this->integer(11),
             'grade' => $this->integer(11),
             'level' => $this->integer(11),
             'category_id' => $this->integer(11)->notNull(),

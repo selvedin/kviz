@@ -105,9 +105,9 @@ class Buttons
     return Html::button(Icons::faIcon('times'), ['class' => 'btn btn-tool', 'data-card-widget' => 'remove']);
   }
 
-  public static function customButton(string $title, array | string $link, $attrs = [], $class = "info",)
+  public static function customButton(string $title, array | string $link, $attrs = [], $class = "info")
   {
-    return Html::a($title, $link, array_merge(['class' => "card-buttons btn btn-sm btn-$class"], $attrs));
+    return Html::a($title, $link, array_merge(['class' => BUTTONS_CLASS . $class], $attrs));
   }
 
   public static function closeModal()

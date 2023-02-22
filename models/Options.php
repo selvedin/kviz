@@ -37,4 +37,9 @@ class Options extends BaseModel
             [['content'], 'string', 'max' => 1024],
         ];
     }
+
+    public function getQuestion()
+    {
+        return $this->hasOne(Question::class, ['id' => 'question_id']);
+    }
 }
