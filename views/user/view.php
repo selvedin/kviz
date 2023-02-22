@@ -37,6 +37,7 @@ echo CardView::widget([
             'email:email',
             ['attribute' => 'isActive', 'label' => __('Status')],
             ['attribute' => 'role.name', 'label' => __('Role')],
+            ['attribute' => 'subjectList', 'label' => __('Subjects'), 'value' => $model->subjectsLabel],
         ],
     ])
 ]);

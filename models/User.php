@@ -33,6 +33,7 @@ class User extends BaseModel implements IdentityInterface
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    public $subjectList;
     /**
      * {@inheritdoc}
      */
@@ -50,6 +51,7 @@ class User extends BaseModel implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             [['role_id'], 'integer'],
             [['first_name', 'last_name'], 'string', 'max' => 128],
+            [['subjectList'], 'safe'],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
     }
@@ -67,6 +69,18 @@ class User extends BaseModel implements IdentityInterface
     public function getContact()
     {
         return $this->hasOne(Contact::class, ['id_user' => 'id']);
+    }
+
+    public function getSubjects()
+    {
+        return $this->hasMany(UserSubject::class, ['user_id' => 'id']);
+    }
+
+    public function getSubjectsLabel()
+    {
+        $labels = "";
+        foreach ($this->subjects as $subject) $labels .= $subject->subject->name . ", ";
+        return $labels;
     }
 
     public function getName()
@@ -284,5 +298,33 @@ class User extends BaseModel implements IdentityInterface
     public static function list()
     {
         return ArrayHelper::map(self::find()->where('status=10')->all(), 'id', 'first_name');
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        if ($this->subjects)  foreach ($this->subjects as $sub) $this->subjectList[] = $sub->subject_id;
+        else $this->subjectList = [];
+    }
+
+    public function beforeSave($insert)
+    {
+        if (is_array($this->subjectList)) {
+            foreach ($this->subjectList as $sub) {
+                if (!UserSubject::find()->where(['user_id' => $this->id, 'subject_id' => $sub])->exists()) {
+                    $subject = new UserSubject(['user_id' => $this->id, 'subject_id' => $sub]);
+                    if (!$subject->save()) die(print_r($subject->errors));
+                }
+            }
+        }
+        return parent::beforeSave($insert);
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        foreach ($this->subjects as $subject)
+            if (!in_array($subject->subject_id, $this->subjectList))
+                $subject->delete();
     }
 }

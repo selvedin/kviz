@@ -1,6 +1,7 @@
 <?php
 
 use app\helpers\Buttons;
+use app\models\Categories;
 use app\models\Roles;
 use app\models\SignupForm;
 use app\models\User;
@@ -70,6 +71,25 @@ if ($model instanceof User)
         ),
         ['class' => 'col-md-6']
     ) ?>
+    <?php
+    if ($model instanceof User)
+        echo Html::tag(
+            'div',
+            $form->field($model, 'subjectList')->widget(
+                Select2::class,
+                [
+                    'data' => Categories::getRoot(),
+                    'options' => [
+                        'placeholder' => __('Select a subject'),
+                        'multiple' => true
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ]
+                ]
+            ),
+            ['class' => 'col-md-6']
+        ) ?>
     <?php
     if ($model instanceof SignupForm) {
         echo Html::tag('div', $form->field($model, 'password')->passwordInput(['autocomplete' => 'new-password']), ['class' => 'col-md-6']);
