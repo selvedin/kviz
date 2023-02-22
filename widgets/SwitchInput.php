@@ -13,6 +13,8 @@ class SwitchInput extends \yii\bootstrap5\Widget
   public $value = 0;
   public $id = "";
   public $type = 'primary';
+  public $isRadio = false;
+  public $checked = false;
 
 
   /**
@@ -20,10 +22,11 @@ class SwitchInput extends \yii\bootstrap5\Widget
    */
   public function run()
   {
-    $checked = $this->value ? 'checked' : '';
+    $checked = $this->checked ? 'checked' : '';
+    $type = $this->isRadio ? 'radio' : 'checkbox';
     if (empty($this->id)) $this->id = Yii::$app->controller->id . "-check";
     echo "<label class='switch switch-$this->type'>
-        <input type='checkbox' name='$this->name' class='switch-input' value='$this->value' $checked>
+        <input type='$type' name='$this->name' class='switch-input' value='$this->value' $checked>
         <span class='switch-toggle-slider'>
           <span class='switch-on'>
             <i class='ti ti-check'></i>

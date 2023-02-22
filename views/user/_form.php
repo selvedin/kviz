@@ -2,6 +2,7 @@
 
 use app\helpers\Buttons;
 use app\models\Categories;
+use app\models\Perms;
 use app\models\Roles;
 use app\models\SignupForm;
 use app\models\User;
@@ -14,6 +15,7 @@ use yii\bootstrap5\Html;
 /** @var app\models\User $model */
 /** @var yii\widgets\ActiveForm $form */
 $this->title = __('User');
+$perms = new Perms();
 $passwordButton = null;
 if ($model instanceof User)
     $passwordButton = $model->status == 10 ? Html::a(
@@ -57,22 +59,24 @@ if ($model instanceof User)
         )->label(__('Role')),
         ['class' => 'col-md-6']
     ) ?>
-    <?= Html::tag(
-        'div',
-        $form->field($model, 'status')->widget(
-            Select2::class,
-            [
-                'data' => User::getStatuses(),
-                'options' => ['placeholder' => __('Select a status')],
-                'pluginOptions' => [
-                    'allowClear' => true
-                ]
-            ]
-        ),
-        ['class' => 'col-md-6']
-    ) ?>
     <?php
-    if ($model instanceof User)
+    if ($perms->canUpdate('UserStatus'))
+        echo Html::tag(
+            'div',
+            $form->field($model, 'status')->widget(
+                Select2::class,
+                [
+                    'data' => User::getStatuses(),
+                    'options' => ['placeholder' => __('Select a status')],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ]
+                ]
+            ),
+            ['class' => 'col-md-6']
+        ) ?>
+    <?php
+    if ($model instanceof User && $perms->canUpdate('UserSubject'))
         echo Html::tag(
             'div',
             $form->field($model, 'subjectList')->widget(

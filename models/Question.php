@@ -138,6 +138,11 @@ class Question extends BaseModel
         return $this->options && isset($this->options[0]) ? $this->options[0]['content'] : null;
     }
 
+    public function getIsTrue()
+    {
+        return $this->options && isset($this->options[0]) ? $this->options[0]['is_true'] : null;
+    }
+
     public function OptionsAsArray()
     {
         $options = [];

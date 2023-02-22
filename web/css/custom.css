@@ -334,3 +334,7 @@ body {
     box-shadow: inset 0px 0px 0px 30px #7ac142;
   }
 }
+
+.question-input {
+  font-size: 4rem;
+}
