@@ -10,6 +10,7 @@ i<?php
 
   $title = __('Config');
   $numLabel = __('Num Of Questions');
+  $typeLabel = __('Question type');
   $gradeLabel = __('Grade');
   $leveLabel = __('Level');
   $categoryLabel = __('Category');
@@ -22,7 +23,24 @@ i<?php
         '',
         ['type' => 'number', 'min' => 1, 'id' => 'quiz-config-num_of_questions', 'class' => 'form-control']
       ),
-    ['class' => 'col-sm-12 col-md-2']
+    ['class' => 'col-sm-12 col-md-1']
+  );
+
+
+  $config .= Html::tag(
+    'div',
+    Html::label($typeLabel, 'quiz-config-question_type', ['class' => 'control-label']) .
+      Select2::widget(
+        [
+          'name' => 'QuizConfig[question_type]',
+          'data' => Question::QuestionTypes(),
+          'options' => ['id' => 'quiz-config-question_type', 'placeholder' => __('Select a question type')],
+          'pluginOptions' => [
+            'allowClear' => true
+          ]
+        ]
+      ),
+    ['class' => 'col-sm-12 col-md-3']
   );
 
   $config .= Html::tag(
@@ -38,7 +56,7 @@ i<?php
           ]
         ]
       ),
-    ['class' => 'col-sm-12 col-md-3']
+    ['class' => 'col-sm-12 col-md-2']
   );
 
   $config .= Html::tag(
@@ -54,12 +72,12 @@ i<?php
           ]
         ]
       ),
-    ['class' => 'col-sm-12 col-md-3']
+    ['class' => 'col-sm-12 col-md-2']
   );
 
   $config .= Html::tag(
     'div',
-    Html::label($leveLabel, 'quiz-config-category', ['class' => 'control-label']) .
+    Html::label($categoryLabel, 'quiz-config-category', ['class' => 'control-label']) .
       Select2::widget(
         [
           'name' => 'QuizConfig[category]',
@@ -82,18 +100,20 @@ i<?php
   $config .= Html::tag(
     'div',
     "<table class='table table-striped'><thead><tr><th>#</th>
-    <th>$numLabel</th><th>$gradeLabel</th><th>$leveLabel</th><th>$categoryLabel</th>
+    <th>$numLabel</th><th>$typeLabel</th><th>$gradeLabel</th><th>$leveLabel</th><th>$categoryLabel</th>
     <th></th></tr></thead>
   <tbody><tr v-for='(conf,ind) in config'>
   <td>
   <input type='hidden' :name='\"Quiz[QuizConfig][\"+ind+\"][id]\"' :value='conf.id' readonly/>
   <input type='hidden' :name='\"Quiz[QuizConfig][\"+ind+\"][num_of_questions]\"' :value='conf.num_of_questions' readonly/>
+  <input type='hidden' :name='\"Quiz[QuizConfig][\"+ind+\"][question_type]\"' :value='conf.question_type' readonly/>
   <input type='hidden' :name='\"Quiz[QuizConfig][\"+ind+\"][grade]\"' :value='conf.grade' readonly/>
   <input type='hidden' :name='\"Quiz[QuizConfig][\"+ind+\"][level]\"' :value='conf.level' readonly/>
   <input type='hidden' :name='\"Quiz[QuizConfig][\"+ind+\"][category_id]\"' :value='conf.category_id' readonly/>
 
   {{ind+1}}.</td>
   <td>{{conf.num_of_questions}}</td>
+  <td>{{conf.questionType}}</td>
   <td>{{conf.gradeLabel}}</td>
   <td>{{conf.levelLabel}}</td>
   <td>{{conf.category}}</td>

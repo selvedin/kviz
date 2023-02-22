@@ -8,7 +8,7 @@ $tfs = Html::tag(
   Html::label(__('Result'), 'input-content', ['class' => 'control-label']) .
     Html::textInput(
       'Question[Options][0][content]',
-      '',
+      $model->firstOption,
       ['id' => 'input-content', 'class' => 'form-control']
     ),
   ['class' => 'col-sm-6 col-md-2']

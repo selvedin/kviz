@@ -17,7 +17,10 @@ class QuizConfigSearch extends QuizConfig
     public function rules()
     {
         return [
-            [['id', 'quiz_id', 'num_of_questions', 'grade', 'level', 'category_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [[
+                'id', 'quiz_id', 'num_of_questions', 'question_type', 'grade', 'level', 'category_id',
+                'created_at', 'created_by', 'updated_at', 'updated_by'
+            ], 'integer'],
         ];
     }
 
@@ -60,6 +63,7 @@ class QuizConfigSearch extends QuizConfig
             'id' => $this->id,
             'quiz_id' => $this->quiz_id,
             'num_of_questions' => $this->num_of_questions,
+            'question_type' => $this->question_type,
             'grade' => $this->grade,
             'level' => $this->level,
             'category_id' => $this->category_id,

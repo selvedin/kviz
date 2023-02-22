@@ -131,7 +131,7 @@ class QuizController extends Controller
         foreach ($data as $d) {
             if (!QuizConfig::find()->where($this->getWhere($id, $d))->exists()) {
                 $option = new QuizConfig([
-                    'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'],
+                    'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'], 'question_type' => $d['question_type'],
                     'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
                 ]);
                 if (!$option->save()) {
@@ -147,6 +147,7 @@ class QuizController extends Controller
     {
         $where = "quiz_id=$id";
         if (!empty($d['num_of_questions'])) $where .= " AND num_of_questions=" . $d['num_of_questions'];
+        if (!empty($d['question_type'])) $where .= " AND question_type=" . $d['question_type'];
         if (!empty($d['grade'])) $where .= " AND grade=" . $d['grade'];
         if (!empty($d['level'])) $where .= " AND level=" . $d['level'];
         if (!empty($d['category_id'])) $where .= " AND category_id=" . $d['category_id'];

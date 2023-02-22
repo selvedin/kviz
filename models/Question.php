@@ -22,6 +22,12 @@ use Yii;
  */
 class Question extends BaseModel
 {
+    const TYPE_TRUE = 1;
+    const TYPE_SINGLE = 2;
+    const TYPE_MULTI = 3;
+    const TYPE_JOIN = 4;
+    const TYPE_INPUT = 5;
+    const TYPE_ESSAI = 6;
     /**
      * {@inheritdoc}
      */
@@ -78,12 +84,12 @@ class Question extends BaseModel
     public static function QuestionTypes()
     {
         return [
-            1 => __('True/False'),
-            2 => __('Single choice'),
-            3 => __('Multiple choice'),
-            4 => __('Join pairs'),
-            5 => __('Input result'),
-            6 => __('Essai')
+            self::TYPE_TRUE => __('True/False'),
+            self::TYPE_SINGLE => __('Single choice'),
+            self::TYPE_MULTI => __('Multiple choice'),
+            self::TYPE_JOIN => __('Join pairs'),
+            self::TYPE_INPUT => __('Input result'),
+            self::TYPE_ESSAI => __('Essai')
         ];
     }
 
@@ -125,6 +131,11 @@ class Question extends BaseModel
     public function getLevelLabel()
     {
         return $this->level ? self::Levels()[$this->level] : null;
+    }
+
+    public function getFirstOption()
+    {
+        return $this->options && isset($this->options[0]) ? $this->options[0]['content'] : null;
     }
 
     public function OptionsAsArray()

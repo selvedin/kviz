@@ -10,6 +10,7 @@ use Yii;
  * @property int $id
  * @property int $quiz_id
  * @property int $num_of_questions
+ * @property int $question_type
  * @property int $grade
  * @property int $level
  * @property int $category_id
@@ -36,7 +37,7 @@ class QuizConfig extends BaseModel
         return [
             [['quiz_id', 'num_of_questions', 'category_id'], 'required'],
             [[
-                'quiz_id', 'num_of_questions', 'grade', 'level', 'category_id',
+                'quiz_id', 'num_of_questions', 'question_type', 'grade', 'level', 'category_id',
                 'created_at', 'created_by', 'updated_at', 'updated_by'
             ], 'integer'],
         ];
@@ -45,6 +46,11 @@ class QuizConfig extends BaseModel
     public function getCategory()
     {
         return $this->hasOne(Categories::class, ['id' => 'category_id']);
+    }
+
+    public function getQuestionType()
+    {
+        return $this->question_type ? Question::QuestionTypes()[$this->question_type] : null;
     }
 
     public function getGradeLabel()
