@@ -151,7 +151,8 @@ $allQuestions = $model->generateQuestions();
                 self.results[existing].rightContent = cont;
                 self.lastAdded = null;
               } else {
-                errorNotification('Left pair does not exist');
+                if (self.questions.length)
+                  errorNotification('Left pair does not exist');
               }
 
             }
@@ -210,8 +211,7 @@ $allQuestions = $model->generateQuestions();
             }
           } else {
             // we are starting adding new pair with lefy as starting pair
-            const existing = self.results.findIndex(res => res.question ==
-              self.question.id && res.left == id);
+            const existing = self.results.findIndex(res => res.question == self.question.id && res.left == id);
             if (existing > -1) {
               //in case that we have this pair already added we need to remove this pair from pairs
               self.results.splice(existing, 1);
@@ -238,12 +238,12 @@ $allQuestions = $model->generateQuestions();
         let correctTitle = '';
         let answerTitle = '';
         let result;
+        console.log("RESULTS: ", self.results);
         self.allQuestions.forEach(question => {
           result = null;
           switch (question.question_type) {
             case 1:
-              result = self.results.find(res => res.question == question
-                .id);
+              result = self.results.find(res => res.question == question.id);
               correctTitle = question.options[0].is_true ?
                 '<?= __('True') ?>' : '<?= __('False') ?>';
               answerTitle = result?.content;
@@ -256,8 +256,7 @@ $allQuestions = $model->generateQuestions();
               })
               break;
             case 2:
-              result = self.results.find(res => res.question == question
-                .id);
+              result = self.results.find(res => res.question == question.id);
               correctAnswers = [];
               correctAnswers = question.options.find(option => option
                 .is_true)?.content;
@@ -271,13 +270,12 @@ $allQuestions = $model->generateQuestions();
               })
               break;
             case 3:
-              result = self.results.filter(res => res.question ==
-                question.id);
+              result = self.results.filter(res => res.question == question.id);
               correctAnswers = [];
               userAnswers = [];
               question.options.filter(option => option.is_true).forEach(
                 option => correctAnswers.push(option.content));
-              result.forEach(res => userAnswers.push(res.content));
+
               correctAnswers.sort();
               userAnswers.sort();
               correctTitle = correctAnswers.join(', ');
@@ -292,8 +290,27 @@ $allQuestions = $model->generateQuestions();
               })
               break;
             case 4:
-              console.log(question);
-              console.log(result);
+              correctAnswers = [];
+              userAnswers = [];
+              result = self.results.filter(res => res.question == question.id);
+              question.pairs.left.forEach(pair => {
+                correctAnswers.push(`${pair.one} - ${pair.two}`);
+              });
+              result.forEach(res => {
+                userAnswers.push(`${res.leftContent} - ${res.rightContent}`);
+              })
+              correctAnswers.sort();
+              userAnswers.sort();
+              correctTitle = correctAnswers.join(', ');
+              answerTitle = userAnswers.join(', ');
+
+              self.summary.push({
+                id: question.id,
+                label: question.content,
+                correct: correctTitle,
+                answer: answerTitle,
+                isCorrect: correctTitle == answerTitle
+              })
               break;
             default:
               break;
