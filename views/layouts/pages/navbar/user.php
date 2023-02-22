@@ -33,19 +33,15 @@ $defaultImage = "/img/nouser.png";
         </div>
       </a>
     </li>
-    <?php
-    if (User::isAdmin()) :
-    ?>
-      <li>
-        <div class="dropdown-divider"></div>
-      </li>
-      <li>
-        <a class="dropdown-item" href="<?= Url::to(['home', 'lang' => 'bs']) ?>">
-          <i class="ti ti-flag me-2 ti-sm"></i>
-          <span class="align-middle">Bosanski jezik</span>
-        </a>
-      </li>
-    <?php endif; ?>
+    <li>
+      <div class="dropdown-divider"></div>
+    </li>
+    <li>
+      <a class="dropdown-item" href="<?= Url::to(['site/home', 'lang' => 'bs']) ?>">
+        <i class="ti ti-flag me-2 ti-sm"></i>
+        <span class="align-middle">Bosanski jezik</span>
+      </a>
+    </li>
     <li>
       <div class="dropdown-divider"></div>
     </li>

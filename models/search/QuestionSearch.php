@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Question;
@@ -17,8 +18,11 @@ class QuestionSearch extends Question
     public function rules()
     {
         return [
-            [['id', 'question_type', 'content_type', 'category_id', 'status', 'grade', 'level', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
-            [['content'], 'safe'],
+            [[
+                'id', 'question_type', 'content_type', 'status', 'grade', 'level',
+                'created_at', 'created_by', 'updated_at', 'updated_by'
+            ], 'integer'],
+            [['content', 'category_id'], 'safe'],
         ];
     }
 
@@ -55,13 +59,14 @@ class QuestionSearch extends Question
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        $category = $this->category_id;
+        if (is_array(Yii::$app->user->identity->subjectList))
+            $category = $this->category_id ? $this->category_id : Yii::$app->user->identity->subjectList;
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'question_type' => $this->question_type,
             'content_type' => $this->content_type,
-            'category_id' => $this->category_id,
             'status' => $this->status,
             'grade' => $this->grade,
             'level' => $this->level,
@@ -71,7 +76,8 @@ class QuestionSearch extends Question
             'updated_by' => $this->updated_by,
         ]);
 
-        $query->andFilterWhere(['like', 'content', $this->content]);
+        $query->andFilterWhere(['like', 'content', $this->content])
+            ->andFilterWhere(['IN', 'category_id', $category]);
 
         return $dataProvider;
     }
