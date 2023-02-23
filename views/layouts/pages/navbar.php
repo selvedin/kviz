@@ -11,7 +11,7 @@ $url = Yii::getAlias('@web');
     <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
       <a href="<?= Url::to(['site/home']) ?>" class="app-brand-link gap-2">
         <span class="app-brand-logo demo">
-          <!--- Logo goes here  -->
+          <img src="<?= $url ?>/images/logo.png" alt="<?= Yii::$app->name ?> Logo" class="brand-image img-circle elevation-3" width="50px">
         </span>
         <span class="app-brand-text demo menu-text fw-bold">
           <?= Yii::$app->name ?>

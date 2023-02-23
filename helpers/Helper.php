@@ -58,6 +58,7 @@ class Helper
         'items' => [
           ['icon' => 'category', 'title' => 'Kategorije', 'url' => '/categories', 'visible' => $perms->canList('Categories')],
           ['icon' => 'stack-pop', 'title' => 'Razredi', 'url' => '/grade', 'visible' => $perms->canList('Grade')],
+          ['icon' => 'building', 'title' => 'Škola', 'url' => '/settings/company', 'visible' => $perms->canUpdate('Settings')],
           ['icon' => 'adjustments-alt', 'title' => 'Generalno', 'url' => '/settings/general', 'visible' => $perms->canUpdate('Settings')],
 
         ]

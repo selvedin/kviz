@@ -93,12 +93,6 @@ class Settings extends BaseModel
         return isset($model) ? $model->id : null;
     }
 
-    public static function getIdDelivery()
-    {
-        $model = self::find()->where("name='Contact Type' AND text_value='[\"Delivery\"]'")->select(['id', 'name', 'text_value'])->one();
-        return isset($model) ? $model->id : null;
-    }
-
     public static function getFields($title)
     {
         $model = self::find()->where("type='Objects' and name='$title'")->one();

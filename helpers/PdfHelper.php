@@ -3,7 +3,16 @@
 namespace app\helpers;
 
 
+use app\models\Settings;
+use TCPDF2DBarcode;
 use Yii;
+
+require_once(Yii::$app->basePath . '/tcpdf/tcpdf_barcodes_1d.php');
+require_once(Yii::$app->basePath . '/tcpdf/tcpdf_barcodes_2d.php');
+
+use TCPDFBarcode;
+use yii\bootstrap4\Html;
+use yii\helpers\Url;
 
 class PdfHelper
 {
@@ -25,7 +34,7 @@ class PdfHelper
 
     // set default monospaced font
     $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-    $pdf->SetMargins(PDF_MARGIN_LEFT, 10, PDF_MARGIN_RIGHT);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, 40, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -40,7 +49,45 @@ class PdfHelper
       require_once(dirname(__FILE__) . '/lang/eng.php');
       $pdf->setLanguageArray($l);
     }
-
+    $pdf->setFont(DEFAULT_FONT);
     return $pdf;
+  }
+
+  public static function resolveTitle($content, $title)
+  {
+    if ($content  instanceof Settings) {
+      switch ($content->type) {
+        case 'Documents':
+          return $content->n;
+      }
+    }
+    return $title;
+  }
+
+  public static function filterContent($content)
+  {
+    if ($content  instanceof Settings) {
+      switch ($content->type) {
+        case 'Documents':
+          return $content->a4;
+        default:
+          return null;
+      }
+    }
+  }
+
+  public static function barcode($code, $type = 'C39')
+  {
+    $width = 1.5;
+    $height = 60;
+    $barcodeobj = new TCPDFBarcode($code, $type);
+    $qrCode = new TCPDF2DBarcode(__host() . Url::to(['package/get', 'code' => $code, 'user' => Yii::$app->user->id]), "QRCODE,Q");
+    $file_png = "images/barcodes/$code.png";
+    $file_qr = "images/barcodes/qr_$code.png";
+    file_put_contents($file_png, $barcodeobj->getBarcodePngData($width, $height));
+    file_put_contents($file_qr, $qrCode->getBarcodePngData(10, 10));
+    // return $barcodeobj->getBarcodeHTML($width, $height, 'black');
+    // return $barcodeobj->getBarcodeSVG($width, $height, 'black');
+    // return $barcodeobj->getBarcodePNG($width, $height, array(0, 128, 0));
   }
 }
