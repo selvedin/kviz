@@ -1,20 +1,23 @@
 <?php
 
+use app\helpers\Buttons;
 use app\helpers\Icons;
 use app\widgets\RowInput;
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
-$this->title = __('Company Info');
+$this->title = __('School Info');
 ?>
 <div class="row">
   <div class="col-md-12">
     <?php ActiveForm::begin() ?>
     <div class="card card-secondary">
-      <div class="card-header">
-        <h3 class="card-title"><?= $this->title ?></h3>
-        <div class="card-tools">
-          <?= Html::submitButton(Icons::faIcon('save'), ['class' => 'btn btn-success']) ?>
+      <div id="sticky-wrapper" class="sticky-wrapper" style="height: 80px;">
+        <div class="card-header sticky-element bg-label-info d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row">
+          <h1 class="card-title mb-sm-0 me-2"><?= $this->title ?></h1>
+          <div class="action-btns">
+            <?= Buttons::Save() ?>
+          </div>
         </div>
       </div>
       <div class="card-body">
@@ -31,8 +34,8 @@ $this->title = __('Company Info');
           </div>
           <div class="col-md-6">
             <div class="card card-primary card-outline">
-              <div class="card-body box-profile">
-                <div class="text-center">
+              <div class="card-body box-profile text-center">
+                <div>
                   <img class="profile-user-img img-fluid " :src="basePath+logoImage+'?<?= time() ?>'" alt="Logo">
                 </div>
                 <ul class="list-group list-group-unbordered mb-3">

@@ -69,6 +69,11 @@ function set($model, $field)
   return isset($model[$field]) ? $model[$field] : null;
 }
 
+function __host()
+{
+  return $_SERVER['SERVER_NAME'] == 'localhost' ? Yii::$app->params['baseUrl'] : Yii::$app->params['serverName'];
+}
+
 function fileSizeFormat($bytes)
 {
   if ($bytes >= 1073741824) return number_format($bytes / 1073741824, 2) . ' GB';

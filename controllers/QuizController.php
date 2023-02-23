@@ -189,6 +189,20 @@ class QuizController extends Controller
     }
 
     /**
+     * Exports generated questions for a Quiz to PDF.
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionPdf($id)
+    {
+        $perms = new Perms();
+        if (!$perms->canView('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model = $this->findModel($id);
+        return $this->render('pdf', ['model' => $model, 'questions' => $model->generateQuestions()]);
+    }
+
+    /**
      * Finds the Quiz model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID

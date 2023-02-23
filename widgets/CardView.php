@@ -2,6 +2,7 @@
 
 namespace app\widgets;
 
+use app\helpers\Helper;
 use Yii;
 
 /**
@@ -41,7 +42,7 @@ class CardView extends \yii\bootstrap5\Widget
             echo "<ul class='card-inlinelist list-inline mb-0'><li class='list-inline-item'>";
             foreach ($this->buttons as $button) echo $button;
             echo "</li></ul>";
-            self::dropDown($this->buttons);
+            Helper::dropDown($this->buttons);
             echo "</div></div>";
         }
         echo "<div class='card-content'>$this->content</div>";
@@ -58,7 +59,7 @@ class CardView extends \yii\bootstrap5\Widget
         echo "<ul class='card-inlinelist list-inline mb-0 '><li class='list-inline-item'>";
         foreach ($config["buttons"] as $button) echo $button;
         echo "</li></ul>";
-        self::dropDown($config['buttons']);
+        Helper::dropDown($config['buttons']);
         echo "</div></div>";
         echo "<div class='card-body'>";
     }
@@ -67,21 +68,5 @@ class CardView extends \yii\bootstrap5\Widget
     {
         echo "</div><div class='card-footer'></div>";
         echo "</div></div></div></div>";
-    }
-
-    public static function dropDown($buttons)
-    {
-        echo '<div class="card-dropdown btn-group">';
-        echo '<button type="button" 
-        class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow waves-effect waves-light" 
-        data-bs-toggle="dropdown" 
-        aria-expanded="false">
-        <i class="ti ti-dots-vertical"></i>
-        </button>';
-        echo '<ul class="dropdown-menu dropdown-menu-end" style="">';
-        foreach ($buttons as $button)
-            echo "<li>$button</li>";
-        echo '</ul>';
-        echo '</div>';
     }
 }
