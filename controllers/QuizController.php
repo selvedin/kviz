@@ -198,7 +198,8 @@ class QuizController extends Controller
     {
         $perms = new Perms();
         if (!$perms->canView('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        return $this->render('pdf', ['model' => $this->findModel($id)]);
+        $model = $this->findModel($id);
+        return $this->render('pdf', ['model' => $model, 'questions' => $model->generateQuestions()]);
     }
 
     /**

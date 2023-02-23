@@ -15,7 +15,7 @@ class MYPDF extends \TCPDF
   public function Header()
   {
     $company = Settings::getCompanyInfo();
-    $image_file = 'img/logo.png';
+    $image_file = 'images/logo.png';
     $this->Image($image_file, 15, 5, '', 25, 'PNG', '', 'T', false, 300, 'L', false, false, 0, false, false, false);
     $this->SetFont(DEFAULT_FONT, 'B', 10);
 
