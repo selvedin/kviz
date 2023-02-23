@@ -79,8 +79,10 @@ class CardView extends \yii\bootstrap5\Widget
         <i class="ti ti-dots-vertical"></i>
         </button>';
         echo '<ul class="dropdown-menu dropdown-menu-end" style="">';
-        foreach ($buttons as $button)
-            echo "<li>$button</li>";
+        foreach ($buttons as $button) {
+            $formatedButton = str_replace('btn', 'dropdown-link', str_replace(['btn-primary', 'rounded-pill', 'text-white'], "", $button));
+            echo "<li>$formatedButton</li>";
+        }
         echo '</ul>';
         echo '</div>';
     }
