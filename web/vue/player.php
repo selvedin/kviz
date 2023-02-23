@@ -86,7 +86,8 @@ $allQuestions = $model->generateQuestions();
         if ([1, 2].includes(self.question.question_type)) {
           self.results = self.results.filter(res => res.question != self
             .question.id);
-        } else if (self.question.question_type == 3) {
+        } else if (self.question.question_type == 3) { // MULTI
+          //TODO - nesto ne kupi rezultate, provjeriti
           const existingIndex = self.results.findIndex(res => res
             .question == self.question.id && res.answer == answer);
           if (existingIndex > -1) {
@@ -232,7 +233,6 @@ $allQuestions = $model->generateQuestions();
         let correctTitle = '';
         let answerTitle = '';
         let result;
-        console.log("RESULTS: ", self.results);
         self.allQuestions.forEach(question => {
           result = null;
           switch (question.question_type) {
@@ -269,7 +269,7 @@ $allQuestions = $model->generateQuestions();
               userAnswers = [];
               question.options.filter(option => option.is_true).forEach(
                 option => correctAnswers.push(option.content));
-
+              result.forEach(res => userAnswers.push(res.content));
               correctAnswers.sort();
               userAnswers.sort();
               correctTitle = correctAnswers.join(', ');

@@ -88,7 +88,7 @@ class Quiz extends BaseModel
     {
         $questions = [];
         if (!count($this->config))
-            $questions = Question::generateGuestions("", $this->num_of_questions);
+            $questions = Question::generateGuestions("status = 1", $this->num_of_questions);
         else
             foreach ($this->config as $conf) {
                 $limit = $conf->num_of_questions;
