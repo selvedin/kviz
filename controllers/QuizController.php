@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Perms;
 use app\models\Quiz;
 use app\models\QuizConfig;
+use app\models\QuizResults;
 use app\models\search\QuizSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -30,6 +31,7 @@ class QuizController extends Controller
                     'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
+                        'save-results' => ['POST'],
                     ],
                 ],
             ]
@@ -177,12 +179,12 @@ class QuizController extends Controller
 
     public function actionDeleteConfig($id)
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
         $model = QuizConfig::findOne($id);
         $quiz = Quiz::findOne($model->quiz_id);
         $perms = new Perms();
         if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        Yii::$app->response->format = Response::FORMAT_JSON;
         $model->delete();
         $quiz->save();
         return ['message' => __('Config deleted')];
@@ -201,6 +203,33 @@ class QuizController extends Controller
         $model = $this->findModel($id);
         return $this->render('pdf', ['model' => $model, 'questions' => $model->generateQuestions()]);
     }
+
+    /**
+     * Exports generated questions for a Quiz to PDF.
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionSaveResults($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = $this->findModel($id);
+        if ($this->request->isPost) {
+            foreach ($this->request->post() as $data) {
+                foreach ($data as $d) {
+                    $result = new QuizResults();
+                    $result->quiz_id = $id;
+                    $result->question_id = (int)$d['question'];
+                    $result->competitor_id = Yii::$app->user->id;
+                    $result->answer_id = (int)$d['answer'];
+                    $result->save();
+                }
+            }
+        }
+        return ['error' => 'Error'];
+    }
+
 
     /**
      * Finds the Quiz model based on its primary key value.

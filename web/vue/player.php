@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Quiz;
+use yii\helpers\Url;
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 $model = $id ? Quiz::findOne($id) : null;
@@ -62,19 +63,26 @@ $allQuestions = $model->generateQuestions();
         $('#stopwatch').hide();
       },
       startQuestion: function() {
+        const self = this;
         $('#stopwatch').show();
         $('#input-result-text').val(null);
-        if (this.questions.length) {
-          this.question = this.questions.shift();
-          this.pastQuestions.push(this.question);
-          this.questionIsStarted = true;
-          startTimer(this.questionTimeInSeconds);
-          this.canAnswer = true;
+        if (self.questions.length) {
+          self.question = self.questions.shift();
+          self.pastQuestions.push(self.question);
+          self.questionIsStarted = true;
+          startTimer(self.questionTimeInSeconds);
+          self.canAnswer = true;
           return;
         }
-        this.canAnswer = false;
-        this.showResults = true;
-        this.question = {};
+        self.canAnswer = false;
+        self.showResults = true;
+        self.question = {};
+        $.post(`<?= Url::to(['quiz/save-results', 'id' => $id]) ?>`, {
+          results: self.results
+        }, function(data) {
+          console.log(data);
+        }).fail(error =>
+          console.error(error))
       },
       stopQuestion: function() {
         $('#stopwatch').hide();
