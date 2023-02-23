@@ -201,7 +201,7 @@ class QuizController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException(__('The requested page does not exist.'));
     }
 
     private function isPrivate($creator)

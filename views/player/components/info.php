@@ -28,7 +28,7 @@
       <h4 class='text-white'><?= __('The Quiz duration (minutes)') ?>:</h4>
     </div>
     <div class='col-md-4'>
-      <span class='badge badge-center rounded-pill bg-success'>{{duration / 60}}</span>
+      <span class='badge badge-center rounded-pill bg-success'>{{parseInt(duration / 60)}}</span>
     </div>
     <div class="col-md-2"></div>
   </div>

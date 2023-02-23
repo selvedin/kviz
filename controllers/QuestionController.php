@@ -96,7 +96,8 @@ class QuestionController extends Controller
         if ($model->load($data) && $model->save()) {
 
             if (isset($data['Question'])) {
-                if ($model->question_type == Question::TYPE_INPUT) $this->addOption($model->id, $data['Question']);
+                if ($model->question_type == Question::TYPE_INPUT)
+                    $this->addOption($model->id, $data['Question']);
                 else $this->addData($model->id, $data['Question']);
             }
 
@@ -134,7 +135,7 @@ class QuestionController extends Controller
         }
         foreach ($data as $d) {
             if (!Options::find()->where(['question_id' => $id, 'content' => $d['content']])->exists()) {
-                $option = new Options(['question_id' => $id, 'content' => $d['content'], 'is_true' => 1]);
+                $option = new Options(['question_id' => $id, 'content' => $d['content'], 'is_true' => $d['is_true']]);
                 if (!$option->save()) $this->showErrors($option);
             }
         }
@@ -222,7 +223,7 @@ class QuestionController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException(__('The requested page does not exist.'));
     }
 
     public function actionDeleteOptions($id, $isPair = false)
@@ -232,7 +233,7 @@ class QuestionController extends Controller
         if (!$perms->canDelete('Question') || $this->isPrivate($model->created_by))
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         Yii::$app->response->format = Response::FORMAT_JSON;
-        if ($isPair)  Pairs::findOne($id)->delete();
+        if ($isPair && $pair = Pairs::findOne($id)) $pair->delete();
         else Options::findOne($id)->delete();
         return ['message' => __('Option deleted')];
     }

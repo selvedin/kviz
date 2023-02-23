@@ -12,6 +12,7 @@ if ($model && !$isNewRecord) {
     'num_of_questions' => $conf->num_of_questions
   ];
 }
+$allQuestions = $model->generateQuestions();
 ?>
 <script>
   //VUE APP
@@ -19,14 +20,16 @@ if ($model && !$isNewRecord) {
     el: '#mainApp',
     data: {
       title: '<?= __('Player') ?>',
-      COLORS: ['btn-primary', 'btn-danger', 'btn-info', 'btn-warning', 'btn-success', 'btn-dark'],
+      COLORS: ['btn-primary', 'btn-danger', 'btn-info', 'btn-warning',
+        'btn-success', 'btn-dark'
+      ],
       isNewRecord: <?= $isNewRecord ?>,
       config: <?= json_encode($config) ?>,
-      allQuestions: <?= json_encode($model->generateQuestions()) ?>,
-      questions: <?= json_encode($model->generateQuestions()) ?>,
+      allQuestions: <?= json_encode($allQuestions) ?>,
+      questions: <?= json_encode($allQuestions) ?>,
       pastQuestions: [],
       question: {},
-      duration: <?= $model->duration * 60 ?>,
+      duration: <?= $model->duration * (isset($_GET['test']) ? 10 : 60) ?>,
       questionTimeInSeconds: 5,
       questionIsStarted: false,
       results: [],
@@ -42,7 +45,8 @@ if ($model && !$isNewRecord) {
     },
     mounted() {
       $('#stopwatch').hide();
-      this.questionTimeInSeconds = Math.round(this.duration / this.questions.length);
+      this.questionTimeInSeconds = Math.round(this.duration / this.questions
+        .length);
     },
     methods: {
       runQuiz: function() {
@@ -59,6 +63,7 @@ if ($model && !$isNewRecord) {
       },
       startQuestion: function() {
         $('#stopwatch').show();
+        $('#input-result-text').val(null);
         if (this.questions.length) {
           this.question = this.questions.shift();
           this.pastQuestions.push(this.question);
@@ -75,28 +80,25 @@ if ($model && !$isNewRecord) {
         $('#stopwatch').hide();
         this.questionIsStarted = false;
         this.canAnswer = false;
-        // this.printResults();
-      },
-      printResults: function() {
-        this.results.forEach(res => {
-          console.log(res.leftContent, res.rightContent);
-        })
       },
       answerQuestion: function(answer, content = '') {
         const self = this;
         if ([1, 2].includes(self.question.question_type)) {
-          self.results = self.results.filter(res => res.question != self.question.id);
-        } else if (self.question.question_type == 3) {
-          const existingIndex = self.results.findIndex(res => res.question == self.question.id && res.answer == answer);
+          self.results = self.results.filter(res => res.question != self
+            .question.id);
+        } else if (self.question.question_type == 3) { // MULTI
+          //TODO - nesto ne kupi rezultate, provjeriti
+          const existingIndex = self.results.findIndex(res => res
+            .question == self.question.id && res.answer == answer);
           if (existingIndex > -1) {
             self.results.splice(existingIndex, 1);
             return;
           }
         } else if (self.question.question_type == 5) { //input result
-          const existing = self.results.findIndex(res => res.question = self.question.id);
+          const existing = self.results.find(res => res.question == self.question.id);
           if (existing) {
-            self.results[existing].answer = answer.target.value;
-            self.results[existing].content = answer.target.value;
+            existing.answer = answer.target.value;
+            existing.content = answer.target.value;
             return;
           }
           self.results.push({
@@ -114,15 +116,19 @@ if ($model && !$isNewRecord) {
         self.results.push(newAnswer);
         $(document).focus();
       },
-      addPair: function(id, cont, el, isRight = false) {
+      addPair: function(id, cont, el, isRight = false, index = 0) { //question_type = 4 - JOIN PAIRS
         const self = this;
         if (isRight) { // ADDING RIGHT PAIR
           if (self.lastAdded) { // adding process has been started
-            if (self.isLastRight) { // on starting process right side has been added first
-              if (self.lastAdded == id) return; // if the same item is clicked nothing has to be changed
+            if (self
+              .isLastRight
+            ) { // on starting process right side has been added first
+              if (self.lastAdded == id)
+                return; // if the same item is clicked nothing has to be changed
               //if not that we need to remove last added item - which is right and add start adding
               // with new right pair
-              self.results = self.results.filter(res => res.question == self.question.id && res.right != self.lastAdded);
+              self.results = self.results.filter(res => res.question == self
+                .question.id && res.right != self.lastAdded);
               self.results.push({
                 question: self.question.id,
                 right: id,
@@ -133,19 +139,22 @@ if ($model && !$isNewRecord) {
               self.lastAdded = id;
             } else {
               // last added is not the right and in this case we need to find last added left pair and add right to it
-              const existing = self.results.findIndex(res => res.question == self.question.id && res.left == self.lastAdded);
+              const existing = self.results.findIndex(res => res.question ==
+                self.question.id && res.left == self.lastAdded);
               if (existing > -1) {
                 self.results[existing].right = id;
                 self.results[existing].rightContent = cont;
                 self.lastAdded = null;
               } else {
-                errorNotification('Left pair does not exist');
+                if (self.questions.length)
+                  errorNotification('Left pair does not exist');
               }
 
             }
           } else {
             // we are starting adding new pair with right as starting pair
-            const existing = self.results.findIndex(res => res.question == self.question.id && res.right == id);
+            const existing = self.results.findIndex(res => res.question ==
+              self.question.id && res.right == id);
             if (existing > -1) {
               //in case that we have this pair already added we need to remove this pair from pairs
               self.results.splice(existing, 1);
@@ -164,12 +173,17 @@ if ($model && !$isNewRecord) {
           self.isLastRight = true;
         } else { // ADDING LEFT PAIR
           if (self.lastAdded) { // adding process has been started
-            if (!self.isLastRight) { // on starting process left side has been added first
-              if (self.lastAdded == id) return; // if the same item is clicked nothing has to be changed
+            if (!self
+              .isLastRight
+            ) { // on starting process left side has been added first
+              if (self.lastAdded == id)
+                return; // if the same item is clicked nothing has to be changed
               //if not that we need to remove last added item - which is left and add start adding
               // with new right pair
-              self.results = self.results.filter(res => res.question == self.question.id && res.left != self.lastAdded);
+              self.results = self.results.filter(res => res.question == self
+                .question.id && res.left != self.lastAdded);
               self.results.push({
+                index,
                 question: self.question.id,
                 right: null,
                 rightContent: null,
@@ -179,9 +193,11 @@ if ($model && !$isNewRecord) {
               self.lastAdded = id;
             } else {
               // last added is not the left and in this case we need to find last added right pair and add left to it
-              const existing = self.results.findIndex(res => res.question == self.question.id && res.right == self.lastAdded);
+              const existing = self.results.findIndex(res => res.question ==
+                self.question.id && res.right == self.lastAdded);
               if (existing > -1) {
                 self.results[existing].left = id;
+                self.results[existing].index = index;
                 self.results[existing].leftContent = cont;
                 self.lastAdded = null;
               } else {
@@ -198,6 +214,7 @@ if ($model && !$isNewRecord) {
               // if this pair has not been added to results we are adding it
               self.results.push({
                 question: self.question.id,
+                index,
                 right: null,
                 rightContent: null,
                 left: id,
@@ -215,11 +232,15 @@ if ($model && !$isNewRecord) {
         let userAnswers = [];
         let correctTitle = '';
         let answerTitle = '';
+        let result;
         self.allQuestions.forEach(question => {
-          switch (+question.question_type) {
+          result = null;
+          switch (question.question_type) {
             case 1:
-              correctTitle = question.options[0].is_true ? '<?= __('True') ?>' : '<?= __('False') ?>';
-              answerTitle = self.results.find(res => res.question == question.id)?.content;
+              result = self.results.find(res => res.question == question.id);
+              correctTitle = question.options[0].is_true ?
+                '<?= __('True') ?>' : '<?= __('False') ?>';
+              answerTitle = result?.content;
               self.summary.push({
                 id: question.id,
                 label: question.content,
@@ -229,23 +250,26 @@ if ($model && !$isNewRecord) {
               })
               break;
             case 2:
+              result = self.results.find(res => res.question == question.id);
               correctAnswers = [];
-              question.options.filter(option => option.is_true).forEach(option => correctAnswers.push(option.content));
-              correctTitle = correctAnswers.join(', ');
-              answerTitle = self.results.find(res => res.question == question.id)?.content;
+              correctAnswers = question.options.find(option => option
+                .is_true)?.content;
+              answerTitle = result?.content;
               self.summary.push({
                 id: question.id,
                 label: question.content,
-                correct: correctTitle,
+                correct: correctAnswers,
                 answer: answerTitle,
-                isCorrect: correctTitle == answerTitle
+                isCorrect: correctAnswers == answerTitle
               })
               break;
             case 3:
+              result = self.results.filter(res => res.question == question.id);
               correctAnswers = [];
               userAnswers = [];
-              question.options.filter(option => option.is_true).forEach(option => correctAnswers.push(option.content));
-              self.results.filter(res => res.question == question.id).forEach(res => userAnswers.push(res.content));
+              question.options.filter(option => option.is_true).forEach(
+                option => correctAnswers.push(option.content));
+              result.forEach(res => userAnswers.push(res.content));
               correctAnswers.sort();
               userAnswers.sort();
               correctTitle = correctAnswers.join(', ');
@@ -259,10 +283,51 @@ if ($model && !$isNewRecord) {
                 isCorrect: correctTitle == answerTitle
               })
               break;
+            case 4: // JOIN
+              correctAnswers = [];
+              userAnswers = [];
+              result = self.results.filter(res => res.question == question.id);
+              question.pairs.left.forEach(pair => {
+                correctAnswers.push(`${pair.one} - ${pair.two}`);
+              });
+              result.forEach(res => {
+                userAnswers.push(`${res.leftContent} - ${res.rightContent}`);
+              })
+              correctAnswers.sort();
+              userAnswers.sort();
+              correctTitle = correctAnswers.join(', ');
+              answerTitle = userAnswers.join(', ');
+
+              self.summary.push({
+                id: question.id,
+                label: question.content,
+                correct: correctTitle,
+                answer: answerTitle,
+                isCorrect: correctTitle == answerTitle
+              })
+              break;
+            case 5: //INPUT
+              result = self.results.find(res => res.question == question.id);
+              self.summary.push({
+                id: question.id,
+                label: question.content,
+                correct: question.options[0].content,
+                answer: result.answer,
+                isCorrect: (question.options[0].content).trim() == (result.answer).trim()
+              })
+              break;
             default:
               break;
           }
         });
+      },
+      getPairIndex: function(id, isRight = false) {
+        let result;
+        if (isRight)
+          result = this.results.find(res => res.question == this.question.id && res.right == id);
+        else
+          result = this.results.find(res => res.question == this.question.id && res.left == id);
+        return result ? result.index : null;
       }
     },
     computed: {
@@ -283,7 +348,8 @@ if ($model && !$isNewRecord) {
       },
       summary: function(val) {
         this.totalCorrect = this.summary.filter(s => s.isCorrect).length;
-        this.totalPercentage = Math.round(this.totalCorrect / this.allQuestions.length * 100);
+        this.totalPercentage = Math.round(this.totalCorrect / this
+          .allQuestions.length * 100);
       },
     },
   });
