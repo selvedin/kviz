@@ -73,4 +73,24 @@ class Helper
       ],
     ];
   }
+
+  public static function dropDown($buttons)
+  {
+    if (count($buttons)) {
+      echo '<div class="card-dropdown btn-group">';
+      echo '<button type="button" 
+            class="btn btn-primary btn-icon rounded-pill dropdown-toggle hide-arrow waves-effect waves-light" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false">
+            <i class="ti ti-dots-vertical"></i>
+            </button>';
+      echo '<ul class="dropdown-menu dropdown-menu-end" style="">';
+      foreach ($buttons as $button) {
+        $formatedButton = str_replace('btn', 'dropdown-link', str_replace(['btn-primary', 'rounded-pill', 'text-white'], "", $button));
+        echo "<li>$formatedButton</li>";
+      }
+      echo '</ul>';
+      echo '</div>';
+    }
+  }
 }

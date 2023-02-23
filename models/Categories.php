@@ -79,7 +79,7 @@ class Categories extends BaseModel
         }
         return ArrayHelper::map(self::find()
             ->where($where)
-            ->select(["id", "name"])->all(), "id", "name");
+            ->select(["id", "name"])->orderBy('name')->all(), "id", "name");
     }
 
     public static function getChildrenForSelect($id)
