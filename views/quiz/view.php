@@ -2,6 +2,7 @@
 
 use app\helpers\Buttons;
 use app\helpers\Icons;
+use app\models\Perms;
 use app\widgets\CardView;
 
 /** @var yii\web\View $this */
@@ -9,6 +10,7 @@ use app\widgets\CardView;
 
 $this->title = __('Quiz');
 \yii\web\YiiAsset::register($this);
+$perms = new Perms();
 ?>
 <div id="quizApp">
     <?= CardView::begin([
@@ -20,7 +22,7 @@ $this->title = __('Quiz');
             Buttons::Create(),
             __isUser(Buttons::customButton(
                 Icons::faIcon('rocket me-2') .  __('Run'),
-                ['player/view', 'id' => $model->id],
+                ['quiz/prepare', 'id' => $model->id],
                 [],
                 'btn btn-sm rounded-pill mx-1 text-white btn-warning'
             )),
@@ -63,6 +65,9 @@ $this->title = __('Quiz');
         </div>
 
         <?php require_once('view/config.php'); ?>
+        <?php require_once('view/active.php'); ?>
+        <?php require_once('view/pending.php'); ?>
+        <?php require_once('view/history.php'); ?>
     </div>
     <?= CardView::end(); ?>
 </div>

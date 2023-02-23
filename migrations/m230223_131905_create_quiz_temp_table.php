@@ -17,6 +17,7 @@ class m230223_131905_create_quiz_temp_table extends Migration
             'quiz_id' => $this->integer(11)->unsigned()->notNull(),
             'quiz' => $this->text(),
             'results' => $this->text(),
+            'active' => $this->smallInteger(2),
             'created_at' => $this->integer(11),
             'created_by' => $this->integer(11)->unsigned(),
             'updated_at' => $this->integer(11),

@@ -12,6 +12,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\PasswordResetRequestForm;
+use app\models\QuizTemp;
 use app\models\ResendVerificationEmailForm;
 use app\models\ResetPasswordForm;
 use app\models\Signup;
@@ -75,7 +76,8 @@ class SiteController extends Controller
 
     public function actionHome()
     {
-        return $this->render('index');
+        $active = QuizTemp::find()->where(['active' => 1])->select(['id', 'quiz_id'])->all();
+        return $this->render('index', ['quizes' => $active]);
     }
 
     /**

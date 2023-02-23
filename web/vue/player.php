@@ -13,7 +13,9 @@ if ($model && !$isNewRecord) {
     'num_of_questions' => $conf->num_of_questions
   ];
 }
-$allQuestions = $model->generateQuestions();
+$data = $model->generateQuestions();
+$allQuestions = $data['questions'];
+$tempId = (int)$data['id']
 ?>
 <script>
   //VUE APP
@@ -21,6 +23,7 @@ $allQuestions = $model->generateQuestions();
     el: '#mainApp',
     data: {
       title: '<?= __('Player') ?>',
+      tempId: <?= $tempId ? $tempId : 0 ?>,
       COLORS: ['btn-primary', 'btn-danger', 'btn-info', 'btn-warning',
         'btn-success', 'btn-dark'
       ],
@@ -77,12 +80,11 @@ $allQuestions = $model->generateQuestions();
         self.canAnswer = false;
         self.showResults = true;
         self.question = {};
-        $.post(`<?= Url::to(['quiz/save-results', 'id' => $id]) ?>`, {
+        $.post(`<?= Url::to(['quiz/save-results', 'id' => $id]) ?>&temp=${self.tempId}`, {
           results: self.results
         }, function(data) {
-          console.log(data);
-        }).fail(error =>
-          console.error(error))
+          self.summary = data;
+        }).fail(error => console.error(error))
       },
       stopQuestion: function() {
         $('#stopwatch').hide();
@@ -157,7 +159,6 @@ $allQuestions = $model->generateQuestions();
                 if (self.questions.length)
                   errorNotification('Left pair does not exist');
               }
-
             }
           } else {
             // we are starting adding new pair with right as starting pair
@@ -234,101 +235,6 @@ $allQuestions = $model->generateQuestions();
           self.isLastRight = false;
         }
       },
-      summarize: function() {
-        const self = this;
-        let correctAnswers = [];
-        let userAnswers = [];
-        let correctTitle = '';
-        let answerTitle = '';
-        let result;
-        self.allQuestions.forEach(question => {
-          result = null;
-          switch (question.question_type) {
-            case 1:
-              result = self.results.find(res => res.question == question.id);
-              correctTitle = question.options[0].is_true ?
-                '<?= __('True') ?>' : '<?= __('False') ?>';
-              answerTitle = result?.content;
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: correctTitle,
-                answer: answerTitle,
-                isCorrect: correctTitle == answerTitle
-              })
-              break;
-            case 2:
-              result = self.results.find(res => res.question == question.id);
-              correctAnswers = [];
-              correctAnswers = question.options.find(option => option
-                .is_true)?.content;
-              answerTitle = result?.content;
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: correctAnswers,
-                answer: answerTitle,
-                isCorrect: correctAnswers == answerTitle
-              })
-              break;
-            case 3:
-              result = self.results.filter(res => res.question == question.id);
-              correctAnswers = [];
-              userAnswers = [];
-              question.options.filter(option => option.is_true).forEach(
-                option => correctAnswers.push(option.content));
-              result.forEach(res => userAnswers.push(res.content));
-              correctAnswers.sort();
-              userAnswers.sort();
-              correctTitle = correctAnswers.join(', ');
-              answerTitle = userAnswers.join(', ');
-
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: correctTitle,
-                answer: answerTitle,
-                isCorrect: correctTitle == answerTitle
-              })
-              break;
-            case 4: // JOIN
-              correctAnswers = [];
-              userAnswers = [];
-              result = self.results.filter(res => res.question == question.id);
-              question.pairs.left.forEach(pair => {
-                correctAnswers.push(`${pair.one} - ${pair.two}`);
-              });
-              result.forEach(res => {
-                userAnswers.push(`${res.leftContent} - ${res.rightContent}`);
-              })
-              correctAnswers.sort();
-              userAnswers.sort();
-              correctTitle = correctAnswers.join(', ');
-              answerTitle = userAnswers.join(', ');
-
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: correctTitle,
-                answer: answerTitle,
-                isCorrect: correctTitle == answerTitle
-              })
-              break;
-            case 5: //INPUT
-              result = self.results.find(res => res.question == question.id);
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: question.options[0].content,
-                answer: result.answer,
-                isCorrect: (question.options[0].content).trim() == (result.answer).trim()
-              })
-              break;
-            default:
-              break;
-          }
-        });
-      },
       getPairIndex: function(id, isRight = false) {
         let result;
         if (isRight)
@@ -351,9 +257,9 @@ $allQuestions = $model->generateQuestions();
       }
     },
     watch: {
-      showResults: function(val) {
-        if (val) this.summarize();
-      },
+      // showResults: function(val) {
+      //   if (val) this.summarize();
+      // },
       summary: function(val) {
         this.totalCorrect = this.summary.filter(s => s.isCorrect).length;
         this.totalPercentage = Math.round(this.totalCorrect / this

@@ -150,6 +150,21 @@ class Question extends BaseModel
         return $options;
     }
 
+    public function OptionsAsString()
+    {
+        $options = "";
+        foreach ($this->options as $o) $options .= $o->content . ', ';
+        return rtrim($options, ', ');
+    }
+
+    public function CorrectOptionsAsString()
+    {
+        $options = "";
+        foreach ($this->options as $o)
+            if ($o->is_true) $options .= $o->content . ', ';
+        return rtrim($options, ', ');
+    }
+
     public function PairsAsArray()
     {
         $pairs = [];

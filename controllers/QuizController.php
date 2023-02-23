@@ -205,29 +205,49 @@ class QuizController extends Controller
         return $this->render('pdf', ['model' => $model, 'questions' => $model->generateQuestions()]);
     }
 
+    public function actionPrepare($id)
+    {
+        $perms = new Perms();
+        if (!$perms->canView('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model = $this->findModel($id);
+        $data = $model->generateQuestions();
+        return $this->redirect(['view', 'id' => $model->id]);
+    }
+
+    public function actionActivate($id, $active)
+    {
+        $perms = new Perms();
+        if (!$perms->canUpdate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model = QuizTemp::findOne($id);
+        $model->active = $active;
+        $model->save();
+        return $this->redirect(['view', 'id' => $model->quizObject->id]);
+    }
+
     /**
      * Exports generated questions for a Quiz to PDF.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionSaveResults($id)
+    public function actionSaveResults($id, $temp)
     {
+        $data = [];
         Yii::$app->response->format = Response::FORMAT_JSON;
-
         if ($this->request->isPost) {
-            $model = QuizTemp::getEmptyById($id);
+            if ($temp)  $model = QuizTemp::findOne($temp);
+            else $model = QuizTemp::getById($id);
             if ($model) {
-                $model->results = serialize($this->request->post());
-                if (!$model->save())
-                    throw new HttpException(500, json_encode($model->errors));
-            } else
-                throw new HttpException(500, __('Can not find model'));
-            // foreach ($this->request->post() as $data) {
-            //     foreach ($data as $d) $this->addResult($id, $d);
-            // }
+                if ($model->results) {
+                    $oldData = unserialize($model->results);
+                    $oldData[Yii::$app->user->id] = serialize($this->request->post());
+                } else $oldData[Yii::$app->user->id] = serialize($this->request->post());
+                $model->results = serialize($oldData);
+                if (!$model->save())  throw new HttpException(500, json_encode($model->errors));
+                $data = $model->processResults();
+            } else throw new HttpException(500, __('Can not find model'));
         }
-        return ['message' => 'Results saved'];
+        return $data;
     }
 
     private function addResult($id, $d)

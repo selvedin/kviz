@@ -51,6 +51,21 @@ class Quiz extends BaseModel
         return $this->hasMany(QuizConfig::class, ['quiz_id' => 'id']);
     }
 
+    public function getHistory()
+    {
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("results IS NOT NULL");
+    }
+
+    public function getPending()
+    {
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=0");
+    }
+
+    public function getActive()
+    {
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=1");
+    }
+
     public function getGradeLabel()
     {
         return $this->hasOne(Grade::class, ['id' => 'grade']);
@@ -88,7 +103,7 @@ class Quiz extends BaseModel
     {
         $questions = [];
         $existing = QuizTemp::getEmptyById($this->id);
-        if ($existing) return unserialize($existing->quiz);
+        if ($existing) return ['id' => $existing->id, 'questions' => unserialize($existing->quiz)];
         if (!count($this->config))
             $questions = Question::generateGuestions("status = 1", $this->num_of_questions);
         else
@@ -97,8 +112,8 @@ class Quiz extends BaseModel
                 $questions = Question::generateGuestions($this->createWhere($conf), $limit);
             }
         shuffle($questions);
-        QuizTemp::addQuiz($this->id, serialize($questions));
-        return $questions;
+        $tempId = QuizTemp::addQuiz($this->id, serialize($questions));
+        return ['id' => $tempId, 'questions' => $questions];
     }
 
     private function createWhere($conf)
