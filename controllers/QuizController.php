@@ -6,6 +6,7 @@ use app\models\Perms;
 use app\models\Quiz;
 use app\models\QuizConfig;
 use app\models\QuizResults;
+use app\models\QuizTemp;
 use app\models\search\QuizSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -214,22 +215,30 @@ class QuizController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-        $model = $this->findModel($id);
         if ($this->request->isPost) {
-            foreach ($this->request->post() as $data) {
-                foreach ($data as $d) {
-                    $result = new QuizResults();
-                    $result->quiz_id = $id;
-                    $result->question_id = (int)$d['question'];
-                    $result->competitor_id = Yii::$app->user->id;
-                    $result->answer_id = (int)$d['answer'];
-                    $result->save();
-                }
-            }
+            $model = QuizTemp::getEmptyById($id);
+            if ($model) {
+                $model->results = serialize($this->request->post());
+                if (!$model->save())
+                    throw new HttpException(500, json_encode($model->errors));
+            } else
+                throw new HttpException(500, __('Can not find model'));
+            // foreach ($this->request->post() as $data) {
+            //     foreach ($data as $d) $this->addResult($id, $d);
+            // }
         }
-        return ['error' => 'Error'];
+        return ['message' => 'Results saved'];
     }
 
+    private function addResult($id, $d)
+    {
+        $result = new QuizResults();
+        $result->quiz_id = $id;
+        $result->question_id = (int)$d['question'];
+        $result->competitor_id = Yii::$app->user->id;
+        $result->answer_id = (int)$d['answer'];
+        $result->save();
+    }
 
     /**
      * Finds the Quiz model based on its primary key value.

@@ -87,19 +87,27 @@ class Quiz extends BaseModel
     public function generateQuestions()
     {
         $questions = [];
+        $existing = QuizTemp::getEmptyById($this->id);
+        if ($existing) return unserialize($existing->quiz);
         if (!count($this->config))
             $questions = Question::generateGuestions("status = 1", $this->num_of_questions);
         else
             foreach ($this->config as $conf) {
                 $limit = $conf->num_of_questions;
-                $where = "status = 1 AND category_id = $conf->category_id";
-                if ($conf->question_type) $where .= " AND question_type=$conf->question_type";
-                if ($conf->grade) $where .= " AND grade=$conf->grade";
-                if ($conf->level) $where .= " AND level=$conf->level";
-                $questions = Question::generateGuestions($where, $limit);
+                $questions = Question::generateGuestions($this->createWhere($conf), $limit);
             }
         shuffle($questions);
+        QuizTemp::addQuiz($this->id, serialize($questions));
         return $questions;
+    }
+
+    private function createWhere($conf)
+    {
+        $where = "status = 1 AND category_id = $conf->category_id";
+        if ($conf->question_type) $where .= " AND question_type=$conf->question_type";
+        if ($conf->grade) $where .= " AND grade=$conf->grade";
+        if ($conf->level) $where .= " AND level=$conf->level";
+        return $where;
     }
 
     public function getConfigNumber()
