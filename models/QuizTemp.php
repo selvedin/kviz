@@ -43,33 +43,87 @@ class QuizTemp extends BaseModel
         return $this->hasOne(Quiz::class, ['id' => 'quiz_id']);
     }
 
-    public function processResults()
+    public function processResults($id = 0)
     {
-        if (!$this->results) return [];
-        $data = [];
-        $quiz = unserialize($this->quiz);
-        $results = unserialize($this->results);
+        $id = $id ? $id : Yii::$app->user->id;
+        $final = [];
+        $temp = unserialize($this->results);
+        $results = unserialize($temp[$id]);
         $results = $results['results'];
+        $processed = [];
+        $num = 1;
         $totalCorrect = 0;
-        foreach ($quiz as $q) {
-            $result = getResult($q['id'], $results);
-            $answer = isset($result['content']) ? $result['content'] : null;
-            $question  = Question::findOne((int)$q['id']);
-            $rightOptions = $question->CorrectOptionsAsString();
-
-            $isCorrect = trim($answer) == trim($rightOptions);
+        foreach ($results as $result) {
+            $question = Question::findOne($result['question']);
+            if (in_array($question->id, $processed)) continue;
+            if ($question->question_type == 3) {
+                $processed[] = $question->id;
+                $answer = $this->getOptions($question->id, $results);
+            } else if ($question->question_type == 4) {
+                $processed[] = $question->id;
+                $answer = $this->getPairs($question->id, $results);
+            } else
+                $answer = $this->resolveAnswer($question, $result);
+            $options = $this->resolveOptions($question);
+            $correct = $this->resolveCorrect($question);
+            $isCorrect = $answer == $correct;
             if ($isCorrect) $totalCorrect++;
-
-            $data[] = [
-                'id' => $q['id'],
-                'title' => $q['content'],
-                'options' => $question->OptionsAsString(),
-                'correct' => $rightOptions,
+            $final[] = [
+                'id' => $question->id,
+                'title' => $question->content,
+                'options' => $options,
+                'correct' => $correct,
                 'answer' => $answer,
                 'isCorrect' => $isCorrect
             ];
+            $num++;
         }
-        return ['items' => $data, 'totalCorrect' => $totalCorrect];
+        return ['items' => $final, 'totalCorrect' => $totalCorrect];
+    }
+
+    private function resolveOptions(Question $question)
+    {
+        $qt = $question->question_type;
+        if ($qt == 1) return __('True') . "/" . __('False');
+        if (in_array($qt, [2, 3, 5])) return $question->OptionsAsString();
+        if ($qt == 4) return $question->PairsAsString();
+    }
+
+    private function resolveCorrect(Question $question)
+    {
+        $qt = $question->question_type;
+        if ($qt == 1) return $question->isTrue ? __('True') : __('False');
+        if (in_array($qt, [2, 3, 5])) return $question->CorrectOptionsAsString();
+        if ($qt == 4) return $question->PairsAsString();
+    }
+
+    private function resolveAnswer(Question $question, $data)
+    {
+        $qt = $question->question_type;
+        if ($qt == 1) return $data['answer'] ? __('True') : __('False');
+        if ($qt == 2) return Options::findOne($data['answer'])->content;
+        if ($qt == 5) return $data['answer'];
+        return null;
+    }
+
+    private function getOptions($id, $res)
+    {
+        $data = [];
+        foreach ($res as $d)
+            if ($d['question'] == $id)
+                $data[] = Options::findOne($d['answer'])->content;
+        sort($data);
+        return implode(', ', $data);
+    }
+
+    private function getPairs($id, $res)
+    {
+        $data = [];
+        foreach ($res as $d)
+            if ($d['question'] == $id)
+                $data[] = $d['leftContent'] . " - " . $d['rightContent'];
+        sort($data);
+        return implode("\n", $data);
     }
 
     public static function addQuiz($id, $quiz)
@@ -89,5 +143,12 @@ class QuizTemp extends BaseModel
     public static function getEmptyById($id)
     {
         return QuizTemp::find()->where("quiz_id=$id AND active=1")->one();
+    }
+
+    public static function getResult($id, $results)
+    {
+        foreach ($results as $result)
+            if ($result['question'] == $id) return $result;
+        return null;
     }
 }

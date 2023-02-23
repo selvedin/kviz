@@ -83,6 +83,7 @@ $tempId = (int)$data['id']
         $.post(`<?= Url::to(['quiz/save-results', 'id' => $id]) ?>&temp=${self.tempId}`, {
           results: self.results
         }, function(data) {
+          console.log(data);
           self.summary = data;
         }).fail(error => console.error(error))
       },
@@ -257,11 +258,8 @@ $tempId = (int)$data['id']
       }
     },
     watch: {
-      // showResults: function(val) {
-      //   if (val) this.summarize();
-      // },
       summary: function(val) {
-        this.totalCorrect = this.summary.filter(s => s.isCorrect).length;
+        this.totalCorrect = this.summary.items.filter(s => s.isCorrect).length;
         this.totalPercentage = Math.round(this.totalCorrect / this
           .allQuestions.length * 100);
       },

@@ -297,4 +297,9 @@ class SiteController extends Controller
         }
         return $this->render('trans', ['words' => $words, 'add' => $add]);
     }
+
+    public function actionTest()
+    {
+        return $this->render('test');
+    }
 }

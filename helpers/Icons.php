@@ -57,4 +57,14 @@ class Icons
       ['class' => "spinner-border $size text-$color", 'role' => 'status']
     );
   }
+
+  public static function Correct()
+  {
+    return Html::tag('i', '', ['class' => "fas fa-check-circle fa-2x text-success"]);
+  }
+
+  public static function Incorrect()
+  {
+    return Html::tag('i', '', ['class' => "fas fa-times-circle fa-2x text-danger"]);
+  }
 }
