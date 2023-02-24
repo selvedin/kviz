@@ -43,7 +43,11 @@ class Question extends BaseModel
     {
         return [
             [['content'], 'required'],
-            [['question_type', 'content_type', 'category_id', 'status', 'grade', 'level', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [[
+                'question_type', 'content_type', 'category_id', 'status',
+                'grade', 'level', 'created_at', 'created_by',
+                'updated_at', 'updated_by'
+            ], 'integer'],
             [['content'], 'string', 'max' => 1024],
         ];
     }
@@ -146,18 +150,46 @@ class Question extends BaseModel
     public function OptionsAsArray()
     {
         $options = [];
-        foreach ($this->options as $o) $options[] = ['id' => $o->id, 'content' => $o->content, 'is_true' => $o->is_true];
+        foreach ($this->options as $o)
+            $options[] = ['id' => $o->id, 'content' => $o->content, 'is_true' => $o->is_true];
+        shuffle($options);
         return $options;
+    }
+
+    public function OptionsAsString()
+    {
+        $options = [];
+        foreach ($this->options as $o) $options[] = $o->content;
+        sort($options);
+        return implode(', ', $options);
+    }
+
+    public function CorrectOptionsAsString()
+    {
+        $options = [];
+        foreach ($this->options as $o) if ($o->is_true) $options[] = $o->content;
+        sort($options);
+        return implode(', ', $options);
+        $options = "";
     }
 
     public function PairsAsArray()
     {
         $pairs = [];
         foreach ($this->pairs as $p) $pairs[] = ['id' => $p->id, 'one' => $p->one, 'two' => $p->two];
+        shuffle($pairs);
         $data['left'] = $pairs;
         shuffle($pairs);
         $data['right'] = $pairs;
         return $data;
+    }
+
+    public function PairsAsString()
+    {
+        $pairs = [];
+        foreach ($this->pairs as $p) $pairs[] = "$p->one - $p->two";
+        sort($pairs);
+        return implode("\n", $pairs);
     }
 
     public static function generateGuestions($where, $limit)

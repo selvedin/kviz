@@ -2,6 +2,7 @@
 
 namespace app\helpers;
 
+use Yii;
 use yii\bootstrap5\Html;
 
 define('BUTTONS_CLASS', 'btn btn-sm rounded-pill mx-1 text-white btn-');
@@ -81,12 +82,13 @@ class Buttons
     ]);
   }
 
-  public static function Pdf($id, $flag = false)
+  public static function Pdf($id, $controller = null)
   {
-    $title = __('Export to PDF');
+    $title = 'PDF';
+    $controller = $controller ?? Yii::$app->controller->id;
     return Html::a(
       Icons::faIcon('file-pdf') . Html::tag('span', $title, PADDING),
-      ['pdf', 'id' => $id, 'flag' => $flag],
+      ["$controller/pdf", 'id' => $id],
       [
         'class' => BUTTONS_CLASS . 'danger',
         'target' => 'blank',

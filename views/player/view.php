@@ -7,10 +7,12 @@ $this->title = __('Running') . '  ' . $model->title;
     <div class="card-body card-quiz h-100 d-flex align-items-center">
         <div id="stopwatch">
         </div>
+        <div v-if="isPlaying" class="btn btn-outline-warning rounded-pill btn-lg" style="position:absolute;top:10px;left:10px;font-size:2rem;">
+            {{pastQuestions.length}}/{{allQuestions.length}}
+        </div>
         <div v-if="isPlaying && !showResults" class='w-100 h-100'>
             <div class="question-part h-50  ">
                 <h1 class='quiz-question-title text-center ms-auto me-auto w-75 mt-5'>
-                    {{pastQuestions.length}}/{{allQuestions.length}}<br />
                     {{question.content}}
                 </h1>
             </div>

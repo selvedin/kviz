@@ -15,9 +15,11 @@ class m230217_140532_create_quiz_results_table extends Migration
         $this->createTable('{{%quiz_results}}', [
             'id' => $this->primaryKey(),
             'quiz_id' => $this->integer(11)->notNull(),
-            'question_id' => $this->integer(11)->notNull(),
+            'temp_id' => $this->integer(11)->notNull(),
             'competitor_id' => $this->integer(11)->notNull(),
-            'answer_id' => $this->integer(11)->notNull(),
+            'results' => $this->string(),
+            'summary' => $this->string(),
+            'totals' => $this->string(),
             'created_at' => $this->integer(11),
             'created_by' => $this->integer(11)->unsigned(),
             'updated_at' => $this->integer(11),

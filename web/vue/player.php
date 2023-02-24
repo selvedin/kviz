@@ -1,18 +1,17 @@
 <?php
 
-use app\models\Quiz;
+use app\models\QuizResults;
+use app\models\QuizTemp;
+use yii\helpers\Url;
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
-$model = $id ? Quiz::findOne($id) : null;
-$isNewRecord = isset($model) ? (int)$model->isNewRecord : true;
-$config =  [];
-if ($model && !$isNewRecord) {
-  foreach ($model->config as $conf) $config[] = [
-    'id' => $conf->id,
-    'num_of_questions' => $conf->num_of_questions
-  ];
-}
-$allQuestions = $model->generateQuestions();
+$model = $id ? QuizTemp::findOne($id) : null;
+
+$allQuestions = unserialize($model->quiz);
+$tempId = $id;
+$seconds = isset($_GET['test']) ? 10 : 60;
+$didPlay = $model->isPlayed();
+
 ?>
 <script>
   //VUE APP
@@ -20,20 +19,19 @@ $allQuestions = $model->generateQuestions();
     el: '#mainApp',
     data: {
       title: '<?= __('Player') ?>',
+      tempId: <?= $tempId ? $tempId : 0 ?>,
       COLORS: ['btn-primary', 'btn-danger', 'btn-info', 'btn-warning',
         'btn-success', 'btn-dark'
       ],
-      isNewRecord: <?= $isNewRecord ?>,
-      config: <?= json_encode($config) ?>,
       allQuestions: <?= json_encode($allQuestions) ?>,
       questions: <?= json_encode($allQuestions) ?>,
       pastQuestions: [],
       question: {},
-      duration: <?= $model->duration * (isset($_GET['test']) ? 10 : 60) ?>,
+      duration: <?= $model->quizObject->duration * $seconds ?>,
       questionTimeInSeconds: 5,
       questionIsStarted: false,
       results: [],
-      totalQuestions: <?= $model->num_of_questions ? $model->num_of_questions : 1 ?>,
+      totalQuestions: <?= $model->quizObject->num_of_questions ? $model->quizObject->num_of_questions : 1 ?>,
       totalCorrect: 0,
       totalPercentage: 0,
       summary: [],
@@ -42,9 +40,11 @@ $allQuestions = $model->generateQuestions();
       canAnswer: false,
       lastAdded: null,
       isLastRight: false,
+      didPlay: <?= $didPlay ? 'true' : 'false' ?>,
     },
     mounted() {
       $('#stopwatch').hide();
+      if (this.didPlay) toastr.error('You already played this quiz');
       this.questionTimeInSeconds = Math.round(this.duration / this.questions
         .length);
     },
@@ -60,21 +60,29 @@ $allQuestions = $model->generateQuestions();
         this.isPlaying = false;
         this.showResults = false;
         $('#stopwatch').hide();
+        window.location = '<?= Url::to(['site/home']) ?>'
       },
       startQuestion: function() {
+        const self = this;
         $('#stopwatch').show();
         $('#input-result-text').val(null);
-        if (this.questions.length) {
-          this.question = this.questions.shift();
-          this.pastQuestions.push(this.question);
-          this.questionIsStarted = true;
-          startTimer(this.questionTimeInSeconds);
-          this.canAnswer = true;
+        if (self.questions.length) {
+          self.question = self.questions.shift();
+          self.pastQuestions.push(self.question);
+          self.questionIsStarted = true;
+          startTimer(self.questionTimeInSeconds);
+          self.canAnswer = true;
           return;
         }
-        this.canAnswer = false;
-        this.showResults = true;
-        this.question = {};
+        self.canAnswer = false;
+        self.showResults = true;
+        self.question = {};
+        $.post(`<?= Url::to(['quiz/save-results', 'id' => $id]) ?>&temp=${self.tempId}`, {
+          results: self.results
+        }, function(data) {
+          console.log(data);
+          self.summary = data;
+        }).fail(error => console.error(error))
       },
       stopQuestion: function() {
         $('#stopwatch').hide();
@@ -87,7 +95,8 @@ $allQuestions = $model->generateQuestions();
           self.results = self.results.filter(res => res.question != self
             .question.id);
         } else if (self.question.question_type == 3) { // MULTI
-          //TODO - nesto ne kupi rezultate, provjeriti
+          //TODO - nesto ne kupi rezultate - kad je kratko vrijeme - brzo se odgovara
+          // vidjeti da se ne moze proci dalje kad se klikne dok se ne ubiljeze rezultati
           const existingIndex = self.results.findIndex(res => res
             .question == self.question.id && res.answer == answer);
           if (existingIndex > -1) {
@@ -149,7 +158,6 @@ $allQuestions = $model->generateQuestions();
                 if (self.questions.length)
                   errorNotification('Left pair does not exist');
               }
-
             }
           } else {
             // we are starting adding new pair with right as starting pair
@@ -226,101 +234,6 @@ $allQuestions = $model->generateQuestions();
           self.isLastRight = false;
         }
       },
-      summarize: function() {
-        const self = this;
-        let correctAnswers = [];
-        let userAnswers = [];
-        let correctTitle = '';
-        let answerTitle = '';
-        let result;
-        self.allQuestions.forEach(question => {
-          result = null;
-          switch (question.question_type) {
-            case 1:
-              result = self.results.find(res => res.question == question.id);
-              correctTitle = question.options[0].is_true ?
-                '<?= __('True') ?>' : '<?= __('False') ?>';
-              answerTitle = result?.content;
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: correctTitle,
-                answer: answerTitle,
-                isCorrect: correctTitle == answerTitle
-              })
-              break;
-            case 2:
-              result = self.results.find(res => res.question == question.id);
-              correctAnswers = [];
-              correctAnswers = question.options.find(option => option
-                .is_true)?.content;
-              answerTitle = result?.content;
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: correctAnswers,
-                answer: answerTitle,
-                isCorrect: correctAnswers == answerTitle
-              })
-              break;
-            case 3:
-              result = self.results.filter(res => res.question == question.id);
-              correctAnswers = [];
-              userAnswers = [];
-              question.options.filter(option => option.is_true).forEach(
-                option => correctAnswers.push(option.content));
-              result.forEach(res => userAnswers.push(res.content));
-              correctAnswers.sort();
-              userAnswers.sort();
-              correctTitle = correctAnswers.join(', ');
-              answerTitle = userAnswers.join(', ');
-
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: correctTitle,
-                answer: answerTitle,
-                isCorrect: correctTitle == answerTitle
-              })
-              break;
-            case 4: // JOIN
-              correctAnswers = [];
-              userAnswers = [];
-              result = self.results.filter(res => res.question == question.id);
-              question.pairs.left.forEach(pair => {
-                correctAnswers.push(`${pair.one} - ${pair.two}`);
-              });
-              result.forEach(res => {
-                userAnswers.push(`${res.leftContent} - ${res.rightContent}`);
-              })
-              correctAnswers.sort();
-              userAnswers.sort();
-              correctTitle = correctAnswers.join(', ');
-              answerTitle = userAnswers.join(', ');
-
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: correctTitle,
-                answer: answerTitle,
-                isCorrect: correctTitle == answerTitle
-              })
-              break;
-            case 5: //INPUT
-              result = self.results.find(res => res.question == question.id);
-              self.summary.push({
-                id: question.id,
-                label: question.content,
-                correct: question.options[0].content,
-                answer: result.answer,
-                isCorrect: (question.options[0].content).trim() == (result.answer).trim()
-              })
-              break;
-            default:
-              break;
-          }
-        });
-      },
       getPairIndex: function(id, isRight = false) {
         let result;
         if (isRight)
@@ -343,11 +256,8 @@ $allQuestions = $model->generateQuestions();
       }
     },
     watch: {
-      showResults: function(val) {
-        if (val) this.summarize();
-      },
       summary: function(val) {
-        this.totalCorrect = this.summary.filter(s => s.isCorrect).length;
+        this.totalCorrect = this.summary.items.filter(s => s.isCorrect).length;
         this.totalPercentage = Math.round(this.totalCorrect / this
           .allQuestions.length * 100);
       },

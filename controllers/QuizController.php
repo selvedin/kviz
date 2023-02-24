@@ -5,6 +5,8 @@ namespace app\controllers;
 use app\models\Perms;
 use app\models\Quiz;
 use app\models\QuizConfig;
+use app\models\QuizResults;
+use app\models\QuizTemp;
 use app\models\search\QuizSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -30,6 +32,7 @@ class QuizController extends Controller
                     'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
+                        'save-results' => ['POST'],
                     ],
                 ],
             ]
@@ -99,7 +102,7 @@ class QuizController extends Controller
     {
         $model = $this->findModel($id);
         $perms = new Perms();
-        if (!$perms->canUpdate('Quiz') || $this->isPrivate($model->created_by))
+        if (!$perms->canUpdate('Quiz') || $model->isPrivate())
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
 
         if ($this->request->isPost) $this->saveModel($model, $this->request->post());
@@ -168,7 +171,7 @@ class QuizController extends Controller
     {
         $model = $this->findModel($id);
         $perms = new Perms();
-        if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
+        if (!$perms->canDelete('Quiz') || $model->isPrivate())
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model->delete();
 
@@ -177,12 +180,12 @@ class QuizController extends Controller
 
     public function actionDeleteConfig($id)
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
         $model = QuizConfig::findOne($id);
         $quiz = Quiz::findOne($model->quiz_id);
         $perms = new Perms();
-        if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
+        if (!$perms->canDelete('Quiz') || $model->isPrivate())
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        Yii::$app->response->format = Response::FORMAT_JSON;
         $model->delete();
         $quiz->save();
         return ['message' => __('Config deleted')];
@@ -199,7 +202,64 @@ class QuizController extends Controller
         $perms = new Perms();
         if (!$perms->canView('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = $this->findModel($id);
-        return $this->render('pdf', ['model' => $model, 'questions' => $model->generateQuestions()]);
+        $data = []; //$model->generateQuestions();
+        //TODO - fix this part of printing pdf for the quiz
+        return $this->render('pdf', ['model' => $model, 'questions' => $data['questions']]);
+    }
+
+    public function actionPrepare($id)
+    {
+        $perms = new Perms();
+        if (!$perms->canView('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model = $this->findModel($id);
+        $model->generateQuestions(false); // generate new
+        return $this->redirect(['view', 'id' => $model->id]);
+    }
+
+    public function actionActivate($id, $active)
+    {
+        $perms = new Perms();
+        if (!$perms->canUpdate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model = QuizTemp::findOne($id);
+        $model->active = $active;
+        $model->save();
+        return $this->redirect(['view', 'id' => $model->quizObject->id]);
+    }
+
+    /**
+     * Exports generated questions for a Quiz to PDF.
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionSaveResults($id, $temp)
+    {
+        $data = [];
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        if ($this->request->isPost) {
+            if ($temp)  $model = QuizTemp::findOne($temp);
+            else $model = QuizTemp::getById($id);
+            if ($model) {
+                if ($model->results) {
+                    $oldData = unserialize($model->results);
+                    $oldData[Yii::$app->user->id] = serialize($this->request->post());
+                } else $oldData[Yii::$app->user->id] = serialize($this->request->post());
+                $model->results = serialize($oldData);
+                if (!$model->save())  throw new HttpException(500, json_encode($model->errors));
+                $data = $model->processResults();
+            } else throw new HttpException(500, __('Can not find model'));
+        }
+        return $data;
+    }
+
+    private function addResult($id, $d)
+    {
+        $result = new QuizResults();
+        $result->quiz_id = $id;
+        $result->question_id = (int)$d['question'];
+        $result->competitor_id = Yii::$app->user->id;
+        $result->answer_id = (int)$d['answer'];
+        $result->save();
     }
 
     /**
@@ -216,12 +276,5 @@ class QuizController extends Controller
         }
 
         throw new NotFoundHttpException(__('The requested page does not exist.'));
-    }
-
-    private function isPrivate($creator)
-    {
-        if (Yii::$app->user->identity->role->private)
-            if ($creator != Yii::$app->user->id) return true;
-        return false;
     }
 }

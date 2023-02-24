@@ -46,4 +46,12 @@ class BaseModel extends ActiveRecord
 
     return $event->isValid;
   }
+
+  public function isPrivate()
+  {
+    if (Yii::$app->user->isGuest) return true;
+    if (Yii::$app->user->identity->role->private)
+      if ($this->created_by != Yii::$app->user->id) return true;
+    return false;
+  }
 }

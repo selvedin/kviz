@@ -11,17 +11,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(q, ind) in summary">
+          <tr v-for="(item, ind) in summary.items">
             <td>{{ind+1}}.</td>
-            <td>{{q.label}}</td>
+            <td>{{item.title}}</td>
             <td>
               <span>
-                {{q.correct}},
+                {{item.correct}},
               </span>
             </td>
             <td>
-              <span :class="q.isCorrect?'text-success':'text-danger'">
-                {{q.answer}},
+              <span :class="item.isCorrect?'text-success':'text-danger'">
+                {{item.answer}},
               </span>
             </td>
           </tr>
@@ -31,7 +31,7 @@
             <td colspan='3'><?= __('Summary') ?></td>
             <td>
               <h4>
-                {{ totalCorrect}}/{{ allQuestions.length}}
+                {{ summary.totalCorrect}}/{{ allQuestions.length}}
                 [{{ totalPercentage }}%]
               </h4>
             </td>
