@@ -52,7 +52,8 @@ class QuizResults extends BaseModel
                     'temp_id' => $quiz->id,
                     'competitor_id' => Yii::$app->user->id,
                 ]);
-            $model->results = $quiz->results;
+            $results = unserialize($quiz->results);
+            $model->results = serialize($results[Yii::$app->user->id]);
             $model->summary = serialize($summary);
             $model->totals = serialize(['totalCorrect' => $totals]);
             if (!$model->save()) throw new HttpException(500, json_encode($model->errors));

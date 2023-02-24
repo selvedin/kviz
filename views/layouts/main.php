@@ -45,6 +45,8 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     <?php $this->head() ?>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="<?= $url ?>/vendor/libs/jquery/jquery.js"></script>
+    <script src="<?= $url ?>/vendor/libs/toastr/toastr.js"></script>
+    <script src="<?= $url ?>/vendor/libs/sweetalert2/sweetalert2.js"></script>
     <script src="<?= $url ?>/vendor/js/helpers.js"></script>
     <script src="<?= $url ?>/js/hijri.js"></script>
     <script src="<?= $url ?>/js/config.js"></script>

@@ -48,11 +48,6 @@ class PlayerController extends Controller
             'id' => $model->id,
             'model' => $model->quizObject,
             'questions' => unserialize($model->quiz),
-            'didPlay' => QuizResults::find()->where([
-                'quiz_id' => $model->quiz_id,
-                'temp_id' => $id,
-                'competitor_id' => Yii::$app->user->id
-            ])->exists()
         ]);
     }
 
@@ -74,7 +69,7 @@ class PlayerController extends Controller
 
     protected function findActive($id)
     {
-        if (($model = QuizTemp::findOne(['quiz_id' => $id, 'active' => 1])) !== null) {
+        if (($model = QuizTemp::findOne(['id' => $id, 'active' => 1])) !== null) {
             return $model;
         }
 
