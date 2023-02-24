@@ -31,6 +31,7 @@ if ($model && !$isNewRecord) {
       title: '<?= __('Quiz') ?>',
       isNewRecord: <?= $isNewRecord ?>,
       config: <?= json_encode($config) ?>,
+      tempId: null,
     },
     mounted() {},
     methods: {
@@ -71,8 +72,35 @@ if ($model && !$isNewRecord) {
           }
         });
       },
-      runQuiz: function() {
-        alert('Running a quiz');
+      addCompetitor: function() {
+        const self = this;
+        const competitor = $('#quiz-competitor').val();
+        if (competitor) {
+          $.post(`<?= Url::to(['quiz-temp/add-competitor']) ?>?id=${self.tempId}`, {
+              quiz_id: <?= $id ?>,
+              competitor_id: competitor
+            },
+            function(data) {
+              successNotification();
+              window.location.reload();
+            }).fail((err) => errorNotification(err.responseJSON.message));
+        }
+      },
+      removeCompetitor: function(id) {
+        const self = this;
+        Swal.fire(SWAL_DELETE_OPTIONS).then((result) => {
+          if (result.isConfirmed) {
+            $.post(`<?= Url::to(['quiz-temp/delete-competitor']) ?>?id=${id}`, {},
+              function(data) {
+                successNotification();
+                window.location.reload();
+              }).fail((err) => errorNotification(err.responseJSON.message));
+          }
+        });
+      },
+      toggleModal: function(id) {
+        this.tempId = id;
+        $('#competitorsModal').modal('show');
       }
     },
     computed: {},

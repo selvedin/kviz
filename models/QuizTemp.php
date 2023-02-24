@@ -43,6 +43,23 @@ class QuizTemp extends BaseModel
         return $this->hasOne(Quiz::class, ['id' => 'quiz_id']);
     }
 
+    public function getUserResults()
+    {
+        return $this->hasMany(QuizResults::class, ['temp_id' => 'id']);
+    }
+
+    public function getCompetitors()
+    {
+        return $this->hasMany(QuizCompetitors::class, ['temp_id' => 'id']);
+    }
+
+    public function getCompetitorsJson()
+    {
+        $data = [];
+        foreach ($this->competitors as $comp) $data[] = ['id' => $comp->id, 'competitor' => $comp->user->name];
+        return $data;
+    }
+
     public function processResults($id = 0)
     {
         $id = $id ? $id : Yii::$app->user->id;
@@ -126,10 +143,10 @@ class QuizTemp extends BaseModel
         return implode("\n", $data);
     }
 
-    public static function addQuiz($id, $quiz)
+    public static function addQuiz($id, $quiz, $cache = true)
     {
-        $model = self::find()->where("quiz_id=$id AND active=1")->one();
-        if ($model) $model->quiz = $quiz;
+        if ($cache) $model = self::find()->where("quiz_id=$id AND active=1")->one();
+        if (isset($model)) $model->quiz = $quiz;
         else $model = new QuizTemp(['quiz_id' => $id, 'quiz' => $quiz, 'active' => 0]);
         $model->save();
         return $model->id;

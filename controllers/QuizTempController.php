@@ -4,11 +4,13 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Perms;
+use app\models\QuizCompetitors;
 use app\models\QuizTemp;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\HttpException;
+use yii\web\Response;
 
 /**
  * QuizTempController implements the CRUD actions for QuizTemp model.
@@ -27,6 +29,8 @@ class QuizTempController extends Controller
                     'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
+                        'add-competitor' => ['POST'],
+                        'delete-competitor' => ['POST'],
                     ],
                 ],
             ]
@@ -48,6 +52,29 @@ class QuizTempController extends Controller
         return $this->render('pdf', ['model' => $model]);
     }
 
+    public function actionAddCompetitor($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModel($id);
+        if ($this->request->isPost) {
+            $data = $this->request->post();
+            $model = new QuizCompetitors([
+                'quiz_id' => $data['quiz_id'],
+                'temp_id' => $id,
+                'competitor_id' => $data['competitor_id']
+            ]);
+            if (!$model->save()) throw new HttpException(500, json_encode($model->errors));
+        }
+        return [];
+    }
+
+    public function actionDeleteCompetitor($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = QuizCompetitors::findOne($id);
+        if ($model) $model->delete();
+        return [];
+    }
     /**
      * Deletes an existing QuizTemp model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

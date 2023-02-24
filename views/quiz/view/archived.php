@@ -1,17 +1,16 @@
 <?php
 
-use app\helpers\Buttons;
 use yii\bootstrap5\Html;
 
-if ($perms->canView('ActiveQuiz')) :
+if ($perms->canView('ArchivedQuiz')) :
 ?>
   <div class='col-12'>
     <div class="card h-100">
-      <div class="card-header bg-primary d-flex justify-content-between">
+      <div class="card-header bg-secondary d-flex justify-content-between">
         <div class="card-title mb-0">
           <h5 class="mb-0 text-white">
-            <i class="fas fa-rocket"></i>
-            <?= __('Active Quizes') ?>
+            <i class="fas fa-archive"></i>
+            <?= __('Archived Quizes') ?>
           </h5>
           <small class="text-muted"></small>
         </div>
@@ -30,9 +29,9 @@ if ($perms->canView('ActiveQuiz')) :
                   </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
-                  <?php foreach ($model->active as $k => $active) {
+                  <?php foreach ($model->archived as $k => $archived) {
                     $competitors = "";
-                    foreach ($active->competitors as $c) {
+                    foreach ($archived->competitors as $c) {
                       $competitors .= Html::a(
                         Html::tag('span', $c->user->name, ['class' => 'ms-auto']),
                         'javascript:void(0)',
@@ -44,20 +43,15 @@ if ($perms->canView('ActiveQuiz')) :
                     echo Html::tag(
                       'tr',
                       Html::tag('td', $k + 1 . '.') .
-                        Html::tag('td', $active->quizObject->num_of_questions)
+                        Html::tag('td', $archived->quizObject->num_of_questions)
                         . Html::tag('td', $competitors)
                         . Html::tag(
                           'td',
-                          __isUser(Buttons::Pdf($active->id, 'quiz-temp')) .
-                            (count($active->userResults) ? Html::a(
-                              __('Archive'),
-                              ['quiz/activate', 'id' => $active->id, 'active' => 2],
-                              ['class' => 'btn btn-sm btn-outline-secondary rounded-pill ms-2']
-                            ) : Html::a(
-                              __('Deactive'),
-                              ['quiz/activate', 'id' => $active->id, 'active' => 0],
-                              ['class' => 'btn btn-sm btn-outline-primary rounded-pill']
-                            )),
+                          Html::a(
+                            __('Summary'),
+                            ['quiz-temp/summary', 'id' => $archived->id],
+                            ['class' => 'btn btn-sm btn-outline-info rounded-pill']
+                          ),
                           ['class' => 'text-end']
                         )
                     );

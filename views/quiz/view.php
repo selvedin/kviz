@@ -21,7 +21,7 @@ $perms = new Perms();
             __isUser(Buttons::Update('id', $model->id)),
             Buttons::Create(),
             __isUser(Buttons::customButton(
-                Icons::faIcon('rocket me-2') .  __('Run'),
+                Icons::faIcon('blender me-2') .  __('Prepare'),
                 ['quiz/prepare', 'id' => $model->id],
                 [],
                 'btn btn-sm rounded-pill mx-1 text-white btn-warning'
@@ -64,12 +64,14 @@ $perms = new Perms();
         </div>
 
         <?php require_once('view/config.php'); ?>
-        <?php require_once('view/active.php'); ?>
         <?php require_once('view/pending.php'); ?>
+        <?php require_once('view/active.php'); ?>
+        <?php require_once('view/archived.php'); ?>
         <?php
         //TODO - fix history
         //require_once('view/history.php'); 
         ?>
     </div>
     <?= CardView::end(); ?>
+    <?php require_once('view/competitorModal.php'); ?>
 </div>

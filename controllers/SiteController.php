@@ -76,7 +76,12 @@ class SiteController extends Controller
 
     public function actionHome()
     {
-        $active = QuizTemp::find()->where(['active' => 1])->select(['id', 'quiz_id'])->all();
+        $id = Yii::$app->user->id;
+        $active = [];
+        if ($id) {
+            $where = "active =1 AND id IN (SELECT temp_id from quiz_competitors where competitor_id=$id)";
+            $active = QuizTemp::find()->where($where)->select(['id', 'quiz_id'])->all();
+        }
         return $this->render('index', ['quizes' => $active]);
     }
 

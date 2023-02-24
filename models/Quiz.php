@@ -66,6 +66,11 @@ class Quiz extends BaseModel
         return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=1");
     }
 
+    public function getArchived()
+    {
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=2");
+    }
+
     public function getGradeLabel()
     {
         return $this->hasOne(Grade::class, ['id' => 'grade']);
@@ -99,11 +104,11 @@ class Quiz extends BaseModel
         return $this->level ? Question::Levels()[$this->level] : null;
     }
 
-    public function generateQuestions()
+    public function generateQuestions($cache = true)
     {
         $questions = [];
-        $existing = QuizTemp::getEmptyById($this->id);
-        if ($existing) return ['id' => $existing->id, 'questions' => unserialize($existing->quiz)];
+        if ($cache) $existing = QuizTemp::getEmptyById($this->id);
+        if (isset($existing)) return ['id' => $existing->id, 'questions' => unserialize($existing->quiz)];
         if (!count($this->config))
             $questions = Question::generateGuestions("status = 1", $this->num_of_questions);
         else
@@ -112,7 +117,7 @@ class Quiz extends BaseModel
                 $questions = Question::generateGuestions($this->createWhere($conf), $limit);
             }
         shuffle($questions);
-        $tempId = QuizTemp::addQuiz($this->id, serialize($questions));
+        $tempId = QuizTemp::addQuiz($this->id, serialize($questions), $cache);
         return ['id' => $tempId, 'questions' => $questions];
     }
 

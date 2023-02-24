@@ -17,7 +17,10 @@ class QuizCompetitorsSearch extends QuizCompetitors
     public function rules()
     {
         return [
-            [['id', 'quiz_id', 'competitor_id', 'team_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [[
+                'id', 'quiz_id', 'temp_id', 'competitor_id', 'team_id',
+                'created_at', 'created_by', 'updated_at', 'updated_by'
+            ], 'integer'],
         ];
     }
 
@@ -59,6 +62,7 @@ class QuizCompetitorsSearch extends QuizCompetitors
         $query->andFilterWhere([
             'id' => $this->id,
             'quiz_id' => $this->quiz_id,
+            'temp_id' => $this->temp_id,
             'competitor_id' => $this->competitor_id,
             'team_id' => $this->team_id,
             'created_at' => $this->created_at,
