@@ -67,7 +67,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     <?= ToastAlert::widget() ?>
     <?php require_once('imageModal.php') ?>
     <?php require_once('imageModal.php') ?>
-    <?= Yii::$app->user->isGuest ? null : Html::tag('script', '', ['src' => "worker/worker.js"]); ?>
+    <?= Yii::$app->user->isGuest ? null : Html::tag('script', '', ['src' => Yii::$app->request->baseUrl . "/worker/worker.js"]); ?>
 </body>
 
 </html>
