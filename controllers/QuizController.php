@@ -102,7 +102,7 @@ class QuizController extends Controller
     {
         $model = $this->findModel($id);
         $perms = new Perms();
-        if (!$perms->canUpdate('Quiz') || $this->isPrivate($model->created_by))
+        if (!$perms->canUpdate('Quiz') || $model->isPrivate())
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
 
         if ($this->request->isPost) $this->saveModel($model, $this->request->post());
@@ -171,7 +171,7 @@ class QuizController extends Controller
     {
         $model = $this->findModel($id);
         $perms = new Perms();
-        if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
+        if (!$perms->canDelete('Quiz') || $model->isPrivate())
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model->delete();
 
@@ -184,7 +184,7 @@ class QuizController extends Controller
         $model = QuizConfig::findOne($id);
         $quiz = Quiz::findOne($model->quiz_id);
         $perms = new Perms();
-        if (!$perms->canDelete('Quiz') || $this->isPrivate($model->created_by))
+        if (!$perms->canDelete('Quiz') || $model->isPrivate())
             throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model->delete();
         $quiz->save();
@@ -202,7 +202,8 @@ class QuizController extends Controller
         $perms = new Perms();
         if (!$perms->canView('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model = $this->findModel($id);
-        $data = $model->generateQuestions();
+        $data = []; //$model->generateQuestions();
+        //TODO - fix this part of printing pdf for the quiz
         return $this->render('pdf', ['model' => $model, 'questions' => $data['questions']]);
     }
 
@@ -275,12 +276,5 @@ class QuizController extends Controller
         }
 
         throw new NotFoundHttpException(__('The requested page does not exist.'));
-    }
-
-    private function isPrivate($creator)
-    {
-        if (Yii::$app->user->identity->role->private)
-            if ($creator != Yii::$app->user->id) return true;
-        return false;
     }
 }

@@ -26,7 +26,6 @@ $perms = new Perms();
                 [],
                 'btn btn-sm rounded-pill mx-1 text-white btn-warning'
             )),
-            __isUser(Buttons::Pdf($model->id)),
         ],
     ]) ?>
     <br />
@@ -67,7 +66,10 @@ $perms = new Perms();
         <?php require_once('view/config.php'); ?>
         <?php require_once('view/active.php'); ?>
         <?php require_once('view/pending.php'); ?>
-        <?php require_once('view/history.php'); ?>
+        <?php
+        //TODO - fix history
+        //require_once('view/history.php'); 
+        ?>
     </div>
     <?= CardView::end(); ?>
 </div>

@@ -17,7 +17,8 @@ class QuizResultsSearch extends QuizResults
     public function rules()
     {
         return [
-            [['id', 'quiz_id', 'question_id', 'competitor_id', 'answer_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['id', 'quiz_id', 'question_id', 'temp_id', 'answer_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['results'], 'safe'],
         ];
     }
 
@@ -59,14 +60,14 @@ class QuizResultsSearch extends QuizResults
         $query->andFilterWhere([
             'id' => $this->id,
             'quiz_id' => $this->quiz_id,
-            'question_id' => $this->question_id,
+            'temp_id' => $this->question_id,
             'competitor_id' => $this->competitor_id,
-            'answer_id' => $this->answer_id,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
         ]);
+        $query->andFilterWhere(['like', 'results', $this->results]);
 
         return $dataProvider;
     }

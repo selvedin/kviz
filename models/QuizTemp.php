@@ -151,4 +151,22 @@ class QuizTemp extends BaseModel
             if ($result['question'] == $id) return $result;
         return null;
     }
+
+    /** After record is saved
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        if ($this->results) {
+            $model = QuizResults::find()->where(['quiz_id' => $this->quiz_id, 'temp_id' => $this->id, 'competitor_id' => Yii::$app->user->id])->one();
+            if (!$model)
+                $model = new QuizResults([
+                    'quiz_id' => $this->quiz_id,
+                    'temp_id' => $this->id,
+                    'competitor_id' => Yii::$app->user->id
+                ]);
+            $model->results = $this->results;
+            $model->save();
+        }
+    }
 }

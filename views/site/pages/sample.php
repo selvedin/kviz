@@ -20,7 +20,7 @@ use yii\bootstrap5\Html;
               </div>
               <div class="col-lg-7 col-md-9 col-12 order-2 order-md-1">
                 <h6 class="text-white mt-0 mt-md-3 mb-3">
-                  <?= Html::a('Pokusaj odmah', ['player/view', 'id' => $quiz->quizObject->id, 'test' => 1], ['class' => 'text-white']) ?>
+                  <?= Html::a('Pokusaj odmah', ['player/view', 'id' => $quiz->quizObject->id], ['class' => 'text-white']) ?>
                 </h6>
                 <div class="row">
                   <div class="col-6">

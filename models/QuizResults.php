@@ -9,9 +9,9 @@ use Yii;
  *
  * @property int $id
  * @property int $quiz_id
- * @property int $question_id
+ * @property int $temp_id
  * @property int $competitor_id
- * @property int $answer_id
+ * @property string $results
  * @property int|null $created_at
  * @property int|null $created_by
  * @property int|null $updated_at
@@ -33,26 +33,9 @@ class QuizResults extends BaseModel
     public function rules()
     {
         return [
-            [['quiz_id', 'question_id', 'competitor_id', 'answer_id'], 'required'],
-            [['quiz_id', 'question_id', 'competitor_id', 'answer_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'quiz_id' => 'Quiz ID',
-            'question_id' => 'Question ID',
-            'competitor_id' => 'Competitor ID',
-            'answer_id' => 'Answer ID',
-            'created_at' => 'Created At',
-            'created_by' => 'Created By',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
+            [['quiz_id', 'temp_id', 'competitor_id', 'results'], 'required'],
+            [['quiz_id', 'temp_id', 'competitor_id', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['results'], 'string'],
         ];
     }
 }

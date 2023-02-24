@@ -98,7 +98,8 @@ $tempId = (int)$data['id']
           self.results = self.results.filter(res => res.question != self
             .question.id);
         } else if (self.question.question_type == 3) { // MULTI
-          //TODO - nesto ne kupi rezultate, provjeriti
+          //TODO - nesto ne kupi rezultate - kad je kratko vrijeme - brzo se odgovara
+          // vidjeti da se ne moze proci dalje kad se klikne dok se ne ubiljeze rezultati
           const existingIndex = self.results.findIndex(res => res
             .question == self.question.id && res.answer == answer);
           if (existingIndex > -1) {

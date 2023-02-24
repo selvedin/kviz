@@ -1,5 +1,6 @@
 <?php
 
+use app\helpers\Buttons;
 use yii\bootstrap5\Html;
 
 if ($perms->canView('ActiveQuiz')) :
@@ -35,11 +36,21 @@ if ($perms->canView('ActiveQuiz')) :
                         Html::tag('td', $pending->quizObject->num_of_questions)
                         . Html::tag(
                           'td',
-                          Html::a(
-                            $pending->active ? __('Deactive') : __('Activate'),
-                            ['quiz/activate', 'id' => $pending->id, 'active' => $pending->active ? 0 : 1],
-                            ['class' => 'btn btn-sm btn-outline-primary rounded-pill']
-                          ),
+                          __isUser(Buttons::Pdf($pending->id, 'quiz-temp')) .
+                            Html::a(
+                              $pending->active ? __('Deactive') : __('Activate'),
+                              ['quiz/activate', 'id' => $pending->id, 'active' => $pending->active ? 0 : 1],
+                              ['class' => 'btn btn-sm btn-outline-primary rounded-pill']
+                            )
+                            . Html::a(
+                              __('Delete'),
+                              ['quiz-temp/delete', 'id' => $pending->id],
+                              [
+                                'class' => 'btn btn-sm btn-outline-danger rounded-pill ms-2',
+                                'data-method' => 'POST',
+                                'data-confirm' => __('Are You sure')
+                              ]
+                            ),
                           ['class' => 'text-end']
                         )
                     );
