@@ -186,6 +186,16 @@ class QuizTemp extends BaseModel
         return null;
     }
 
+    public function isPlayed()
+    {
+        if (Yii::$app->user->isGuest) return false;
+        return QuizResults::find()->where([
+            'quiz_id' => $this->quiz_id,
+            'temp_id' => $this->id,
+            'competitor_id' => Yii::$app->user->id
+        ])->exists();
+    }
+
     /** After record is saved
      */
     public function afterSave($insert, $changedAttributes)

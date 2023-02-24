@@ -10,11 +10,7 @@ $model = $id ? QuizTemp::findOne($id) : null;
 $allQuestions = unserialize($model->quiz);
 $tempId = $id;
 $seconds = isset($_GET['test']) ? 10 : 60;
-$didPlay = QuizResults::find()->where([
-  'quiz_id' => $model->quiz_id,
-  'temp_id' => $id,
-  'competitor_id' => Yii::$app->user->id
-])->exists();
+$didPlay = $model->isPlayed();
 
 ?>
 <script>
@@ -64,6 +60,7 @@ $didPlay = QuizResults::find()->where([
         this.isPlaying = false;
         this.showResults = false;
         $('#stopwatch').hide();
+        window.location = '<?= Url::to(['site/home']) ?>'
       },
       startQuestion: function() {
         const self = this;

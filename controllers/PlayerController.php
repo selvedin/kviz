@@ -51,6 +51,19 @@ class PlayerController extends Controller
         ]);
     }
 
+    public function actionResults($id)
+    {
+        if (Yii::$app->user->isGuest) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $model =  $this->findActive($id);
+        return $this->render('results', [
+            'results' => QuizResults::find()->where([
+                'quiz_id' => $model->quiz_id,
+                'temp_id' => $model->id,
+                'competitor_id' => Yii::$app->user->isGuest ? 0 : Yii::$app->user->id
+            ])->one()
+        ]);
+    }
+
     /**
      * Finds the Quiz model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
