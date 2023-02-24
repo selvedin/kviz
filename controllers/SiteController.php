@@ -85,6 +85,16 @@ class SiteController extends Controller
         return $this->render('index', ['quizes' => $active]);
     }
 
+    public function actionCheckStatus($last)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $id = Yii::$app->user->id;
+        $where = "active =1 AND id IN (SELECT temp_id from quiz_competitors where competitor_id=$id) AND updated_at > $last";
+        $active = QuizTemp::find()->where($where)->select(['id', 'quiz_id'])->exists();
+
+        return ['lastCheck' => time(), 'hasNewQuiz' => $active];
+    }
+
     /**
      * Login action.
      *

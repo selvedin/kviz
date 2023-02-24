@@ -42,18 +42,18 @@ $hasError = count($errors) ? $errors[0] : null;
 
                 <div class="mb-3">
                     <label for="email" class="form-label"><?= __('Username') ?></label>
-                    <input type="text" class="form-control" id="email" name="LoginForm[username]" placeholder="<?= __('Enter your username') ?>" autofocus />
+                    <input type="text" class="form-control" id="email" tabindex="1" name="LoginForm[username]" placeholder="<?= __('Enter your username') ?>" autofocus />
                 </div>
 
                 <div class="mb-3 form-password-toggle">
                     <div class="d-flex justify-content-between">
                         <label class="form-label" for="password"><?= __('Password') ?></label>
-                        <a href="<?= Url::to(['site/request-password-reset']) ?>">
+                        <a href="<?= Url::to(['site/request-password-reset']) ?>" tabindex="3">
                             <small><?= __('Forgot Password') ?></small>
                         </a>
                     </div>
                     <div class="input-group input-group-merge">
-                        <input type="password" id="password" class="form-control" name="LoginForm[password]" placeholder="******" aria-describedby="password" />
+                        <input type="password" id="password" tabindex="2" class="form-control" name="LoginForm[password]" placeholder="******" aria-describedby="password" />
                         <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                     </div>
                 </div>
@@ -71,7 +71,7 @@ $hasError = count($errors) ? $errors[0] : null;
 
                 <p class="text-center mt-4">
                     <span>Još nemate račun?</span>
-                    <a href="<?= Url::to(['site/signup']) ?>">
+                    <a href="<?= Url::to(['site/signup']) ?>" tabindex="4">
                         <span>Napravite račun</span>
                     </a>
                 </p>
