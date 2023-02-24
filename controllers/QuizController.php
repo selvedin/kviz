@@ -252,14 +252,11 @@ class QuizController extends Controller
         return $data;
     }
 
-    private function addResult($id, $d)
+    public function actionGetUserSummary($id)
     {
-        $result = new QuizResults();
-        $result->quiz_id = $id;
-        $result->question_id = (int)$d['question'];
-        $result->competitor_id = Yii::$app->user->id;
-        $result->answer_id = (int)$d['answer'];
-        $result->save();
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = QuizResults::findOne($id);
+        return $model ? unserialize($model->summary) : [];
     }
 
     /**

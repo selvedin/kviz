@@ -42,12 +42,30 @@ if ($perms->canView('ActiveQuiz')) :
                         ]
                       );
                     }
+                    foreach ($active->userResults as $r) {
+                      $totals = unserialize($r->totals);
+                      $totals = $totals['totalCorrect'];
+                      $results .= Html::tag(
+                        'div',
+                        Html::tag(
+                          'h6',
+                          Html::a($r->user->name, 'javascript:void(0)', ['@click' => "getUserSummary($r->id)"]),
+                          ['class' => 'mb-0']
+                        ) .
+                          Html::tag(
+                            'div',
+                            $totals . "/" . $r->quiz->num_of_questions,
+                            ['class' => 'badge rounded bg-label-success']
+                          ),
+                        ['class' => 'd-flex gap-2 align-items-center mx-2']
+                      );
+                    }
                     echo Html::tag(
                       'tr',
                       Html::tag('td', $k + 1 . '.') .
                         Html::tag('td', $active->quizObject->num_of_questions)
                         . Html::tag('td', $competitors)
-                        . Html::tag('td', $results)
+                        . Html::tag('td', $results, ['class' => 'd-flex'])
                         . Html::tag(
                           'td',
                           __isUser(Buttons::Pdf($active->id, 'quiz-temp')) .
