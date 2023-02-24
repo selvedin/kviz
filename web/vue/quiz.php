@@ -32,6 +32,7 @@ if ($model && !$isNewRecord) {
       isNewRecord: <?= $isNewRecord ?>,
       config: <?= json_encode($config) ?>,
       tempId: null,
+      userSummary: []
     },
     mounted() {},
     methods: {
@@ -101,6 +102,13 @@ if ($model && !$isNewRecord) {
       toggleModal: function(id) {
         this.tempId = id;
         $('#competitorsModal').modal('show');
+      },
+      getUserSummary: function(id) {
+        const self = this;
+        $.get(`<?= Url::to(['quiz/get-user-summary']) ?>?id=${id}`, function(data) {
+          self.userSummary = data;
+          $('#summaryModal').modal('show');
+        }).fail(error => toastr.error(error.message))
       }
     },
     computed: {},

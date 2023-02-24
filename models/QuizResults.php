@@ -42,6 +42,16 @@ class QuizResults extends BaseModel
         ];
     }
 
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'competitor_id']);
+    }
+
+    public function getQuiz()
+    {
+        return $this->hasOne(Quiz::class, ['id' => 'quiz_id']);
+    }
+
     public static function add($quiz, $summary, $totals)
     {
         if ($quiz->results) {

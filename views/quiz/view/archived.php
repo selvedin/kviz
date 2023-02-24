@@ -25,12 +25,12 @@ if ($perms->canView('ArchivedQuiz')) :
                     <th style="width:5%;">#</th>
                     <th style="width:10%;"><?= __('Num of questions') ?></th>
                     <th><?= __('Competitors') ?></th>
-                    <th style="width:20%;"></th>
+                    <th><?= __('Results') ?></th>
                   </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
                   <?php foreach ($model->archived as $k => $archived) {
-                    $competitors = "";
+                    $competitors = $results = "";
                     foreach ($archived->competitors as $c) {
                       $competitors .= Html::a(
                         Html::tag('span', $c->user->name, ['class' => 'ms-auto']),
@@ -40,20 +40,34 @@ if ($perms->canView('ArchivedQuiz')) :
                         ]
                       );
                     }
+                    foreach ($archived->userResults as $r) {
+                      $totals = unserialize($r->totals);
+                      $totals = $totals['totalCorrect'];
+                      $results .= Html::tag(
+                        'div',
+                        Html::tag(
+                          'h6',
+                          Html::a(
+                            $r->user->name,
+                            'javascript:void(0)',
+                            ['@click' => "getUserSummary($r->id)"]
+                          ),
+                          ['class' => 'mb-0']
+                        )
+                          . Html::tag(
+                            'div',
+                            $totals . "/" . $r->quiz->num_of_questions,
+                            ['class' => 'badge rounded bg-label-success']
+                          ),
+                        ['class' => 'd-flex gap-2 align-items-center mx-2']
+                      );
+                    }
                     echo Html::tag(
                       'tr',
                       Html::tag('td', $k + 1 . '.') .
                         Html::tag('td', $archived->quizObject->num_of_questions)
                         . Html::tag('td', $competitors)
-                        . Html::tag(
-                          'td',
-                          Html::a(
-                            __('Summary'),
-                            ['quiz-temp/summary', 'id' => $archived->id],
-                            ['class' => 'btn btn-sm btn-outline-info rounded-pill']
-                          ),
-                          ['class' => 'text-end']
-                        )
+                        . Html::tag('td', $results, ['class' => 'd-flex'])
                     );
                   }
                   ?>

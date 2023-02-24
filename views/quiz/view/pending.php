@@ -4,14 +4,7 @@ use app\helpers\Buttons;
 use app\helpers\Icons;
 use yii\bootstrap5\Html;
 
-$badge = Html::tag(
-  'span',
-  Html::tag('i', '', ['class' => 'fas fa-times']),
-  [
-    'class' => 'badge badge-center rounded-pill bg-danger ms-4',
-    'style' => 'margin-right:-15px;'
-  ]
-);
+$badge = __badge();
 if ($perms->canView('ActiveQuiz')) :
 ?>
   <div class='col-12'>

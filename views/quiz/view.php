@@ -4,6 +4,7 @@ use app\helpers\Buttons;
 use app\helpers\Icons;
 use app\models\Perms;
 use app\widgets\CardView;
+use yii\bootstrap5\Html;
 
 /** @var yii\web\View $this */
 /** @var app\models\Question $model */
@@ -67,11 +68,23 @@ $perms = new Perms();
         <?php require_once('view/pending.php'); ?>
         <?php require_once('view/active.php'); ?>
         <?php require_once('view/archived.php'); ?>
-        <?php
-        //TODO - fix history
-        //require_once('view/history.php'); 
-        ?>
+
     </div>
     <?= CardView::end(); ?>
     <?php require_once('view/competitorModal.php'); ?>
+    <?php require_once('view/summaryModal.php'); ?>
 </div>
+<?php
+function __badge($text = null)
+{
+    $text = $text ? $text : Html::tag('i', '', ['class' => 'fas fa-times']);
+    return Html::tag(
+        'span',
+        $text,
+        [
+            'class' => 'badge badge-center rounded-pill bg-danger ms-4',
+            'style' => 'margin-right:-15px;'
+        ]
+    );
+}
+?>
