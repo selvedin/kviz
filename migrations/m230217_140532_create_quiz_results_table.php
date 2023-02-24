@@ -18,6 +18,8 @@ class m230217_140532_create_quiz_results_table extends Migration
             'temp_id' => $this->integer(11)->notNull(),
             'competitor_id' => $this->integer(11)->notNull(),
             'results' => $this->string(),
+            'summary' => $this->string(),
+            'totals' => $this->string(),
             'created_at' => $this->integer(11),
             'created_by' => $this->integer(11)->unsigned(),
             'updated_at' => $this->integer(11),

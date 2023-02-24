@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\helpers\CacheHelper;
 use Yii;
 
 /**
@@ -62,40 +63,56 @@ class QuizTemp extends BaseModel
 
     public function processResults($id = 0)
     {
-        $id = $id ? $id : Yii::$app->user->id;
-        $final = [];
-        $temp = unserialize($this->results);
-        $results = unserialize($temp[$id]);
-        $results = $results['results'];
-        $processed = [];
-        $num = 1;
-        $totalCorrect = 0;
-        foreach ($results as $result) {
-            $question = Question::findOne($result['question']);
-            if (in_array($question->id, $processed)) continue;
-            if ($question->question_type == 3) {
-                $processed[] = $question->id;
-                $answer = $this->getOptions($question->id, $results);
-            } else if ($question->question_type == 4) {
-                $processed[] = $question->id;
-                $answer = $this->getPairs($question->id, $results);
-            } else
-                $answer = $this->resolveAnswer($question, $result);
-            $options = $this->resolveOptions($question);
-            $correct = $this->resolveCorrect($question);
-            $isCorrect = $answer == $correct;
-            if ($isCorrect) $totalCorrect++;
-            $final[] = [
-                'id' => $question->id,
-                'title' => $question->content,
-                'options' => $options,
-                'correct' => $correct,
-                'answer' => $answer,
-                'isCorrect' => $isCorrect
-            ];
-            $num++;
+        $CACHE_KEY = "_temp_quiz_results__$this->id" . Yii::$app->user->id;
+        $cache = CacheHelper::get($CACHE_KEY);
+        if ($cache == false) {
+            $id = $id ? $id : Yii::$app->user->id;
+            $final = [];
+            $quiz = unserialize($this->quiz);
+            $results = unserialize($this->results);
+            $results = unserialize($results[$id]);
+            $results = $results['results'];
+            $processed = [];
+            $num = 1;
+            $totalCorrect = 0;
+            foreach ($quiz as $q) {
+                //TODO - if there is no question in results it has no answer - process
+                $question = Question::findOne($q['id']);
+                $result = $this->extractResult($results, $q['id']);
+                if (in_array($question->id, $processed)) continue;
+                if ($question->question_type == 3) {
+                    $processed[] = $question->id;
+                    $answer = $this->getOptions($question->id, $results);
+                } else if ($question->question_type == 4) {
+                    $processed[] = $question->id;
+                    $answer = $this->getPairs($question->id, $results);
+                } else
+                    $answer = $this->resolveAnswer($question, $result);
+                $options = $this->resolveOptions($question);
+                $correct = $this->resolveCorrect($question);
+                $isCorrect = $answer == $correct;
+                if ($isCorrect) $totalCorrect++;
+                $final[] = [
+                    'id' => $question->id,
+                    'title' => $question->content,
+                    'options' => $options,
+                    'correct' => $correct,
+                    'answer' => $answer,
+                    'isCorrect' => $isCorrect
+                ];
+                $num++;
+            }
+            QuizResults::add($this, $final, $totalCorrect);
+            $cache = ['items' => $final, 'totalCorrect' => $totalCorrect];
+            CacheHelper::set($CACHE_KEY, $cache);
         }
-        return ['items' => $final, 'totalCorrect' => $totalCorrect];
+        return $cache;
+    }
+
+    private function extractResult($results, $q)
+    {
+        foreach ($results as $result) if ($result['question'] == $q) return $result;
+        return null;
     }
 
     private function resolveOptions(Question $question)
@@ -117,9 +134,9 @@ class QuizTemp extends BaseModel
     private function resolveAnswer(Question $question, $data)
     {
         $qt = $question->question_type;
-        if ($qt == 1) return $data['answer'] ? __('True') : __('False');
-        if ($qt == 2) return Options::findOne($data['answer'])->content;
-        if ($qt == 5) return $data['answer'];
+        if ($qt == 1) return isset($data['answer']) ? ($data['answer'] ? __('True') : __('False')) : __("No Answer");
+        if ($qt == 2) return isset($data['answer']) ? Options::findOne($data['answer'])->content : __("No Answer");
+        if ($qt == 5) return isset($data['answer']) ? $data['answer'] : __("No Answer");
         return null;
     }
 
@@ -174,16 +191,5 @@ class QuizTemp extends BaseModel
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-        if ($this->results) {
-            $model = QuizResults::find()->where(['quiz_id' => $this->quiz_id, 'temp_id' => $this->id, 'competitor_id' => Yii::$app->user->id])->one();
-            if (!$model)
-                $model = new QuizResults([
-                    'quiz_id' => $this->quiz_id,
-                    'temp_id' => $this->id,
-                    'competitor_id' => Yii::$app->user->id
-                ]);
-            $model->results = $this->results;
-            $model->save();
-        }
     }
 }

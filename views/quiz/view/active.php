@@ -26,12 +26,13 @@ if ($perms->canView('ActiveQuiz')) :
                     <th style="width:5%;">#</th>
                     <th style="width:10%;"><?= __('Num of questions') ?></th>
                     <th><?= __('Competitors') ?></th>
+                    <th><?= __('Results') ?></th>
                     <th style="width:20%;"></th>
                   </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
                   <?php foreach ($model->active as $k => $active) {
-                    $competitors = "";
+                    $competitors = $results = "";
                     foreach ($active->competitors as $c) {
                       $competitors .= Html::a(
                         Html::tag('span', $c->user->name, ['class' => 'ms-auto']),
@@ -46,6 +47,7 @@ if ($perms->canView('ActiveQuiz')) :
                       Html::tag('td', $k + 1 . '.') .
                         Html::tag('td', $active->quizObject->num_of_questions)
                         . Html::tag('td', $competitors)
+                        . Html::tag('td', $results)
                         . Html::tag(
                           'td',
                           __isUser(Buttons::Pdf($active->id, 'quiz-temp')) .

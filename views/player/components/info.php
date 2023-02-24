@@ -1,7 +1,7 @@
 <?php
 $style = 'style="font-size:1.5rem;font-weight:bold;"';
 ?>
-<button type='button' :disabled="!questions.length" @click='runQuiz()' :class="[classObject, 'btn-quiz-active']">
+<button type='button' :disabled="!questions.length || didPlay" @click='runQuiz()' :class="[classObject, 'btn-quiz-active']">
   <strong><?= $model->title ?></strong><br />
   <small><?= __('Run quiz') ?></small>
 </button>

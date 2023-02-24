@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Quiz;
+use app\models\QuizResults;
 use app\models\QuizTemp;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -41,19 +42,17 @@ class PlayerController extends Controller
      */
     public function actionView($id)
     {
-        if (Yii::$app->user->isGuest)
-            throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        if (Yii::$app->user->isGuest) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
         $model =  $this->findActive($id);
-        // $data = $model->generateQuestions();
-        // if (!isset($data['questions']))
-        //     Yii::$app->session->setFlash(
-        //         'error',
-        //         __('There are no questions satisfying the quiz criteria. The question has to be in an Active state to be ready for the quiz.')
-        //     );
         return $this->render('view', [
             'id' => $model->id,
             'model' => $model->quizObject,
-            'questions' => unserialize($model->quiz)
+            'questions' => unserialize($model->quiz),
+            'didPlay' => QuizResults::find()->where([
+                'quiz_id' => $model->quiz_id,
+                'temp_id' => $id,
+                'competitor_id' => Yii::$app->user->id
+            ])->exists()
         ]);
     }
 

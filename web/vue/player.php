@@ -15,7 +15,7 @@ if ($model && !$isNewRecord) {
 }
 $data = $model->generateQuestions();
 $allQuestions = $data['questions'];
-$tempId = (int)$data['id']
+$tempId = (int)$data['id'];
 ?>
 <script>
   //VUE APP
@@ -46,6 +46,7 @@ $tempId = (int)$data['id']
       canAnswer: false,
       lastAdded: null,
       isLastRight: false,
+      didPlay: false,
     },
     mounted() {
       $('#stopwatch').hide();

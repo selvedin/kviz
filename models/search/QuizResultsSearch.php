@@ -67,7 +67,9 @@ class QuizResultsSearch extends QuizResults
             'updated_at' => $this->updated_at,
             'updated_by' => $this->updated_by,
         ]);
-        $query->andFilterWhere(['like', 'results', $this->results]);
+        $query->andFilterWhere(['like', 'results', $this->results])
+            ->andFilterWhere(['like', 'summary', $this->summary])
+            ->andFilterWhere(['like', 'totals', $this->totals]);
 
         return $dataProvider;
     }
