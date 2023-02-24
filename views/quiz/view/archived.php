@@ -56,7 +56,7 @@ if ($perms->canView('ArchivedQuiz')) :
                         )
                           . Html::tag(
                             'div',
-                            $totals . "/" . $r->quiz->num_of_questions,
+                            $totals . "/" . count(unserialize($archived->quiz)),
                             ['class' => 'badge rounded bg-label-success']
                           ),
                         ['class' => 'd-flex gap-2 align-items-center mx-2']

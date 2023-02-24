@@ -7,16 +7,26 @@ $object = 'places';
 $id = null;
 ?>
 <script>
+  const BASE_URL = '<?= Yii::$app->request->baseUrl ?>/';
   //VUE APP
   const mainApp = new Vue({
     el: '#siteApp',
     data: {
       title: '<?= __('Quiz') ?>',
+      lastCheck: <?= time() ?>,
+      hasNewQuiz: false,
     },
     mounted() {},
     methods: {},
     computed: {},
-    watch: {}
+    watch: {
+      hasNewQuiz: function(val) {
+        if (val) {
+          toastr.info('<?= __('New Quiz ready for You') ?> 🎉');
+          window.location.reload();
+        }
+      }
+    }
   });
 
   function showToast(message) {

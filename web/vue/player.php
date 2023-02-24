@@ -49,6 +49,21 @@ $didPlay = $model->isPlayed();
         .length);
     },
     methods: {
+      saveToLocal: function() {
+        localStorage.setItem(`QUIZ_<?= $id ?>_RESULTS`, JSON.stringify(this.results))
+        localStorage.setItem(`QUIZ_<?= $id ?>_QUESTIONS`, JSON.stringify(this.questions))
+        localStorage.setItem(`QUIZ_<?= $id ?>_QUESTION`, JSON.stringify(this.question))
+      },
+      getFromLocal: function() {
+        localStorage.setItem(`QUIZ_<?= $id ?>_RESULTS`, JSON.stringify(this.results))
+        localStorage.setItem(`QUIZ_<?= $id ?>_QUESTIONS`, JSON.stringify(this.questions))
+        localStorage.setItem(`QUIZ_<?= $id ?>_QUESTION`, JSON.stringify(this.question))
+      },
+      clearLocal: function() {
+        localStorage.removeItem(`QUIZ_<?= $id ?>_RESULTS`);
+        localStorage.removeItem(`QUIZ_<?= $id ?>_QUESTIONS`);
+        localStorage.removeItem(`QUIZ_<?= $id ?>_QUESTION`);
+      },
       runQuiz: function() {
         const elem = document.getElementById("mainApp");
         openFullscreen(elem);
