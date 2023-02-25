@@ -81,7 +81,7 @@ class QuizController extends Controller
     {
         $perms = new Perms();
         if (!$perms->canCreate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        $model = new Quiz(['status' => 0]);
+        $model = new Quiz(['status' => 0, 'quiz_type' => Quiz::TYPE_SELF]);
 
         if ($this->request->isPost) $this->saveModel($model, $this->request->post());
         else $model->loadDefaultValues();

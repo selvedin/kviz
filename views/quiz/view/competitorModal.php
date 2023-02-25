@@ -23,7 +23,7 @@ use yii\bootstrap5\Html;
         <?= Select2::widget([
           'name' => 'QuizCompetitors[competitor_id]',
           'data' => User::list(),
-          'options' =>  ['id' => 'quiz-competitor', 'placeholder' => __('Select a chapter') . '...',],
+          'options' =>  ['id' => 'quiz-competitor', 'placeholder' => __('Select a competitor') . '...',],
           'pluginOptions' => [
             'tags' => true,
             'dropdownParent' => '#competitorsModal'

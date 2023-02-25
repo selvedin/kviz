@@ -19,7 +19,8 @@ class QuizSearch extends Quiz
         return [
             [[
                 'id', 'num_of_questions', 'duration', 'grade', 'level', 'status',
-                'school_id', 'moderator_id', 'created_at', 'created_by', 'updated_at', 'updated_by'
+                'school_id', 'moderator_id', 'created_at', 'created_by', 'updated_at', 'updated_by',
+                'quiz_type', 'activeNum'
             ], 'integer'],
             [['title'], 'safe'],
         ];
@@ -67,6 +68,7 @@ class QuizSearch extends Quiz
             'grade' => $this->grade,
             'level' => $this->level,
             'status' => $this->status,
+            'quiz_type' => $this->quiz_type,
             'school_id' => $this->school_id,
             'moderator_id' => $this->moderator_id,
             'created_at' => $this->created_at,
@@ -76,6 +78,12 @@ class QuizSearch extends Quiz
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title]);
+        if ($this->activeNum != null) {
+            $activeSql = "SELECT quiz_id from quiz_temp where active=1 group by quiz_id having count(*)";
+            $sql = "id  IN ($activeSql=$this->activeNum)";
+            if ($this->activeNum == 0) $sql = "id NOT IN ($activeSql!=0)";
+            $query->andWhere($sql);
+        }
 
         return $dataProvider;
     }

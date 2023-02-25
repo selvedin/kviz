@@ -1,7 +1,7 @@
 <?php
 
 // comment out the following two lines when deployed to production
-if (in_array($_SERVER['SERVER_NAME'], ['localhost', 'delivery.local']) || isset($_GET['log'])) {
+if (in_array($_SERVER['SERVER_NAME'], ['localhost', 'quiz.local']) || isset($_GET['log'])) {
   defined('YII_DEBUG') or define('YII_DEBUG', true);
   defined('YII_ENV') or define('YII_ENV', 'dev');
 } else {

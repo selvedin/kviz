@@ -2,6 +2,7 @@
 
 use app\models\Grade;
 use app\models\Question;
+use app\models\Quiz;
 use app\models\User;
 use app\widgets\CardView;
 use kartik\select2\Select2;
@@ -22,7 +23,7 @@ $content .= Html::tag('div', $form->field($model, 'grade')->widget(
   Select2::class,
   [
     'data' => Grade::list(),
-    'options' => ['placeholder' => __('Select grade')],
+    'options' => ['placeholder' => __('Select a grade')],
     'pluginOptions' => [
       'allowClear' => true
     ],
@@ -32,18 +33,18 @@ $content .= Html::tag('div', $form->field($model, 'level')->widget(
   Select2::class,
   [
     'data' => Question::Levels(),
-    'options' => ['placeholder' => __('Select level')],
+    'options' => ['placeholder' => __('Select a level')],
     'pluginOptions' => [
       'allowClear' => true
     ],
   ]
 ), ['class' => 'col-md-4']);
 
-$content .= Html::tag('div', $form->field($model, 'status')->widget(
+$content .= Html::tag('div', $form->field($model, 'quiz_type')->widget(
   Select2::class,
   [
-    'data' => Question::Statuses(),
-    'options' => ['placeholder' => __('Select status')],
+    'data' => Quiz::getTypes(),
+    'options' => ['placeholder' => __('Select a type')],
     'pluginOptions' => [
       'allowClear' => true
     ],
