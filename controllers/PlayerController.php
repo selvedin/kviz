@@ -43,7 +43,7 @@ class PlayerController extends Controller
     public function actionView($id)
     {
         if (Yii::$app->user->isGuest) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        $model =  $this->findActive($id);
+        $model =  $this->findModel($id);
         return $this->render('view', [
             'id' => $model->id,
             'model' => $model->quizObject,
@@ -54,7 +54,10 @@ class PlayerController extends Controller
     public function actionResults($id)
     {
         if (Yii::$app->user->isGuest) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        $model =  $this->findActive($id);
+        $model =  $this->findModel($id);
+        if (!in_array($model->active, [1, 3]))
+            throw new NotFoundHttpException(__('The requested page does not exist.'));
+
         return $this->render('results', [
             'results' => QuizResults::find()->where([
                 'quiz_id' => $model->quiz_id,
@@ -73,7 +76,7 @@ class PlayerController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Quiz::findOne(['id' => $id])) !== null) {
+        if (($model = QuizTemp::findOne(['id' => $id])) !== null) {
             return $model;
         }
 

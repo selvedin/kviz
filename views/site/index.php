@@ -8,5 +8,5 @@ $this->title = Yii::$app->name;
 <div id="siteApp">
   <?php //require_once('pages/sample.php') 
   ?>
-  <?php require_once('pages/active.php') ?>
+  <?php require_once('pages/quizes.php') ?>
 </div>

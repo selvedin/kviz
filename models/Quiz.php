@@ -29,6 +29,13 @@ class Quiz extends BaseModel
 
     const TYPE_SELF = 1;
     const TYPE_REMOTE = 2;
+
+    const STATUS_PENDING = 0;
+    const STATUS_ACTIVE = 1;
+    const STATUS_STARTED = 2;
+    const STATUS_RUNNING = 3;
+    const STATUS_FINISHED = 9;
+    const STATUS_ARCHIVED = 10;
     /**
      * {@inheritdoc}
      */
@@ -65,17 +72,27 @@ class Quiz extends BaseModel
 
     public function getPending()
     {
-        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=0");
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_PENDING);
     }
 
     public function getActive()
     {
-        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=1");
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_ACTIVE);
+    }
+
+    public function getStarted()
+    {
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_STARTED);
+    }
+
+    public function getRunning()
+    {
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_RUNNING);
     }
 
     public function getArchived()
     {
-        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=2");
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_ARCHIVED);
     }
 
     public function getGradeLabel()

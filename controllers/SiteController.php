@@ -12,6 +12,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\PasswordResetRequestForm;
+use app\models\Quiz;
 use app\models\QuizTemp;
 use app\models\ResendVerificationEmailForm;
 use app\models\ResetPasswordForm;
@@ -79,8 +80,11 @@ class SiteController extends Controller
         $id = Yii::$app->user->id;
         $active = [];
         if ($id) {
-            $where = "active =1 AND id IN (SELECT temp_id from quiz_competitors where competitor_id=$id)";
-            $active = QuizTemp::find()->where($where)->select(['id', 'quiz_id'])->all();
+            $active = "active=" . Quiz::STATUS_ACTIVE;
+            $active .= " OR active=" . Quiz::STATUS_STARTED;
+            $active .= " OR active=" . Quiz::STATUS_RUNNING;
+            $where = "($active) AND id IN (SELECT temp_id from quiz_competitors where competitor_id=$id)";
+            $active = QuizTemp::find()->where($where)->select(['id', 'quiz_id', 'active'])->all();
         }
         return $this->render('index', ['quizes' => $active]);
     }
