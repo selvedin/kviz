@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\CacheHelper;
 use Yii;
 use app\models\Quiz;
 use app\models\QuizResults;
@@ -43,6 +44,7 @@ class PlayerController extends Controller
     public function actionView($id)
     {
         if (Yii::$app->user->isGuest) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        CacheHelper::clearCache(QUIZ_STARTED_CACHE);
         $model =  $this->findModel($id);
         return $this->render('view', [
             'id' => $model->id,

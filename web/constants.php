@@ -14,3 +14,5 @@ define('RICH_TOOLBAR', [
 ]);
 
 define('FONT_SIZES', ['8', '9', '10', '11', '12', '13', '14', '16', '18', '20', '24', '36', '48']);
+
+define('QUIZ_STARTED_CACHE', 'QUIZ_STARTED_CACHE');

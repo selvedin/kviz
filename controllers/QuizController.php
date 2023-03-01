@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\CacheHelper;
 use app\models\Perms;
 use app\models\Quiz;
 use app\models\QuizConfig;
@@ -33,6 +34,7 @@ class QuizController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                         'save-results' => ['POST'],
+                        'start' => ['POST'],
                     ],
                 ],
             ]
@@ -110,6 +112,34 @@ class QuizController extends Controller
         return $this->render('_form', [
             'model' => $model,
         ]);
+    }
+
+    public function actionStart($id, $question)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $perms = new Perms();
+        if (!$perms->canUpdate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
+        if ($cache == false) $cache = [$id => $question];
+        else $cache[$id] = $question;
+        CacheHelper::set(QUIZ_STARTED_CACHE . "_$id", $cache, 60 * 60);
+        return true;
+    }
+
+    public function actionGetStarted()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
+        return $cache ? $cache : [];
+    }
+
+    public function actionStop($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
+        $cache[$id] = 'stopped';
+        CacheHelper::set(QUIZ_STARTED_CACHE . "_$id", $cache, 60 * 60);
     }
 
     private function saveModel($model, $data)

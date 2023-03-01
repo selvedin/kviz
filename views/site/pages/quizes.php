@@ -5,19 +5,6 @@
   use app\models\Quiz;
   use yii\helpers\Url;
 
-  $images = [
-    'card-advance-sale.png',
-    'boy-verify-email-dark.png',
-    'boy-with-laptop-dark.png',
-    'boy-with-rocket-light.png',
-    'girl-unlock-password-light.png',
-    'girl-doing-yoga-light.png',
-    'girl-verify-password-dark.png',
-    'girl-with-laptop.png',
-    'girl-with-laptop-light.png',
-    'page-misc-under-maintenance.png',
-    'auth-forgot-password-illustration-light.png'
-  ];
   foreach ($quizes as $k => $quiz) :
     $disabled = false;
     $isPlayed = $quiz->isPlayed();

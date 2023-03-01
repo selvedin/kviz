@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\CacheHelper;
 use Yii;
 use app\helpers\Helper;
 use app\helpers\Icons;
@@ -78,15 +79,19 @@ class SiteController extends Controller
     public function actionHome()
     {
         $id = Yii::$app->user->id;
-        $active = [];
+        $quizes = $moderate = [];
         if ($id) {
-            $active = "active=" . Quiz::STATUS_ACTIVE;
-            $active .= " OR active=" . Quiz::STATUS_STARTED;
-            $active .= " OR active=" . Quiz::STATUS_RUNNING;
-            $where = "($active) AND id IN (SELECT temp_id from quiz_competitors where competitor_id=$id)";
-            $active = QuizTemp::find()->where($where)->select(['id', 'quiz_id', 'active'])->all();
+            $status = "active=" . Quiz::STATUS_ACTIVE;
+            $status .= " OR active=" . Quiz::STATUS_STARTED;
+            $status .= " OR active=" . Quiz::STATUS_RUNNING;
+            $where = "($status) AND id IN (SELECT temp_id from quiz_competitors where competitor_id=$id)";
+            $quizes = QuizTemp::find()->where($where)->select(['id', 'quiz_id', 'active'])->all();
+
+            $status = "active=" . Quiz::STATUS_RUNNING;
+            $where = "($status) AND quiz_id IN (SELECT id from quiz where moderator_id=$id)";
+            $moderate = QuizTemp::find()->where($where)->select(['id', 'quiz_id', 'active'])->all();
         }
-        return $this->render('index', ['quizes' => $active]);
+        return $this->render('index', ['quizes' => $quizes, 'moderate' => $moderate]);
     }
 
     public function actionCheckStatus($last)
