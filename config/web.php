@@ -13,7 +13,7 @@ $cache = [
         ],
     ],
 ];
-if ($_SERVER['SERVER_NAME'] == 'localhost') {
+if (in_array($_SERVER['SERVER_NAME'], ['localhost', 'quiz.local'])) {
     $db = require __DIR__ . '/db.php';
     $cache = [
         'class' => 'yii\caching\ApcCache',

@@ -19,16 +19,16 @@ $didPlay = $model->isPlayed();
     el: '#mainApp',
     data: {
       title: '<?= __('Player') ?>',
-      tempId: <?= $tempId ? $tempId : 0 ?>,
+      tempId: <?= $tempId ? $tempId : 0 ?>, // running quiz
       COLORS: ['btn-primary', 'btn-danger', 'btn-info', 'btn-warning',
         'btn-success', 'btn-dark'
-      ],
-      allQuestions: <?= json_encode($allQuestions) ?>,
-      questions: <?= json_encode($allQuestions) ?>,
-      pastQuestions: [],
-      question: {},
-      duration: <?= $model->quizObject->duration * $seconds ?>,
-      questionTimeInSeconds: 5,
+      ], // colors for matched pairs
+      allQuestions: <?= json_encode($allQuestions) ?>, // after filtering questions keeps track of loaded questions
+      questions: <?= json_encode($allQuestions) ?>, // questions for traversal
+      pastQuestions: [], // keeping track of passed questions
+      question: {}, // current Question 
+      duration: <?= $model->quizObject->duration * $seconds ?>, // duration of the Quiz
+      questionTimeInSeconds: 5, //default time for question to answer
       questionIsStarted: false,
       results: [],
       totalQuestions: <?= $model->quizObject->num_of_questions ? $model->quizObject->num_of_questions : 1 ?>,
@@ -36,11 +36,17 @@ $didPlay = $model->isPlayed();
       totalPercentage: 0,
       summary: [],
       isPlaying: false,
+      isRunning: false,
       showResults: false,
       canAnswer: false,
       lastAdded: null,
       isLastRight: false,
       didPlay: <?= $didPlay ? 'true' : 'false' ?>,
+      isRemote: <?= (int)$model->quizObject->quiz_type - 1 ?>,
+      isModerator: <?= isset($_GET['moderate']) ? 1 : 0 ?>,
+      started: [],
+      runningQuiz: null,
+      nextQuestion: null,
     },
     mounted() {
       $('#stopwatch').hide();
@@ -67,12 +73,15 @@ $didPlay = $model->isPlayed();
       runQuiz: function() {
         const elem = document.getElementById("mainApp");
         openFullscreen(elem);
+        this.isRunning = true;
+        if (this.isRemote) return;
         this.startQuestion();
         this.isPlaying = true;
       },
       stopQuiz: function() {
         document.exitFullscreen();
         this.isPlaying = false;
+        this.isRunning = false;
         this.showResults = false;
         $('#stopwatch').hide();
         window.location = '<?= Url::to(['site/home']) ?>'
@@ -87,22 +96,33 @@ $didPlay = $model->isPlayed();
           self.questionIsStarted = true;
           startTimer(self.questionTimeInSeconds);
           self.canAnswer = true;
+          $.post(`<?= Url::to(['quiz/start']) ?>?id=<?= $id ?>&question=${self.question.id}`, {
+            results: self.results
+          }, function(data) {}).fail(error => console.error(error))
           return;
         }
         self.canAnswer = false;
         self.showResults = true;
+        self.questionIsStarted = false;
         self.question = {};
-        $.post(`<?= Url::to(['quiz/save-results', 'id' => $id]) ?>&temp=${self.tempId}`, {
-          results: self.results
-        }, function(data) {
-          console.log(data);
-          self.summary = data;
-        }).fail(error => console.error(error))
+        $('#stopwatch').hide();
+        if (!self.isRemote || !this.isModerator) {
+          $.post(`<?= Url::to(['quiz/save-results', 'id' => $id]) ?>&temp=${self.tempId}`, {
+            results: self.results
+          }, function(data) {
+            self.summary = data;
+          }).fail(error => console.error(error))
+        } else {
+          $.post(`<?= Url::to(['quiz/stop', 'id' => $id]) ?>`, {}, function(data) {
+            window.location = `<?= Url::to(['site/home']) ?>`;
+          }).fail(error => console.error(error))
+        }
       },
       stopQuestion: function() {
         $('#stopwatch').hide();
         this.questionIsStarted = false;
         this.canAnswer = false;
+        this.nextQuestion = null;
       },
       answerQuestion: function(answer, content = '') {
         const self = this;
@@ -261,13 +281,31 @@ $didPlay = $model->isPlayed();
     computed: {
       classObject() {
         return {
-          active: false,
+          'active': false,
           'ms-auto': true,
           'me-auto': true,
           'rounded-pill': true,
           'btn-quiz': true,
           // 'btn-quiz-active': true
         }
+      },
+      showQuestion: function() {
+        return this.question.id && !this.showResults;
+      },
+      showInfo: function() {
+        return !this.question.id;
+      },
+      showRunButton: function() {
+        return !this.isRemote && !this.showResults;
+      },
+      disableRunButton: function() {
+        return !this.questions.length || this.didPlay;
+      },
+      showSummary: function() {
+        return this.showResults && !this.questions.length;
+      },
+      showQuizDetails: function() {
+        return !this.question.id && !this.isRunning;
       }
     },
     watch: {
@@ -276,12 +314,30 @@ $didPlay = $model->isPlayed();
         this.totalPercentage = Math.round(this.totalCorrect / this
           .allQuestions.length * 100);
       },
+      runningQuiz: function(val) {
+        console.log(val);
+      },
+      started: function(newVal, oldVal) {
+        const quizStarted = newVal[this.tempId];
+        if (quizStarted == 'stopped') {
+          this.startQuestion();
+          this.isRunning = false;
+          this.nextQuestion = null;
+          return;
+        }
+        if (oldVal[this.tempId] != newVal[this.tempId] && !this.isModerator && this.nextQuestion === null && quizStarted) {
+          if (newVal[this.tempId] == undefined)
+            this.isRunning = true;
+          this.nextQuestion = newVal[this.tempId];
+          this.startQuestion();
+        }
+      }
     },
   });
 
   $(document).on('keyup', function(e) {
     if (e.key === 'Space' || e.keyCode === 32) {
-      if (mainApp.questionIsStarted) return;
+      if (mainApp.questionIsStarted || (mainApp.isRemote && !mainApp.isModerator)) return;
       else mainApp.startQuestion();
     }
   });

@@ -9,7 +9,7 @@ class CacheHelper
   public static function get($key)
   {
     $cache = Yii::$app->cache;
-    return $cache->get(Yii::$app->id . $key);
+    return $cache->get(Yii::$app->id . "_" . $key);
   }
 
   public static function set($key, $data, $expiry = 900)

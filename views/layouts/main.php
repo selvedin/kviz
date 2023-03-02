@@ -12,7 +12,7 @@ $path = Yii::$app->basePath;
 $controller = Yii::$app->controller->id;
 $action = Yii::$app->controller->action->id;
 $isLogin = in_array($action, ['login', 'signup', 'request-password-reset', 'reset-password']);
-
+$web = Yii::getAlias('@web');
 AppAsset::register($this);
 
 $this->registerCsrfMetaTags();
@@ -67,7 +67,12 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     <?= ToastAlert::widget() ?>
     <?php require_once('imageModal.php') ?>
     <?php require_once('imageModal.php') ?>
-    <?= Yii::$app->user->isGuest ? null : Html::tag('script', '', ['src' => Yii::$app->request->baseUrl . "/worker/worker.js"]); ?>
+    <?= !Yii::$app->user->isGuest && $controller == 'site' ?
+        Html::tag('script', '', ['src' =>  "$web/worker/worker.js"])
+        : null; ?>
+    <?= $controller == 'player' ?
+        Html::tag('script', '', ['src' => "$web/worker/worker_player.js"])
+        : null; ?>
 </body>
 
 </html>

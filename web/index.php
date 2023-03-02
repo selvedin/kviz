@@ -1,7 +1,7 @@
 <?php
 
 // comment out the following two lines when deployed to production
-if ($_SERVER['SERVER_NAME'] == 'localhost' || isset($_GET['log'])) {
+if (in_array($_SERVER['SERVER_NAME'], ['localhost', 'quiz.local']) || isset($_GET['log'])) {
   defined('YII_DEBUG') or define('YII_DEBUG', true);
   defined('YII_ENV') or define('YII_ENV', 'dev');
 } else {
@@ -71,7 +71,7 @@ function set($model, $field)
 
 function __host()
 {
-  return $_SERVER['SERVER_NAME'] == 'localhost' ? Yii::$app->params['baseUrl'] : Yii::$app->params['serverName'];
+  return in_array($_SERVER['SERVER_NAME'], ['localhost', 'delivery.local']) ? Yii::$app->params['baseUrl'] : Yii::$app->params['serverName'];
 }
 
 function fileSizeFormat($bytes)

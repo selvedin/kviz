@@ -2,6 +2,8 @@
 
 use app\helpers\Buttons;
 use app\models\Question;
+use app\models\Quiz;
+use app\models\QuizTemp;
 use app\widgets\CardView;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
@@ -31,6 +33,12 @@ $this->title = __('Quizes');
                 ['attribute' => 'grade', 'value' => function ($model) {
                     return $model->gradeLabel?->title;
                 }, 'filter' => Question::Grades()],
+                ['attribute' => 'quiz_type', 'value' => function ($model) {
+                    return $model->quizType;
+                }, 'filter' => Quiz::getTypes()],
+                ['attribute' => 'activeNum', 'value' => function ($model) {
+                    return QuizTemp::find()->where(['active' => 1, 'quiz_id' => $model->id])->count();
+                }, 'options' => ['style' => 'width: 10%;']],
                 [
                     'class' => ActionColumn::class,
                 ],

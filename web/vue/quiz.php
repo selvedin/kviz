@@ -4,9 +4,9 @@
 use app\models\Quiz;
 use yii\helpers\Url;
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $model = $id ? Quiz::findOne($id) : null;
-$isNewRecord = isset($model) ? (int)$model->isNewRecord : true;
+$isNewRecord = isset($model) ? (int)$model->isNewRecord : 0;
 $config =  [];
 if ($model && !$isNewRecord) {
   foreach ($model->config as $conf) $config[] = [

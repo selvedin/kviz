@@ -1,4 +1,5 @@
 <script>
+  const BASE_URL = '<?= Yii::getAlias('@web') ?>/';
   const DELETE_TITLE = '<?= __('Are You sure') ?>';
   const DELETE_QUESTION = '<?= __('You wont be able to revert this') ?>';
   const CANCEL_TEXT = '<?= __('Cancel') ?>';

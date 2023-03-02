@@ -14,6 +14,7 @@ use Yii;
  * @property int|null $grade
  * @property int|null $level
  * @property int|null $status
+ * @property int|null $quiz_type
  * @property int|null $school_id
  * @property int|null $moderator_id
  * @property int|null $created_at
@@ -23,6 +24,18 @@ use Yii;
  */
 class Quiz extends BaseModel
 {
+
+    public $activeNum;
+
+    const TYPE_SELF = 1;
+    const TYPE_REMOTE = 2;
+
+    const STATUS_PENDING = 0;
+    const STATUS_ACTIVE = 1;
+    const STATUS_STARTED = 2;
+    const STATUS_RUNNING = 3;
+    const STATUS_FINISHED = 9;
+    const STATUS_ARCHIVED = 10;
     /**
      * {@inheritdoc}
      */
@@ -40,7 +53,8 @@ class Quiz extends BaseModel
             [['title'], 'required'],
             [[
                 'num_of_questions', 'duration', 'grade', 'level', 'status', 'school_id',
-                'moderator_id', 'created_at', 'created_by', 'updated_at', 'updated_by'
+                'moderator_id', 'created_at', 'created_by', 'updated_at', 'updated_by',
+                'quiz_type', 'activeNum'
             ], 'integer'],
             [['title'], 'string', 'max' => 1024],
         ];
@@ -58,17 +72,27 @@ class Quiz extends BaseModel
 
     public function getPending()
     {
-        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=0");
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_PENDING);
     }
 
     public function getActive()
     {
-        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=1");
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_ACTIVE);
+    }
+
+    public function getStarted()
+    {
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_STARTED);
+    }
+
+    public function getRunning()
+    {
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_RUNNING);
     }
 
     public function getArchived()
     {
-        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=2");
+        return $this->hasMany(QuizTemp::class, ['quiz_id' => 'id'])->andWhere("active=" . self::STATUS_ARCHIVED);
     }
 
     public function getGradeLabel()
@@ -80,18 +104,19 @@ class Quiz extends BaseModel
     {
         return [
             // ['label' => __('Title'), 'value' => $this->title],
+            ['label' => __('Moderator'), 'value' => $this->moderator?->name],
             ['label' => __('Num Of Questions'), 'value' => $this->num_of_questions],
-            ['label' => __('Duration'), 'value' => $this->duration],
-            ['label' => __('Status'), 'value' => $this->statusLabel],
+            ['label' => __('Duration'), 'value' => $this->duration . ' ' . __('minutes')],
+            ['label' => __('Time for answer'), 'value' => round($this->duration * 60 / $this->num_of_questions) . ' ' . __('seconds')],
+            ['label' => __('Quiz type'), 'value' => $this->quizType],
             ['label' => __('Grade'), 'value' => $this->gradeLabel?->title],
             ['label' => __('Level'), 'value' => $this->levelLabel],
-            ['label' => __('Moderator'), 'value' => $this->moderator?->name],
         ];
     }
 
     public function getModerator()
     {
-        return $this->hasOne(User::class, ['id' => 'id']);
+        return $this->hasOne(User::class, ['id' => 'moderator_id']);
     }
 
     public function getStatusLabel()
@@ -135,6 +160,23 @@ class Quiz extends BaseModel
         $total = 0;
         foreach ($this->config as $conf) $total += $conf->num_of_questions;
         return $total;
+    }
+
+    public function getQuizType()
+    {
+        switch ($this->quiz_type) {
+            case self::TYPE_SELF:
+                return __('Self running');
+            case self::TYPE_REMOTE:
+                return __('Remote controled');
+            default:
+                return null;
+        }
+    }
+
+    public static function getTypes()
+    {
+        return [self::TYPE_SELF => __("Self running"), self::TYPE_REMOTE => __("Remote controled")];
     }
 
     public function beforeSave($insert)
