@@ -158,6 +158,7 @@ class Question extends BaseModel
 
     public function OptionsAsString()
     {
+        if ($this->question_type == self::TYPE_TRUE) return __('True') . '/' . __('False');
         $options = [];
         foreach ($this->options as $o) $options[] = $o->content;
         sort($options);
@@ -166,6 +167,8 @@ class Question extends BaseModel
 
     public function CorrectOptionsAsString()
     {
+        if ($this->question_type == self::TYPE_TRUE) return $this->isTrue ? __('True') : __('False');
+
         $options = [];
         foreach ($this->options as $o) if ($o->is_true) $options[] = $o->content;
         sort($options);

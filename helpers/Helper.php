@@ -63,8 +63,8 @@ class Helper
       [
         'icon' => 'report-analytics', 'title' => 'Rezultati', 'url' => null, 'visible' => $perms->canList('Results'),
         'items' => [
-          ['icon' => 'report-analytics', 'title' => 'Moji kvizovi', 'url' => '/my-quiz', 'visible' => $perms->canList('Quiz')],
-          ['icon' => 'report-analytics', 'title' => 'Moderirani kvizovi', 'url' => '/moderated', 'visible' => $perms->canList('Quiz')],
+          ['icon' => 'report-analytics', 'title' => 'Moji kvizovi', 'url' => '/reports', 'visible' => $perms->canList('Quiz')],
+          ['icon' => 'report-analytics', 'title' => 'Moderirani kvizovi', 'url' => '/reports/moderated', 'visible' => $perms->canList('Quiz')],
         ]
       ],
       [
