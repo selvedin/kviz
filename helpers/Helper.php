@@ -47,10 +47,24 @@ class Helper
     $canSeeSettings = $perms->canList('Categories');
     return [
       [
-        'icon' => 'home', 'title' => 'Početna', 'url' => null, 'visible' => $canSeeHome,
+        'icon' => 'question-mark', 'title' => 'Pitanja', 'url' => null, 'visible' => $perms->canList('Question'),
         'items' => [
-          ['icon' => 'question-mark', 'title' => 'Pitanja', 'url' => '/question', 'visible' => $perms->canList('Question')],
-          ['icon' => 'tournament', 'title' => 'Kvizovi', 'url' => '/quiz', 'visible' => $perms->canList('Quiz')],
+          ['icon' => 'list', 'title' => 'Lista pitanja', 'url' => '/question', 'visible' => $perms->canList('Question')],
+          ['icon' => 'plus', 'title' => 'Dadaj pitanje', 'url' => '/question/create', 'visible' => $perms->canCreate('Question')],
+        ]
+      ],
+      [
+        'icon' => 'tournament', 'title' => 'Kvizovi', 'url' => null, 'visible' => $perms->canList('Question'),
+        'items' => [
+          ['icon' => 'list', 'title' => 'Kvizovi', 'url' => '/quiz', 'visible' => $perms->canList('Quiz')],
+          ['icon' => 'plus', 'title' => 'Napravi kviz', 'url' => '/quiz/create', 'visible' => $perms->canCreate('Quiz')],
+        ]
+      ],
+      [
+        'icon' => 'report-analytics', 'title' => 'Rezultati', 'url' => null, 'visible' => $perms->canList('Results'),
+        'items' => [
+          ['icon' => 'report-analytics', 'title' => 'Moji kvizovi', 'url' => '/my-quiz', 'visible' => $perms->canList('Quiz')],
+          ['icon' => 'report-analytics', 'title' => 'Moderirani kvizovi', 'url' => '/moderated', 'visible' => $perms->canList('Quiz')],
         ]
       ],
       [
