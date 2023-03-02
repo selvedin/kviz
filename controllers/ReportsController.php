@@ -53,7 +53,8 @@ class ReportsController extends Controller
 
   public function actionView($id, $moderated = false)
   {
-    return $this->render($moderated ? 'details' : 'view', ['model' => QuizResults::findOne($id)]);
+    $model = $moderated ? QuizTemp::findOne($id) : QuizResults::findOne($id);
+    return $this->render($moderated ? 'details' : 'view', ['model' => $model]);
   }
 
   public function actionModerated()

@@ -9,7 +9,7 @@ $summary = unserialize($model->summary);
 ?>
 <?= CardView::begin([
   'title' => __('Quiz') . ': ' . $model->quiz->title . ', '
-    . Html::tag('small', date('d.m.Y', $model->created_at), ['class' => 'text-dark']),
+    . Html::tag('small', date('d.m.Y', $model->updated_at), ['class' => 'text-dark']),
   'buttons' => [],
   'type' => 'info'
 ]);
@@ -33,7 +33,7 @@ $summary = unserialize($model->summary);
       $isCorrect = $sum['correct'] == $sum['answer'];
       if ($isCorrect) $totalCorrect++;
     ?>
-      <tr v-for="(item, ind) in userSummary">
+      <tr>
         <td><?= $num++ ?>.</td>
         <td><?= $sum['title'] ?></td>
         <td><?= $sum['options'] ?></td>
