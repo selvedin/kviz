@@ -20,7 +20,7 @@ function getTableHeader()
 
 function printRow($num, $quiz)
 {
-  $hasResults = $quiz->results && count($quiz->results);
+  $hasResults = $quiz->results && trim($quiz->results) != '' && count(unserialize($quiz->results));
   $hasCompetitors = $quiz->competitors && count($quiz->competitors);
   $results = getResults($quiz);
   $resultText = $results;

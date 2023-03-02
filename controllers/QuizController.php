@@ -114,34 +114,6 @@ class QuizController extends Controller
         ]);
     }
 
-    public function actionStart($id, $question)
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        $perms = new Perms();
-        if (!$perms->canUpdate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
-        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
-        if ($cache == false) $cache = [$id => $question];
-        else $cache[$id] = $question;
-        CacheHelper::set(QUIZ_STARTED_CACHE . "_$id", $cache, 60 * 60);
-        return true;
-    }
-
-    public function actionGetStarted()
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-
-        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
-        return $cache ? $cache : [];
-    }
-
-    public function actionStop($id)
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
-        $cache[$id] = 'stopped';
-        CacheHelper::set(QUIZ_STARTED_CACHE . "_$id", $cache, 60 * 60);
-    }
-
     private function saveModel($model, $data)
     {
         if ($model->load($data) && $model->save()) {
@@ -254,6 +226,37 @@ class QuizController extends Controller
         $model->active = $active;
         $model->save();
         return $this->redirect(['view', 'id' => $model->quizObject->id]);
+    }
+
+    public function actionStart($id, $question)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $perms = new Perms();
+        if (!$perms->canUpdate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
+        if ($cache == false) $cache = [$id => $question];
+        else $cache[$id] = $question;
+        CacheHelper::set(QUIZ_STARTED_CACHE, $cache, 60 * 60);
+        return true;
+    }
+
+    public function actionGetStarted()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
+        return $cache ? $cache : [];
+    }
+
+    public function actionStop($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = QuizTemp::findOne($id);
+        $model->active = Quiz::STATUS_ARCHIVED;
+        $model->save();
+        $cache = CacheHelper::get(QUIZ_STARTED_CACHE);
+        $cache[$id] = 'stopped';
+        CacheHelper::set(QUIZ_STARTED_CACHE, $cache, 60 * 60);
     }
 
     /**

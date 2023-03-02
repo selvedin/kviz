@@ -19,16 +19,16 @@ $didPlay = $model->isPlayed();
     el: '#mainApp',
     data: {
       title: '<?= __('Player') ?>',
-      tempId: <?= $tempId ? $tempId : 0 ?>,
+      tempId: <?= $tempId ? $tempId : 0 ?>, // running quiz
       COLORS: ['btn-primary', 'btn-danger', 'btn-info', 'btn-warning',
         'btn-success', 'btn-dark'
-      ],
-      allQuestions: <?= json_encode($allQuestions) ?>,
-      questions: <?= json_encode($allQuestions) ?>,
-      pastQuestions: [],
-      question: {},
-      duration: <?= $model->quizObject->duration * $seconds ?>,
-      questionTimeInSeconds: 5,
+      ], // colors for matched pairs
+      allQuestions: <?= json_encode($allQuestions) ?>, // after filtering questions keeps track of loaded questions
+      questions: <?= json_encode($allQuestions) ?>, // questions for traversal
+      pastQuestions: [], // keeping track of passed questions
+      question: {}, // current Question 
+      duration: <?= $model->quizObject->duration * $seconds ?>, // duration of the Quiz
+      questionTimeInSeconds: 5, //default time for question to answer
       questionIsStarted: false,
       results: [],
       totalQuestions: <?= $model->quizObject->num_of_questions ? $model->quizObject->num_of_questions : 1 ?>,
@@ -42,7 +42,7 @@ $didPlay = $model->isPlayed();
       lastAdded: null,
       isLastRight: false,
       didPlay: <?= $didPlay ? 'true' : 'false' ?>,
-      isRemote: <?= (int)$model->quizObject->quiz_type ?>,
+      isRemote: <?= (int)$model->quizObject->quiz_type - 1 ?>,
       isModerator: <?= isset($_GET['moderate']) ? 1 : 0 ?>,
       started: [],
       runningQuiz: null,
@@ -103,7 +103,9 @@ $didPlay = $model->isPlayed();
         }
         self.canAnswer = false;
         self.showResults = true;
+        self.questionIsStarted = false;
         self.question = {};
+        $('#stopwatch').hide();
         if (!self.isRemote || !this.isModerator) {
           $.post(`<?= Url::to(['quiz/save-results', 'id' => $id]) ?>&temp=${self.tempId}`, {
             results: self.results
@@ -286,6 +288,24 @@ $didPlay = $model->isPlayed();
           'btn-quiz': true,
           // 'btn-quiz-active': true
         }
+      },
+      showQuestion: function() {
+        return this.question.id && !this.showResults;
+      },
+      showInfo: function() {
+        return !this.question.id;
+      },
+      showRunButton: function() {
+        return !this.isRemote && !this.showResults;
+      },
+      disableRunButton: function() {
+        return !this.questions.length || this.didPlay;
+      },
+      showSummary: function() {
+        return this.showResults && !this.questions.length;
+      },
+      showQuizDetails: function() {
+        return !this.question.id && !this.isRunning;
       }
     },
     watch: {

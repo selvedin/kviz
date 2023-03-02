@@ -1,4 +1,4 @@
-<div v-if="showResults && !questions.length" class='text-center w-100 h-100'>
+<div v-if="showSummary" class="col-md-12 text-center">
   <div class="card">
     <div class="card-body">
       <table class='table text-start' style="font-size:1.3rem;">

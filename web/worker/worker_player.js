@@ -4,5 +4,9 @@ if (typeof worker == "undefined") {
 worker.postMessage({ BASE_URL: BASE_URL });
 
 worker.onmessage = function (event) {
+  if (!mainApp.isRemote) {
+    worker.terminate();
+    worker = undefined;
+  }
   mainApp.started = event.data;
 };
