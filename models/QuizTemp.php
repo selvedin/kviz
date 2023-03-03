@@ -49,6 +49,11 @@ class QuizTemp extends BaseModel
         return $this->hasMany(QuizResults::class, ['temp_id' => 'id']);
     }
 
+    public function getMyResults()
+    {
+        return $this->hasOne(QuizResults::class, ['temp_id' => 'id'])->andFilterWhere(['competitor_id' => Yii::$app->user->id]);
+    }
+
     public function getCompetitors()
     {
         return $this->hasMany(QuizCompetitors::class, ['temp_id' => 'id']);

@@ -38,7 +38,7 @@
           </div>
           <div class="col-5 text-center text-sm-left">
             <div class="card-body pb-0 px-0 px-md-4">
-              <img src="img/illustrations/<?= $images[rand(0, count($images) - 1)] ?>" height="140" alt="view sales">
+              <img src="<?= $path . IMAGES[rand(0, count(IMAGES) - 1)] ?>" height="140" alt="view sales">
             </div>
           </div>
         </div>

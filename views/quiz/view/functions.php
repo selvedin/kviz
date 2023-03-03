@@ -23,13 +23,14 @@ function printRow($num, $quiz)
   $hasResults = $quiz->results && trim($quiz->results) != '' && count(unserialize($quiz->results));
   $hasCompetitors = $quiz->competitors && count($quiz->competitors);
   $results = getResults($quiz);
+  $totalQuestions = count(unserialize($quiz->quiz));
   $resultText = $results;
   if (!$hasResults && !$hasCompetitors)
     $resultText = __('Add competitors to be able to activate the quiz');
   echo Html::tag(
     'tr',
     Html::tag('td', $num + 1 . '.') .
-      Html::tag('td', $quiz->quizObject->num_of_questions)
+      Html::tag('td', $totalQuestions)
       . Html::tag('td', getCompetitors($quiz))
       . Html::tag('td', $resultText, ['class' => $results != '' ? 'd-flex' : ''])
       . Html::tag('td', getButtons($quiz), ['class' => 'text-end'])
@@ -152,6 +153,13 @@ function getButtons($quiz)
         __('Finish'),
         ['quiz/activate', 'id' => $quiz->id, 'active' => Quiz::STATUS_FINISHED],
         ['class' => 'btn-outline-dark btn btn-sm rounded-pill mx-1 animate__animated animate__pulse animate__infinite']
+      );
+      break;
+    case Quiz::STATUS_ARCHIVED:
+      $buttons .= Html::a(
+        __('Results'),
+        ['reports/view', 'id' => $quiz->id, 'moderated' => true],
+        ['class' => 'btn-outline-dark btn btn-sm rounded-pill mx-1', 'target' => '_blank']
       );
       break;
     default:

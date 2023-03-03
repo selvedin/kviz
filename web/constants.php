@@ -16,3 +16,17 @@ define('RICH_TOOLBAR', [
 define('FONT_SIZES', ['8', '9', '10', '11', '12', '13', '14', '16', '18', '20', '24', '36', '48']);
 
 define('QUIZ_STARTED_CACHE', 'QUIZ_STARTED_CACHE');
+
+define('IMAGES', [
+  'card-advance-sale.png',
+  'boy-verify-email-dark.png',
+  'boy-with-laptop-dark.png',
+  'boy-with-rocket-light.png',
+  'girl-unlock-password-light.png',
+  'girl-doing-yoga-light.png',
+  'girl-verify-password-dark.png',
+  'girl-with-laptop.png',
+  'girl-with-laptop-light.png',
+  'page-misc-under-maintenance.png',
+  'auth-forgot-password-illustration-light.png'
+]);

@@ -40,6 +40,7 @@ $summary = unserialize($results->summary);
         }
         ?>
       </tbody>
+    </table>
   </div>
 </div>
 <?= CardView::end() ?>

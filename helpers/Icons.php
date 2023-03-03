@@ -58,13 +58,13 @@ class Icons
     );
   }
 
-  public static function Correct()
+  public static function Correct($size = 'fa-2x')
   {
-    return Html::tag('i', '', ['class' => "fas fa-check-circle fa-2x text-success"]);
+    return Html::tag('i', '', ['class' => "fas fa-check-circle $size text-success"]);
   }
 
-  public static function Incorrect()
+  public static function Incorrect($size = 'fa-2x')
   {
-    return Html::tag('i', '', ['class' => "fas fa-times-circle fa-2x text-danger"]);
+    return Html::tag('i', '', ['class' => "fas fa-times-circle $size text-danger"]);
   }
 }
