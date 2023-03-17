@@ -24,5 +24,6 @@ return [
     'multi_text' => 'Prekriži kvadratiće ispred tačnih odgovora:',
     'join_text' => 'Spoji pojmove na lijevoj strani sa odgvarajućim pojmovima na desnoj strani:',
     'input_text' => 'Upiši tačan rezultat:',
-    "CHATGPT_API_KEY" => $_ENV['CHATGPT_API_KEY']
+    'max_api_calls' => 10,
+    "CHATGPT_API_KEY" => $_ENV['CHATGPT_API_KEY'] ?? ''
 ];

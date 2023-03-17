@@ -35,31 +35,36 @@ $check = Icons::Correct('');
           </div>
         </div>
         <div class="card-body">
-          <?php ActiveForm::begin(); ?>
-          <div class="row">
-            <div class="col-6">
-              <?= Html::label(__('Subject'), "subject", ['class' => 'control-label']) ?>
-              <?= Html::dropDownList("subject", $subject, Categories::getRoot(), ['class' => 'form-select']) ?>
+          <?php
+          if ($total_calls >= Yii::$app->params['max_api_calls'])
+            echo Html::tag('div', __('You have reached the maximum number of API calls for today. Please try again tomorrow.'), ['class' => 'alert alert-danger']);
+          else {
+            ActiveForm::begin(); ?>
+            <div class="row">
+              <div class="col-6">
+                <?= Html::label(__('Subject'), "subject", ['class' => 'control-label']) ?>
+                <?= Html::dropDownList("subject", $subject, Categories::getRoot(), ['class' => 'form-select']) ?>
+              </div>
+              <div class="col-6">
+                <?= Html::label(__('Grade'), "grade", ['class' => 'control-label']) ?>
+                <?= Html::dropDownList("grade", $grade, Grade::list(), ['class' => 'form-select']) ?>
+              </div>
+              <div class="col-8">
+                <?= Html::label(__('Unit title'), "title", ['class' => 'control-label']) ?>
+                <?= Html::textInput("title", $title, ['class' => 'form-control']) ?>
+              </div>
+              <div class="col-4">
+                <?= Html::label(__('Number of questions'), "num_of_questions", ['class' => 'control-label']) ?>
+                <?= Html::dropDownList("num_of_questions", $num_of_questions, array_combine($range, $range), ['class' => 'form-select']) ?>
+              </div>
             </div>
-            <div class="col-6">
-              <?= Html::label(__('Grade'), "grade", ['class' => 'control-label']) ?>
-              <?= Html::dropDownList("grade", $grade, Grade::list(), ['class' => 'form-select']) ?>
+            <div class="row mt-4">
+              <div class="col-12 text-end">
+                <?= Html::submitButton(__('Submit'), ['class' => 'btn btn-primary']) ?>
+              </div>
             </div>
-            <div class="col-8">
-              <?= Html::label(__('Unit title'), "title", ['class' => 'control-label']) ?>
-              <?= Html::textInput("title", $title, ['class' => 'form-control']) ?>
-            </div>
-            <div class="col-4">
-              <?= Html::label(__('Number of questions'), "num_of_questions", ['class' => 'control-label']) ?>
-              <?= Html::dropDownList("num_of_questions", $num_of_questions, array_combine($range, $range), ['class' => 'form-select']) ?>
-            </div>
-          </div>
-          <div class="row mt-4">
-            <div class="col-12 text-end">
-              <?= Html::submitButton(__('Submit'), ['class' => 'btn btn-primary']) ?>
-            </div>
-          </div>
-          <?php ActiveForm::end(); ?>
+          <?php ActiveForm::end();
+          } ?>
         </div>
       </div>
     </div>
