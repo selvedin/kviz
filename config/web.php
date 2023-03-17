@@ -1,7 +1,8 @@
 <?php
 define("IS_MOBILE", preg_match("/phone|iphone|itouch|ipod|symbian|android|htc_|htc-|palmos|blackberry|opera mini|iemobile|windows ce|nokia|fennec|hiptop|kindle|mot |mot-|webos\/|samsung|sonyericsson|^sie-|nintendo/", strtolower(@$_SERVER['HTTP_USER_AGENT'])));
 $params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/db_live.php';
+// $db = require __DIR__ . '/db_live.php';
+$db = require __DIR__ . '/db.php';
 $cache = [
     'class' => 'yii\caching\MemCache',
     'useMemcached' => true, // <--- here
@@ -14,7 +15,7 @@ $cache = [
     ],
 ];
 if (in_array($_SERVER['SERVER_NAME'], ['localhost', 'quiz.local'])) {
-    $db = require __DIR__ . '/db.php';
+
     $cache = [
         'class' => 'yii\caching\ApcCache',
         'keyPrefix' => 'deliveryApp',       // a unique cache key prefix
