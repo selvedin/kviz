@@ -41,4 +41,10 @@ class Grade extends BaseModel
     {
         return ArrayHelper::map(self::find()->select(['id', 'title'])->all(), "id", "title");
     }
+
+    public static function getName($id)
+    {
+        $model = self::findOne($id);
+        return $model ? $model->title : null;
+    }
 }

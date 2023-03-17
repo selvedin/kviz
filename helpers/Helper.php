@@ -51,6 +51,7 @@ class Helper
         'items' => [
           ['icon' => 'list', 'title' => 'Lista pitanja', 'url' => '/question', 'visible' => $perms->canList('Question')],
           ['icon' => 'plus', 'title' => 'Dadaj pitanje', 'url' => '/question/create', 'visible' => $perms->canCreate('Question')],
+          ['icon' => 'robot', 'title' => 'Generiši pitanja', 'url' => '/gpt/question', 'visible' => $perms->canCreate('GenerateQuestion')],
         ]
       ],
       [
