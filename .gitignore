@@ -56,3 +56,4 @@ requests.log
 centos9.sh
 
 /tcpdf
+.env

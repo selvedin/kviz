@@ -13,6 +13,9 @@ if (in_array($_SERVER['SERVER_NAME'], ['localhost', 'quiz.local']) || isset($_GE
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
 $config = require __DIR__ . '/../config/web.php';
 
 require_once(__DIR__ . '/constants.php');

@@ -6,6 +6,7 @@ use app\models\Categories;
 use app\models\Grade;
 use yii\web\Controller;
 use yii\web\HttpException;
+use Yii;
 
 class GptController extends Controller
 {
@@ -24,8 +25,8 @@ class GptController extends Controller
 
       // Define API endpoint and API key
       $api_url = "https://api.openai.com/v1/chat/completions";
-      $api_key = "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";
-      $tokens = 1000;
+      $api_key = Yii::$app->params['CHATGPT_API_KEY'];
+      // $tokens = 1000;
 
       // Set up your prompt
       $input = "Generiši $num_of_questions pitanja iz predmeta '$subject' za $grade razred Osnovne škole.";
