@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\Categories;
+use app\models\Grade;
 use app\models\Options;
 use app\models\Pairs;
 use app\models\Perms;
@@ -10,9 +12,9 @@ use app\models\search\QuestionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use Yii;
 use yii\web\HttpException;
 use yii\web\Response;
+use Yii;
 
 /**
  * QuestionController implements the CRUD actions for Question model.
@@ -208,6 +210,47 @@ class QuestionController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
+    }
+
+    public function actionAddGenerated($question, $details)
+    {
+        $parts = unserialize($question);
+        $details = str_replace(__('Subject') . ": ", "", $details);
+        $subject = substr($details, 0, strpos($details, __("Grade") . ": "));
+        $subject = trim(rtrim($subject, ', '));
+        $category = Categories::find()->where(['name' => $subject])->one();
+
+        $grade = substr($details, strpos($details, __("Grade") . ": ") + strlen(__("Grade") . ": "), strpos($details, __("Unit title") . ": ") - strlen(__("Unit title") . ": "));
+        $grade = trim(substr($grade, 0, strpos($grade, ".,")));
+        $grade_model = Grade::find()->where(['title' => $grade])->one();
+        if (!$category || !$grade_model)
+            throw new HttpException(500, __("Error while adding generated questions"));
+        $model = new Question([
+            'category_id' => $category->id,
+            'grade' => $grade_model->id,
+            'question_type' => Question::TYPE_SINGLE,
+            'content_type' => 1,
+            'status' => 0,
+            'level' => 1,
+        ]);
+        foreach ($parts as $k => $part) {
+            if (empty($part)) continue;
+            if ($k == 0) {
+                $model->content = $part;
+                $model->save();
+            } else {
+                $isTrue = str_contains($part, '[x]') ? 1 : 0;
+                $part = str_replace(['a) ', 'b) ', 'c) ', 'd) ', '[]', '[ ]', '[x]'], '', $part);
+                $option = new Options([
+                    'question_id' => $model->id,
+                    'content' => $part,
+                    'is_true' => $isTrue
+                ]);
+                if (!$option->save())
+                    throw new HttpException(500, __("Error while adding generated questions") . ' ' . json_encode($option->errors));
+            }
+        }
+        return $this->redirect($this->request->referrer);
     }
 
     /**

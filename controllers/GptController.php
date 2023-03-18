@@ -7,8 +7,10 @@ use app\models\Categories;
 use app\models\Grade;
 use yii\web\Controller;
 use yii\web\HttpException;
+use Exception;
 use Yii;
 
+const API_KEY = "https://api.openai.com/v1/chat/completions";
 class GptController extends Controller
 {
 
@@ -16,40 +18,37 @@ class GptController extends Controller
   {
 
     $response = "";
-    $subject = $grade = $title = $num_of_questions = null;
+    $subject = $grade = $title =  null;
+    $num_of_questions = 1;
+
     if ($this->request->isPost) {
       $data = $this->request->post();
       $subject = Categories::getName($data['subject']);
       $grade = Grade::getName($data['grade']) . ".";
       $num_of_questions = $data['num_of_questions'];
+      $filename = time();
+
       $title = $data['title'];
-      $num_of_questions = (int)$num_of_questions - ApiCalls::getTotalCalls();
-      if ($num_of_questions < 0)
+      if (empty($subject) || empty($grade) || empty($num_of_questions)) {
+        Yii::$app->session->setFlash('error', __("You must fill required fields."));
+        return $this->render('question', [
+          'response' => $response,
+          'subject' => $data['subject'] ?? null,
+          'grade' => $data['grade'] ?? null,
+          'title' => $data['title'] ?? null,
+          'num_of_questions' => $data['num_of_questions'] ?? null,
+          'total_calls' => ApiCalls::getTotalCalls()
+        ]);
+      }
+
+      $rest_questions = Yii::$app->params['max_api_calls'] - (int) ApiCalls::getTotalCalls();
+      if ($rest_questions < 0)
         throw new HttpException(500, __("You have exceeded the limit of API calls for today."));
 
-      $api_url = "https://api.openai.com/v1/chat/completions";
-      $api_key = Yii::$app->params['CHATGPT_API_KEY'];
+      $num_of_questions = $rest_questions > $num_of_questions ? $num_of_questions : $rest_questions;
 
-      $input = "Generiši $num_of_questions pitanja iz predmeta '$subject' za $grade razred Osnovne škole.";
-      if ($title) $input .= " Pitanja trebaju biti vezana za nastavnu jedinicu sa naslovom '$title'.";
-      $instruction = " Pitanja trebaju imati više ponuđenih opcija od kojih je jedna tačna.";
-      $instruction .= " Poslije tačne opcije stavi [x].";
-      $instruction .= " Delimiter poslije svakog pitanja treba da bude dvostruki '\\n'.";
+      $options = $this->getOptions($num_of_questions, $subject, $grade, $title);
 
-      $options = array(
-        CURLOPT_URL => $api_url,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode(array(
-          "model" => "gpt-3.5-turbo",
-          "messages" => [["role" => "user", "content" => "$input $instruction"]],
-          "temperature" => 0.7
-        )),
-        CURLOPT_HTTPHEADER => array(
-          "Content-Type: application/json",
-          "Authorization: Bearer $api_key",
-        ),
-      );
       $ch = curl_init();
       curl_setopt_array($ch, $options);
       $response = curl_exec($ch);
@@ -61,11 +60,21 @@ class GptController extends Controller
         if (isset($response_data['error']))
           throw new HttpException(500, $response_data['error']['message']);
         $response = $response_data;
+
+        $this->saveResponse(
+          $subject,
+          $grade,
+          $title,
+          $num_of_questions,
+          $response["choices"][0]['message']['content'],
+          $filename
+        );
+
         $response = explode("\n\n", $response["choices"][0]['message']['content']);
       }
       curl_close($ch);
 
-      ApiCalls::add($api_key, $this->request->userIP, $num_of_questions);
+      ApiCalls::add(API_KEY, $this->request->userIP, $num_of_questions, $filename);
     }
 
     return $this->render('question', [
@@ -74,7 +83,72 @@ class GptController extends Controller
       'grade' => $data['grade'] ?? null,
       'title' => $data['title'] ?? null,
       'num_of_questions' => $data['num_of_questions'] ?? null,
-      'total_calls' => ApiCalls::getTotalCalls()
+      'total_calls' => ApiCalls::getTotalCalls(),
+      'files' => $this->readFiles()
     ]);
+  }
+
+  private function saveResponse($subject, $grade, $title, $num_of_questions, $response, $filename)
+  {
+    $id = Yii::$app->user->id;
+    $path = Yii::$app->basePath . "/runtime/questions/$id/";
+    if (!file_exists($path)) mkdir($path, 0777, true);
+    file_put_contents(
+      $path .  $filename,
+      __('Subject') . ': ' . $subject
+        . ', ' . __('Grade') . ': ' . $grade
+        . ', ' . __('Unit title') . ': ' . $title
+        . ', ' . __('Num of questions') . ': ' . $num_of_questions . "\n\n" .
+        $response,
+      FILE_APPEND
+    );
+  }
+
+  private function getOptions($num_of_questions, $subject, $grade, $title)
+  {
+
+    return [
+      CURLOPT_URL => API_KEY,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_POST => true,
+      CURLOPT_POSTFIELDS => json_encode(array(
+        "model" => "gpt-3.5-turbo",
+        "messages" => [[
+          "role" => "user",
+          "content" => $this->getContent($num_of_questions, $subject, $grade, $title)
+        ]],
+        "temperature" => 0.7
+      )),
+      CURLOPT_HTTPHEADER => array(
+        "Content-Type: application/json",
+        "Authorization: Bearer " . Yii::$app->params['CHATGPT_API_KEY'],
+      ),
+    ];
+  }
+
+  private function getContent($num_of_questions, $subject, $grade, $title)
+  {
+    $content = "Generiši $num_of_questions pitanja iz predmeta '$subject' za $grade razred Osnovne škole.";
+    if ($title) $content .= " Pitanja trebaju biti vezana za nastavnu jedinicu sa naslovom '$title'.";
+    $content .= " Pitanja trebaju imati više ponuđenih opcija od kojih je jedna tačna.";
+    $content .= "Ne dodaji redne brojeve prije pitanja. Poslije tačne opcije stavi [x].";
+    $content .= " Delimiter poslije svakog pitanja treba da bude dvostruki '\\n'.";
+    return $content;
+  }
+
+  private function readFiles()
+  {
+    $id = Yii::$app->user->id;
+    $folder = Yii::$app->basePath . "/runtime/questions/$id/";
+
+    $files = [];
+    if (file_exists($folder)) {
+      try {
+        foreach (array_diff(scandir($folder), array('.', '..')) as $file)
+          $files[] = $file;
+      } catch (Exception $e) {
+      }
+    }
+    return $files;
   }
 }

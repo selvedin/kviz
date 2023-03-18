@@ -12,6 +12,7 @@ use Yii;
  * @property string $api_key
  * @property string $ip
  * @property int $total
+ * @property string $filename
  * @property int|null $created_at
  * @property int|null $created_by
  * @property int|null $updated_at
@@ -35,7 +36,7 @@ class ApiCalls extends BaseModel
         return [
             [['api_key', 'ip', 'total'], 'required'],
             [['total', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
-            [['api_key'], 'string', 'max' => 256],
+            [['api_key', 'filename'], 'string', 'max' => 256],
             [['ip'], 'string', 'max' => 32],
         ];
     }
@@ -49,14 +50,23 @@ class ApiCalls extends BaseModel
             ->sum('total');
     }
 
-    public static function add($api, $ip, $total)
+    public static function add($api, $ip, $total, $filename)
     {
         $api_call = new ApiCalls([
             'api_key' => $api,
             'ip' => $ip,
             'total' => $total,
+            'filename' => "$filename",
         ]);
         if (!$api_call->save())
             throw new Exception("Error saving API call. | " . json_encode($api_call->errors));
+    }
+
+    public static function processFile($file)
+    {
+        $id = Yii::$app->user->id;
+        $content = file_get_contents(Yii::$app->basePath . "/runtime/questions/$id/$file");
+        $content = explode("\n\n", $content);
+        return $content;
     }
 }
