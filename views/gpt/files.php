@@ -1,5 +1,6 @@
 <?php
 
+use app\helpers\StringHelper;
 use app\models\ApiCalls;
 use app\models\Question;
 use app\widgets\AccordionCard;
@@ -26,31 +27,38 @@ use yii\helpers\Url;
 
         for ($i = 1; $i < count($fileContent); $i++) {
           $parts = explode("\n", $fileContent[$i]);
+          $existing = null;
+          $question = null;
+          $options = [];
           foreach ($parts as $k => $part) {
             if (empty($part)) continue;
             if ($k == 0) {
-              $existing = Question::find()->where(['content' => $part])->exists();
+              $question = StringHelper::prepareQuestion($part);
+              $existing = Question::find()->where(['content' => $question])->exists();
               echo Html::tag(
                 'div',
-                Html::tag('strong', $part)
-                  . (!$existing ? Html::a(
-                    __('Save a question'),
-                    Url::to([
-                      'question/add-generated',
-                      'question' => serialize($parts),
-                      'details' => $fileContent[0]
-                    ]),
-                    ['class' => 'btn btn-outline-primary btn-sm rounded-pill']
-                  ) : ''),
+                Html::tag('strong', $question),
                 ['class' => 'd-flex justify-content-between']
               );
             } else {
-              $part = str_replace(['a) ', 'b) ', 'c) ', 'd) ', '[]', '[ ]'], '', $part);
+              $part = str_replace(['a) ', 'b) ', 'c) ', 'd) ', 'e) ', 'f) ', '[]', '[ ]'], '', $part);
+              $options[] = $part;
               $part = str_replace('[x]', $check, $part);
               echo Html::tag('div', $part);
             }
           }
-          echo Html::tag('hr');
+          echo "<div class='d-flex justify-content-end border-bottom'>";
+          if (!$existing && $question) echo Html::a(
+            __('Save a question'),
+            Url::to([
+              'question/add-generated',
+              'question' => $question,
+              'options' => serialize($options),
+              'details' => $fileContent[0]
+            ]),
+            ['class' => 'btn btn-outline-primary btn-sm rounded-pill float-end']
+          );
+          echo "</div>";
         }
         echo AccordionCard::end();
       }

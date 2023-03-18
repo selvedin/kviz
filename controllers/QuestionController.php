@@ -212,20 +212,33 @@ class QuestionController extends Controller
         ]);
     }
 
-    public function actionAddGenerated($question, $details)
+    public function actionAddGenerated($question, $options, $details)
     {
-        $parts = unserialize($question);
-        $details = str_replace(__('Subject') . ": ", "", $details);
-        $subject = substr($details, 0, strpos($details, __("Grade") . ": "));
-        $subject = trim(rtrim($subject, ', '));
-        $category = Categories::find()->where(['name' => $subject])->one();
+        [$category, $grade_model] = $this->prepareDetails($details);
+        $model = $this->generateModel($question, $category, $grade_model);
 
-        $grade = substr($details, strpos($details, __("Grade") . ": ") + strlen(__("Grade") . ": "), strpos($details, __("Unit title") . ": ") - strlen(__("Unit title") . ": "));
-        $grade = trim(substr($grade, 0, strpos($grade, ".,")));
-        $grade_model = Grade::find()->where(['title' => $grade])->one();
+        if (!$model->save())
+            throw new HttpException(500, __("Error while adding generated questions") . ' ' . json_encode($model->errors));
+
+        $this->saveOptions($model->id, unserialize($options));
+
+        return $this->redirect($this->request->referrer);
+    }
+
+    private function prepareDetails($details)
+    {
+        $category = $this->extractCategory($details);
+        $grade_model = $this->extractGrade($details);
+
         if (!$category || !$grade_model)
             throw new HttpException(500, __("Error while adding generated questions"));
-        $model = new Question([
+        return [$category, $grade_model];
+    }
+
+    private function generateModel($question, $category, $grade_model)
+    {
+        return new Question([
+            'content' => $question,
             'category_id' => $category->id,
             'grade' => $grade_model->id,
             'question_type' => Question::TYPE_SINGLE,
@@ -233,24 +246,36 @@ class QuestionController extends Controller
             'status' => 0,
             'level' => 1,
         ]);
-        foreach ($parts as $k => $part) {
-            if (empty($part)) continue;
-            if ($k == 0) {
-                $model->content = $part;
-                $model->save();
-            } else {
-                $isTrue = str_contains($part, '[x]') ? 1 : 0;
-                $part = str_replace(['a) ', 'b) ', 'c) ', 'd) ', '[]', '[ ]', '[x]'], '', $part);
-                $option = new Options([
-                    'question_id' => $model->id,
-                    'content' => $part,
-                    'is_true' => $isTrue
-                ]);
-                if (!$option->save())
-                    throw new HttpException(500, __("Error while adding generated questions") . ' ' . json_encode($option->errors));
-            }
+    }
+
+    private function saveOptions($id, $parts)
+    {
+        foreach ($parts as  $part) {
+            $isTrue = str_contains($part, '[x]') ? 1 : 0;
+            $part = str_replace(['[x]'], '', $part);
+            $option = new Options([
+                'question_id' => $id,
+                'content' => $part,
+                'is_true' => $isTrue
+            ]);
+            if (!$option->save())
+                throw new HttpException(500, __("Error while adding generated questions") . ' ' . json_encode($option->errors));
         }
-        return $this->redirect($this->request->referrer);
+    }
+
+    private function extractCategory($details)
+    {
+        $details = str_replace(__('Subject') . ": ", "", $details);
+        $subject = substr($details, 0, strpos($details, __("Grade") . ": "));
+        $subject = trim(rtrim($subject, ', '));
+        return Categories::find()->where(['name' => $subject])->one();
+    }
+
+    private function extractGrade($details)
+    {
+        $grade = substr($details, strpos($details, __("Grade") . ": ") + strlen(__("Grade") . ": "), strpos($details, __("Unit title") . ": ") - strlen(__("Unit title") . ": "));
+        $grade = trim(substr($grade, 0, strpos($grade, ".,")));
+        return Grade::find()->where(['title' => $grade])->one();
     }
 
     /**
