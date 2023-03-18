@@ -9,10 +9,37 @@ use yii\web\Controller;
 use yii\web\HttpException;
 use Exception;
 use Yii;
+use yii\filters\VerbFilter;
 
 const API_KEY = "https://api.openai.com/v1/chat/completions";
 class GptController extends Controller
 {
+
+  /**
+   * @inheritDoc
+   */
+  public function behaviors()
+  {
+    return array_merge(
+      parent::behaviors(),
+      [
+        'verbs' => [
+          'class' => VerbFilter::class,
+          'actions' => [
+            'delete-file' => ['POST'],
+          ],
+        ],
+      ]
+    );
+  }
+
+  public function actionDeleteFile($file)
+  {
+    $id = Yii::$app->user->id;
+    $file = Yii::$app->basePath . "/runtime/questions/$id/$file";
+    if (file_exists($file)) unlink($file);
+    return $this->redirect($this->request->referrer);
+  }
 
   public function actionQuestion()
   {

@@ -1,5 +1,6 @@
 <?php
 
+use app\helpers\Icons;
 use app\helpers\StringHelper;
 use app\models\ApiCalls;
 use app\models\Question;
@@ -20,9 +21,22 @@ use yii\helpers\Url;
       <?php
       foreach ($files as $file) {
         $fileContent = ApiCalls::processFile($file);
+        $title = date("d.m.Y", $file) . ' - ' . $fileContent[0];
+        $title .= Html::a(
+          Icons::faIcon('trash'),
+          Url::to(['gpt/delete-file', 'file' => $file]),
+          [
+            'class' => 'btn-link btn-sm text-danger',
+            'data' => [
+              'confirm' => __('Are you sure you want to delete this file?'),
+              'method' => 'post',
+            ]
+          ]
+        );
         echo AccordionCard::begin([
           'id' => $file,
-          'title' => date("d.m.Y", $file) . ' - ' . $fileContent[0], 'show' => false
+          'title' => Html::tag('div', $title, ['class' => 'd-flex justify-content-between w-100']),
+          'show' => false
         ]);
 
         for ($i = 1; $i < count($fileContent); $i++) {
