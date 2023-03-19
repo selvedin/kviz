@@ -12,7 +12,7 @@ class StringHelper
     $secondPattern = '/^[\.\(\)]/'; //remove first char if it is dot or bracket
     $question = preg_replace($digitPattern, '', $question);
     $question = preg_replace($secondPattern, '', $question);
-    $question = trim($question);
+    $question = trim(str_replace('\n', '', $question));
     return $question;
   }
 }
