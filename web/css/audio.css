@@ -1,6 +1,5 @@
 .audio-recording-container {
   width: 100%;
-  height: 50vh;
   /* view port height*/
   /*targeting Chrome & Safari*/
   display: -webkit-flex;

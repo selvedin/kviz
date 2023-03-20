@@ -10,7 +10,7 @@ $this->title = __('Audio');
       <div class="card-body">
         <div id="recoreder">
           <div class="audio-recording-container">
-            <h1 class="title"><?= __('Press a microphone to start recording') ?></h1>
+            <h4 class="title"><?= __('Press a microphone to start recording') ?></h4>
             <i class="start-recording-button fa fa-microphone" aria-hidden="true"></i>
             <div class="recording-contorl-buttons-container hide">
               <i class="cancel-recording-button fa fa-window-close" aria-hidden="true"></i>
