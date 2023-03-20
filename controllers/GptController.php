@@ -5,11 +5,13 @@ namespace app\controllers;
 use app\models\ApiCalls;
 use app\models\Categories;
 use app\models\Grade;
+use CURLFile;
 use yii\web\Controller;
 use yii\web\HttpException;
 use Exception;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 const API_KEY = "https://api.openai.com/v1/chat/completions";
 class GptController extends Controller
@@ -39,6 +41,66 @@ class GptController extends Controller
     $file = Yii::$app->basePath . "/runtime/questions/$id/$file";
     if (file_exists($file)) unlink($file);
     return $this->redirect($this->request->referrer);
+  }
+
+  public function actionProcessAudio()
+  {
+    Yii::$app->response->format = Response::FORMAT_JSON;
+    $response = "";
+    if ($this->request->isPost) {
+      $id = Yii::$app->user->id;
+      $upload_dir = Yii::$app->basePath . "/runtime/audios/$id/";
+      if (!file_exists($upload_dir)) mkdir($upload_dir, 0777, true);
+      $filename = $this->request->post('filename');
+      $audio_file = $upload_dir . basename($_FILES[$filename]["name"]);
+
+      // return mime_content_type($_FILES[$filename]["tmp_name"]);
+      if (mime_content_type($_FILES[$filename]["tmp_name"]) !== 'video/webm') {
+        return ['error' => "Sorry, only audio files are allowed."];
+      }
+
+      // Move the uploaded file to the upload directory
+      if (move_uploaded_file($_FILES[$filename]["tmp_name"], $audio_file)) {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => 'https://api.openai.com/v1/audio/transcriptions',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array(
+            'file' => new CURLFile($audio_file),
+            'model' => 'whisper-1',
+            'response_format' => 'json',
+            'temperature' => '0',
+            'language' => 'bs'
+          ),
+          CURLOPT_HTTPHEADER => array(
+            'Content-Type: multipart/form-data',
+            'Accept: application/json',
+            "Authorization: Bearer " . Yii::$app->params['CHATGPT_API_KEY']
+          ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        return json_decode($response);
+      } else {
+        return ['error' => "Sorry, there was an error uploading your file."];
+      }
+    }
+    return $response;
+  }
+
+  public function actionAudio()
+  {
+    return $this->render('audio', ['response' => '']);
   }
 
   public function actionQuestion()
@@ -177,5 +239,19 @@ class GptController extends Controller
       }
     }
     return $files;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public function beforeAction($action)
+  {
+    if (in_array($action->id, [
+      'process-audio',
+    ])) {
+      $this->enableCsrfValidation = false;
+    }
+
+    return parent::beforeAction($action);
   }
 }
