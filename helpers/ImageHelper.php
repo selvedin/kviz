@@ -2,6 +2,7 @@
 
 namespace app\helpers;
 
+use Yii;
 use Exception;
 
 class ImageHelper
@@ -51,5 +52,26 @@ class ImageHelper
       }
     }
     return $files;
+  }
+
+  public static function ImageFolder($full = true)
+  {
+    $id = Yii::$app->user->id;
+    $part = "uploads/$id/";
+    $folder = Yii::$app->basePath . "/" . $part;
+    if (!file_exists($folder)) mkdir($folder, 0777, true);
+    return $full ? $folder : $part;
+  }
+
+  public static function saveImageToServer($image)
+  {
+    if (isset($_FILES[$image])) {
+      $id = Yii::$app->user->id;
+      $fileName = $id . "_" . date("Y_m_d__H_i_s");
+      $file = self::ImageFolder() . $fileName;
+      if (move_uploaded_file($_FILES[$image]["tmp_name"], $file))
+        return $fileName;
+    }
+    return null;
   }
 }

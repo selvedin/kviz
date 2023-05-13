@@ -1,43 +1,27 @@
 <?php
 
-use app\helpers\Icons;
-use app\models\Options;
-use app\models\Pairs;
-use app\models\Question;
-use app\models\QuizTemp;
-use app\models\User;
-use yii\bootstrap5\Html;
+use app\models\GptQuestion;
 
 $this->title = 'Test';
-
-$temp = QuizTemp::findOne(7);
-$results = $temp->processResults(4);
+$content = "SUBJECT: Moja okolina, GRADE: 3, UNIT_TITLE: Godišnja doba, NUM_OF_QUESTIONS: 5, LESSON_TITLE: , QUESTION_TYPE: 2";
+$all = [];
+$test = explode(',', $content);
+foreach ($test as $part) {
+  $item = explode(':', $part);
+  $all[] = $item;
+}
+$model = GptQuestion::resolveQuestion($content);
 ?>
 <div class="card">
   <div class='card-body'>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Question</th>
-          <th>Items</th>
-          <th>Correct</th>
-          <th>Answer</th>
-        </tr>
-      </thead>
-      <tbody>
-
-        <?php
-        foreach ($results['items'] as $item) {
-          echo Html::tag(
-            'tr',
-            Html::tag('td', $item['title']) .
-              Html::tag('td', $item['options']) .
-              Html::tag('td', $item['correct']) .
-              Html::tag('td', $item['answer'])
-          );
-        }
-        ?>
-      </tbody>
-    </table>
+    <div>SUBJECT: <?= $model->subject  ?></div>
+    <div>GRADE: <?= $model->grade  ?></div>
+    <div>UNIT_TITLE: <?= $model->title  ?></div>
+    <div>NUM_OF_QUESTIONS: <?= $model->num_of_questions  ?></div>
+    <div>LESSON_TITLE: <?= $model->lesson  ?></div>
+    <div>QUESTION_TYPE: <?= $model->questionType  ?></div>
   </div>
+  <pre>
+    <?php print_r($all) ?>
+  </pre>
 </div>

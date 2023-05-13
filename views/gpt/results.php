@@ -1,3 +1,8 @@
+<?php
+
+use yii\bootstrap5\Html;
+?>
+
 <div class="col-xl-6 col-md-6 mb-4">
   <div class="card h-100">
     <div class="card-header d-flex justify-content-between">
@@ -7,11 +12,8 @@
     </div>
     <div class="card-body">
       <?php
-
-      use yii\bootstrap5\Html;
-
-      if (is_array($response))
-        foreach ($response as $question) {
+      if (is_array($model->response))
+        foreach ($model->response as $question) {
           $parts = explode("\n", $question);
           foreach ($parts as $k => $part) {
             if ($k == 0)

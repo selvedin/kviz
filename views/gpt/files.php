@@ -1,5 +1,6 @@
 <?php
 
+use app\helpers\GptHelper;
 use app\helpers\Icons;
 use app\helpers\StringHelper;
 use app\models\ApiCalls;
@@ -21,7 +22,8 @@ use yii\helpers\Url;
       <?php
       foreach ($files as $file) {
         $fileContent = ApiCalls::processFile($file);
-        $title = date("d.m.Y", $file) . ' - ' . $fileContent[0];
+        $filename = str_replace(".txt", "", $file);
+        $title = date("d.m.Y", $filename) . ' - ' . $fileContent[0];
         $title .= Html::a(
           Icons::faIcon('trash'),
           Url::to(['gpt/delete-file', 'file' => $file]),
@@ -34,46 +36,13 @@ use yii\helpers\Url;
           ]
         );
         echo AccordionCard::begin([
-          'id' => $file,
+          'id' => $filename,
           'title' => Html::tag('div', $title, ['class' => 'd-flex justify-content-between w-100']),
           'show' => false
         ]);
-
-        for ($i = 1; $i < count($fileContent); $i++) {
-          $parts = explode("\n", $fileContent[$i]);
-          $existing = null;
-          $question = null;
-          $options = [];
-          foreach ($parts as $k => $part) {
-            if (empty($part)) continue;
-            if ($k == 0) {
-              $question = StringHelper::prepareQuestion($part);
-              $existing = Question::find()->where(['content' => $question])->exists();
-              echo Html::tag(
-                'div',
-                Html::tag('strong', $question),
-                ['class' => 'd-flex justify-content-between']
-              );
-            } else {
-              $part = str_replace(['a) ', 'b) ', 'c) ', 'd) ', 'e) ', 'f) ', '[]', '[ ]'], '', $part);
-              $options[] = $part;
-              $part = str_replace('[x]', $check, $part);
-              echo Html::tag('div', $part);
-            }
-          }
-          echo "<div class='d-flex justify-content-end border-bottom'>";
-          if (!$existing && $question) echo Html::a(
-            __('Save a question'),
-            Url::to([
-              'question/add-generated',
-              'question' => $question,
-              'options' => serialize($options),
-              'details' => $fileContent[0]
-            ]),
-            ['class' => 'btn btn-outline-primary btn-sm rounded-pill float-end']
-          );
-          echo "</div>";
-        }
+        echo Html::tag('h5', __('Questions'));
+        echo Html::tag('hr');
+        echo GptHelper::resolveQuestions($fileContent);
         echo AccordionCard::end();
       }
       ?>

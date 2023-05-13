@@ -15,4 +15,10 @@ class StringHelper
     $question = trim(str_replace('\n', '', $question));
     return $question;
   }
+
+  public static function cleanQuestion($question)
+  {
+    $question = str_replace(['a) ', 'b) ', 'c) ', 'd) ', 'e) ', 'f) ', '[]', '[ ]'], '', $question);
+    return $question;
+  }
 }

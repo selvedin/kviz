@@ -10,8 +10,8 @@ if (in_array($_SERVER['SERVER_NAME'], ['localhost', 'quiz.local']) || isset($_GE
 }
 
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
+require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../vendor/yiisoft/yii2/Yii.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -85,6 +85,16 @@ function fileSizeFormat($bytes)
   if ($bytes > 1) return $bytes . ' bytes';
   if ($bytes == 1) return $bytes . ' byte';
   return '0 bytes';
+}
+
+function n2br($text)
+{
+  return str_replace("\n", "<br>", $text);
+}
+
+function br2n($text)
+{
+  return str_replace(["<br/>", "<br>", '\n'], "\n", $text);
 }
 
 (new yii\web\Application($config))->run();

@@ -265,15 +265,15 @@ class QuestionController extends Controller
 
     private function extractCategory($details)
     {
-        $details = str_replace(__('Subject') . ": ", "", $details);
-        $subject = substr($details, 0, strpos($details, __("Grade") . ": "));
+        $details = str_replace("SUBJECT: ", "", $details);
+        $subject = substr($details, 0, strpos($details, "GRADE: "));
         $subject = trim(rtrim($subject, ', '));
         return Categories::find()->where(['name' => $subject])->one();
     }
 
     private function extractGrade($details)
     {
-        $grade = substr($details, strpos($details, __("Grade") . ": ") + strlen(__("Grade") . ": "), strpos($details, __("Unit title") . ": ") - strlen(__("Unit title") . ": "));
+        $grade = substr($details, strpos($details, "GRADE: ") + strlen("GRADE: "), strpos($details, "UNIT_TITLE: ") - strlen("UNIT_TITLE: "));
         $grade = trim(substr($grade, 0, strpos($grade, ".,")));
         return Grade::find()->where(['title' => $grade])->one();
     }

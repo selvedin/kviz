@@ -10,7 +10,7 @@
     $icon = Icons::faIcon('remote ms-2');
     $text = __('Moderate now');
   ?>
-    <div class="col-xl-3 mb-4 col-lg-4 col-12">
+    <div class="mb-4 col-xxl-3 col-lg-4 col-md-6 col-sm-12">
       <div class="card bg-dark">
         <div class="d-flex align-items-end row">
           <div class="col-7">
@@ -25,7 +25,7 @@
           </div>
           <div class="col-5 text-center text-sm-left">
             <div class="card-body pb-0 px-0 px-md-4">
-              <img src="<?= $path .  IMAGES[rand(0, count(IMAGES) - 1)] ?>" height="140" alt="view sales">
+              <img src="<?= $path .  IMAGES[rand(0, count(IMAGES) - 1)] ?>" class='quiz-image' alt="view sales">
             </div>
           </div>
         </div>

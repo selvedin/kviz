@@ -1,12 +1,8 @@
 <?php
 
-use app\helpers\Buttons;
 use app\helpers\Icons;
-use app\models\Categories;
-use app\models\Grade;
 use app\models\Perms;
 use app\widgets\CardView;
-use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
 /** @var yii\web\View $this */
@@ -16,9 +12,8 @@ $this->title = __('Generating Questions');
 \yii\web\YiiAsset::register($this);
 $perms = new Perms();
 $range = range(1, 10);
-$check = Icons::Correct('');
 ?>
-<div id="quizApp">
+<div id="questionGeneratorApp">
   <?= CardView::begin([
     'title' => $this->title,
     'type' => 'info',
@@ -43,7 +38,7 @@ $check = Icons::Correct('');
     </div>
     <?php
 
-    if (!empty($results)) require_once('results.php');
+    if (!empty($model->results)) require_once('results.php');
     else require_once('files.php'); ?>
 
   </div>

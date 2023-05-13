@@ -47,4 +47,10 @@ class Grade extends BaseModel
         $model = self::findOne($id);
         return $model ? $model->title : null;
     }
+
+    public static function getId($name)
+    {
+        $model = self::find()->where(['title' => trim($name)])->one();
+        return $model ? $model->id : null;
+    }
 }

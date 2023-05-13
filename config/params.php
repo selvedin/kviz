@@ -25,6 +25,8 @@ return [
     'join_text' => 'Spoji pojmove na lijevoj strani sa odgvarajućim pojmovima na desnoj strani:',
     'input_text' => 'Upiši tačan rezultat:',
     'python' => 'python',
-    'max_api_calls' => 10,
-    "CHATGPT_API_KEY" => $_ENV['CHATGPT_API_KEY'] ?? ''
+    'max_api_calls' => 50,
+    'quiz_url' => 'http://localhost/APPS/PHP/EDU/quiz/web',
+    'pripreme_url' => 'http://localhost/APPS/PHP/EDU/pripreme/web',
+    'books_url' => 'http://localhost/APPS/PHP/EDU/books/web',
 ];

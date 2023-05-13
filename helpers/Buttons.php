@@ -125,4 +125,18 @@ class Buttons
       'title' => __('Collapse')
     ]);
   }
+
+  public static function icon(
+    string $icon,
+    string $class = 'info',
+    string $title = '',
+    array $attr = [],
+    string | array $link = 'javascript:void(0)'
+  ) {
+    $options = [
+      'class' => "btn btn-icon rounded-pill btn-sm btn-outline-$class me-1",
+      'title' => $title
+    ];
+    return Html::a(Icons::faIcon($icon), $link, array_merge($options, $attr));
+  }
 }

@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\helpers\FileHelper;
 use Exception;
 use Yii;
 
@@ -50,6 +51,11 @@ class ApiCalls extends BaseModel
             ->sum('total');
     }
 
+    public static function getRestCalls()
+    {
+        return Yii::$app->params['max_api_calls'] - (int) self::getTotalCalls();
+    }
+
     public static function add($api, $ip, $total, $filename)
     {
         $api_call = new ApiCalls([
@@ -64,8 +70,7 @@ class ApiCalls extends BaseModel
 
     public static function processFile($file)
     {
-        $id = Yii::$app->user->id;
-        $content = file_get_contents(Yii::$app->basePath . "/runtime/questions/$id/$file");
+        $content = FileHelper::readFile($file);
         $content = explode("\n\n", $content);
         return $content;
     }
