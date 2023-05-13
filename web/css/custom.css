@@ -357,3 +357,9 @@ body {
   left: 10px;
   font-size: 2rem;
 }
+
+img.quiz-image {
+  height: 120px;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+}

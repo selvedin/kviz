@@ -1,7 +1,8 @@
 <?php
 define("IS_MOBILE", preg_match("/phone|iphone|itouch|ipod|symbian|android|htc_|htc-|palmos|blackberry|opera mini|iemobile|windows ce|nokia|fennec|hiptop|kindle|mot |mot-|webos\/|samsung|sonyericsson|^sie-|nintendo/", strtolower(@$_SERVER['HTTP_USER_AGENT'])));
 $params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/db_live.php';
+// $db = require __DIR__ . '/db_live.php';
+$db = require __DIR__ . '/db.php';
 $cache = [
     'class' => 'yii\caching\MemCache',
     'useMemcached' => true, // <--- here
@@ -14,27 +15,29 @@ $cache = [
     ],
 ];
 if (in_array($_SERVER['SERVER_NAME'], ['localhost', 'quiz.local'])) {
-    $db = require __DIR__ . '/db.php';
+
     $cache = [
         'class' => 'yii\caching\ApcCache',
-        'keyPrefix' => 'deliveryApp',       // a unique cache key prefix
+        'keyPrefix' => 'eduApp',       // a unique cache key prefix
         'useApcu' => true,
     ];
 }
 $config = [
-    'id' => 'quiz',
+    'id' => 'eduApp',
     'name' => 'Kviz',
     'basePath' => dirname(__DIR__),
+    'vendorPath' => '../../vendor',
     'bootstrap' => ['log'],
     'language' => isset($_COOKIE['lng']) ? $_COOKIE['lng'] : 'bs',
     'aliases' => [
+        // '@vendor' => dirname(dirname(__DIR__)) . '../../vendor',
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'quiz__yo2OasnSup38H1FPN7DKgQZeTFv-9',
+            'cookieValidationKey' => $_ENV['COOKIE_KEY'],
         ],
         'cache' => $cache,
         'user' => [
@@ -81,7 +84,9 @@ $config = [
             ],
         ],
     ],
-
+    'modules' => [
+        'gridview' => ['class' => 'kartik\grid\Module']
+    ],
     'as access' => [
         'class' => \yii\filters\AccessControl::class, //AccessControl::className(),
         'except' => [

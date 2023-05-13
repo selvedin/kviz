@@ -141,6 +141,18 @@ class Categories extends BaseModel
         return ltrim($ids, ',');
     }
 
+    public static function getName($id)
+    {
+        $model = self::findOne($id);
+        return $model ? $model->name : null;
+    }
+
+    public static function getId($name)
+    {
+        $model = self::find()->where(['name' => trim($name)])->one();
+        return $model ? $model->id : null;
+    }
+
     public function beforeDelete()
     {
         foreach (Categories::find()->where("parent=$this->id")->all() as $q) $q->delete();

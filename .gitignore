@@ -15,6 +15,7 @@ Thumbs.db
 
 # composer vendor dir
 /vendor
+/vendor_old
 
 # composer itself is not needed
 composer.phar
@@ -56,3 +57,4 @@ requests.log
 centos9.sh
 
 /tcpdf
+.env

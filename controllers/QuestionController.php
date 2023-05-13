@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\models\Categories;
+use app\models\Grade;
 use app\models\Options;
 use app\models\Pairs;
 use app\models\Perms;
@@ -10,9 +12,9 @@ use app\models\search\QuestionSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use Yii;
 use yii\web\HttpException;
 use yii\web\Response;
+use Yii;
 
 /**
  * QuestionController implements the CRUD actions for Question model.
@@ -208,6 +210,72 @@ class QuestionController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
+    }
+
+    public function actionAddGenerated($question, $options, $details)
+    {
+        [$category, $grade_model] = $this->prepareDetails($details);
+        $model = $this->generateModel($question, $category, $grade_model);
+
+        if (!$model->save())
+            throw new HttpException(500, __("Error while adding generated questions") . ' ' . json_encode($model->errors));
+
+        $this->saveOptions($model->id, unserialize($options));
+
+        return $this->redirect($this->request->referrer);
+    }
+
+    private function prepareDetails($details)
+    {
+        $category = $this->extractCategory($details);
+        $grade_model = $this->extractGrade($details);
+
+        if (!$category || !$grade_model)
+            throw new HttpException(500, __("Error while adding generated questions"));
+        return [$category, $grade_model];
+    }
+
+    private function generateModel($question, $category, $grade_model)
+    {
+        return new Question([
+            'content' => $question,
+            'category_id' => $category->id,
+            'grade' => $grade_model->id,
+            'question_type' => Question::TYPE_SINGLE,
+            'content_type' => 1,
+            'status' => 0,
+            'level' => 1,
+        ]);
+    }
+
+    private function saveOptions($id, $parts)
+    {
+        foreach ($parts as  $part) {
+            $isTrue = str_contains($part, '[x]') ? 1 : 0;
+            $part = str_replace(['[x]'], '', $part);
+            $option = new Options([
+                'question_id' => $id,
+                'content' => $part,
+                'is_true' => $isTrue
+            ]);
+            if (!$option->save())
+                throw new HttpException(500, __("Error while adding generated questions") . ' ' . json_encode($option->errors));
+        }
+    }
+
+    private function extractCategory($details)
+    {
+        $details = str_replace("SUBJECT: ", "", $details);
+        $subject = substr($details, 0, strpos($details, "GRADE: "));
+        $subject = trim(rtrim($subject, ', '));
+        return Categories::find()->where(['name' => $subject])->one();
+    }
+
+    private function extractGrade($details)
+    {
+        $grade = substr($details, strpos($details, "GRADE: ") + strlen("GRADE: "), strpos($details, "UNIT_TITLE: ") - strlen("UNIT_TITLE: "));
+        $grade = trim(substr($grade, 0, strpos($grade, ".,")));
+        return Grade::find()->where(['title' => $grade])->one();
     }
 
     /**

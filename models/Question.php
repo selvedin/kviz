@@ -28,6 +28,7 @@ class Question extends BaseModel
     const TYPE_JOIN = 4;
     const TYPE_INPUT = 5;
     const TYPE_ESSAI = 6;
+    const TYPE_PROMPT = 7;
     /**
      * {@inheritdoc}
      */

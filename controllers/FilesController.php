@@ -80,13 +80,13 @@ class FilesController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $fileFormName = Yii::$app->params['fileFormName'];
-        $model = Places::findOne($id);
+        // $model = Places::findOne($id);
         if (Yii::$app->request->post() && isset($_FILES[$fileFormName])) {
-            if ($model) {
-                for ($i = 0; $i < count($_FILES[$fileFormName]['name']); $i++) {
-                    $this->uploadFiles($_FILES[$fileFormName]['name'][$i], $_FILES[$fileFormName]['tmp_name'][$i], $id);
-                }
-            } else throw new HttpException(500, 'Fajl nije snimljen.');
+            // if ($model) {
+            //     for ($i = 0; $i < count($_FILES[$fileFormName]['name']); $i++) {
+            //         $this->uploadFiles($_FILES[$fileFormName]['name'][$i], $_FILES[$fileFormName]['tmp_name'][$i], $id);
+            //     }
+            // } else throw new HttpException(500, 'Fajl nije snimljen.');
             return ImageHelper::getImages('places', $id);
         }
         throw new HttpException(500, 'File is not saved');

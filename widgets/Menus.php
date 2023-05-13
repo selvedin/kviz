@@ -40,8 +40,8 @@ class Menus extends \yii\bootstrap5\Widget
         $ca = "$controller/$action";
         $active = "";
         if ($menu['visible']) {
+            $url = $menu['url'] ? ((str_starts_with($menu['url'], 'http') ? $menu['url'] : Url::to([$menu['url']]))) : 'javascript:void(0);';
             $active = (isset($menu['items']) && $this->hasActiveItem($menu['items'], $ca)) || $menu['url'] == $ca ? "active" : "";
-            $url = $menu['url'] ? Url::to([$menu['url']]) : 'javascript:void(0);';
             echo "<li class='menu-item $active'>";
             echo '<a href=' . $url;
             if (isset($menu['items'])) {
@@ -72,8 +72,8 @@ class Menus extends \yii\bootstrap5\Widget
         echo "<ul class='menu-sub'>";
         foreach ($menus as $menu) {
             if ($menu['visible']) {
+                $url = $menu['url'] ? ((str_starts_with($menu['url'], 'http') ? $menu['url'] : Url::to([$menu['url']]))) : 'javascript:void(0);';
                 $active = $menu['url'] == "$controller/$action" ? "active" : "";
-                $url = $menu['url'] ? Url::to([$menu['url']]) : 'javascript:void(0);';
                 $toggle = $menu['url'] ? "" : "menu-toggle";
                 echo "<li class='menu-item $active'>";
                 echo "<a href='$url' class='menu-link $toggle'>";
@@ -93,7 +93,7 @@ class Menus extends \yii\bootstrap5\Widget
         echo '<ul class="menu-sub">';
         foreach ($items as $item) {
             if ($item['visible']) {
-                $url = $item['url'] ? Url::to([$item['url']]) : 'javascript:void(0);';
+                $url = $item['url'] ? ((str_starts_with($item['url'], 'http') ? $item['url'] : Url::to([$item['url']]))) : 'javascript:void(0);';
                 echo self::_li($url, $item['title']);
             }
         }
