@@ -11,12 +11,8 @@ $id = Yii::$app->user->id;
 $folder = Yii::getAlias('@runtime') . "/ocrs/$id/";
 ?>
 <div id="ocrApp">
-  <?= CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [
-      Buttons::customButton(__('Ocr'), ['gpt/ocr'], [], 'dark rounded-pill btn-sm')
-    ],
+  <?= CardView::begin($this->title, 'info', [
+    Buttons::customButton(__('Ocr'), ['gpt/ocr'], [], 'dark rounded-pill btn-sm')
   ]) ?>
   <br />
   <div class="row">

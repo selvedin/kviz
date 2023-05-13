@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="d-flex justify-content-center">
     <div class='col-xl-6 col-md-8 col-sm-12'>
         <h1><?= Html::encode($this->title) ?></h1>
-        <?php CardView::begin(['title' => 'نتشرف بخدمتكم والرد على استفساراتكم', 'buttons' => []]) ?>
+        <?php CardView::begin(__('Contact')) ?>
         <?php $form = ActiveForm::begin(['id' => 'contact-form']); ?>
 
         <?= $form->field($model, 'name')->textInput(['autofocus' => true]) ?>

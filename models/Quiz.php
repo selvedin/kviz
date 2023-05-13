@@ -60,6 +60,11 @@ class Quiz extends BaseModel
         ];
     }
 
+    public function getQuestions()
+    {
+        return $this->hasMany(QuizQuestions::class, ['quiz_id' => 'id']);
+    }
+
     public function getConfig()
     {
         return $this->hasMany(QuizConfig::class, ['quiz_id' => 'id']);
@@ -184,5 +189,11 @@ class Quiz extends BaseModel
         $this->num_of_questions = $this->configNumber ? $this->configNumber : $this->num_of_questions;
 
         return parent::beforeSave($insert);
+    }
+
+    public function beforeDelete()
+    {
+        foreach ($this->questions as $q) $q->delete();
+        return parent::beforeDelete();
     }
 }

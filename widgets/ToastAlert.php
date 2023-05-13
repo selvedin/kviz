@@ -56,13 +56,10 @@ class ToastAlert extends \yii\bootstrap5\Widget
         $duration = Settings::getMessageDuration() * 1000;
         echo "<script>toastr.options = {'closeButton': true,'progressBar': true, 'timeOut': '$duration',};";
         $session = Yii::$app->session;
-
         foreach (array_keys($this->alertTypes) as $type) {
             $flash = $session->getFlash($type);
-
             foreach ((array) $flash as $i => $message)
                 echo "toastr." . $this->alertTypes[$type] . "('$message', '" . ucfirst($type) . "!');";
-
             $session->removeFlash($type);
         }
         echo "</script>";

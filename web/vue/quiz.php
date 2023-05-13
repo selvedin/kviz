@@ -46,6 +46,10 @@ if ($model && !$isNewRecord) {
         const levelLabel = $('#quiz-config-level option:selected').text();
         const category_id = $('#quiz-config-category').val();
         const category = $('#quiz-config-category option:selected').text();
+        if (!Boolean(category_id) || Boolean(num_of_questions)) {
+          toastr.error("<?= __('Category and Number of Questions are required.') ?>");
+          return;
+        }
         if (num_of_questions)
           this.config.push({
             num_of_questions,

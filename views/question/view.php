@@ -8,20 +8,16 @@ use app\widgets\CardView;
 
 $this->title = __('Question');
 \yii\web\YiiAsset::register($this);
-echo  CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [
-        Buttons::List(),
-        Buttons::Create(),
-        Buttons::Update('id', $model->id),
-        Buttons::customButton(
-            __('Activate'),
-            ['question/activate', 'id' => $model->id],
-            ['data-method' => 'POST', 'data-confirm' => __('Are You sure?')],
-            'warning'
-        ),
-    ],
+echo  CardView::begin($this->title, 'info', [
+    Buttons::List(),
+    Buttons::Create(),
+    Buttons::Update('id', $model->id),
+    Buttons::customButton(
+        __('Activate'),
+        ['question/activate', 'id' => $model->id],
+        ['data-method' => 'POST', 'data-confirm' => __('Are You sure?')],
+        'warning'
+    ),
 ]);
 ?>
 <br />

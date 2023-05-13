@@ -7,11 +7,7 @@ use yii\helpers\Url;
 $this->title = __('Moderated Quizes');
 $path = Yii::getAlias('@web') . '/img/illustrations/';
 ?>
-<?= CardView::begin([
-  'title' => $this->title,
-  'type' => 'info',
-  'buttons' => [],
-]) ?>
+<?= CardView::begin($this->title, 'info', []) ?>
 <div class="row mt-4">
   <?php
 

@@ -30,3 +30,5 @@ define('IMAGES', [
   'page-misc-under-maintenance.png',
   'auth-forgot-password-illustration-light.png'
 ]);
+
+define('EXCEL_FILES_PATH', 'uploads/excel');

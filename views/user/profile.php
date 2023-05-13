@@ -9,12 +9,7 @@ use yii\widgets\DetailView;
 $this->title = $model->name == ' ' ? ucfirst($model->username) : $model->name;
 \yii\web\YiiAsset::register($this);
 ?>
-<?= CardView::begin([
-  'title' => $this->title,
-  'type' => 'info',
-  'buttons' => [],
-]);
-?>
+<?= CardView::begin($this->title, 'info') ?>
 <br />
 <?= DetailView::widget([
   'model' => $model,

@@ -16,12 +16,8 @@ foreach ($quiz as $q) {
   $corrects[] = $question->CorrectOptionsAsString();
 }
 ?>
-<?= CardView::begin([
-  'title' => __('Quiz') . ': ' . $model->quizObject->title . ', '
-    . Html::tag('small', date('d.m.Y', $model->updated_at), ['class' => 'text-dark']),
-  'buttons' => [],
-  'type' => 'info'
-]);
+<?= CardView::begin(__('Quiz') . ': ' . $model->quizObject->title . ', '
+  . Html::tag('small', date('d.m.Y', $model->updated_at), ['class' => 'text-dark']), 'info', []);
 ?>
 <div id="reportsApp">
   <?php foreach ($model->userResults as $result) :

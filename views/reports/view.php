@@ -7,12 +7,8 @@ use yii\bootstrap5\Html;
 $this->title = __('View');
 $summary = unserialize($model->summary);
 ?>
-<?= CardView::begin([
-  'title' => __('Quiz') . ': ' . $model->quiz->title . ', '
-    . Html::tag('small', date('d.m.Y', $model->updated_at), ['class' => 'text-dark']),
-  'buttons' => [],
-  'type' => 'info'
-]);
+<?= CardView::begin(__('Quiz') . ': ' . $model->quiz->title . ', '
+  . Html::tag('small', date('d.m.Y', $model->updated_at), ['class' => 'text-dark']), 'info', []);
 ?>
 <table class='table text-start' style="font-size:1.3rem;">
   <thead>

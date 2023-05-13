@@ -22,13 +22,9 @@ $signuUpForm = Html::beginForm(['/user/send-signup'], 'post', ['class' => 'd-fle
     )
     . Html::endForm();
 
-echo  CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [
-        Buttons::Create(),
-        Buttons::ResetList(),
-    ],
+echo  CardView::begin($this->title, 'info', [
+    Buttons::Create(),
+    Buttons::ResetList(),
 ]);
 echo Html::tag(
     'div',

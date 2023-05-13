@@ -26,6 +26,7 @@ class Menus
         'items' => [
           ['icon' => 'list', 'title' => 'Lista pitanja', 'url' => '/question', 'visible' => $perms->canList('Question')],
           ['icon' => 'plus', 'title' => 'Dadaj pitanje', 'url' => '/question/create', 'visible' => $perms->canCreate('Question')],
+          ['icon' => 'upload', 'title' => 'Importuj pitanja', 'url' => '/question/import', 'visible' => $perms->canCreate('Question')],
           ['icon' => 'robot', 'title' => 'Generiši pitanja', 'url' => '/gpt/question', 'visible' => $perms->canCreate('GenerateQuestion')],
           ['icon' => 'scan', 'title' => 'Skeniraj lekciju', 'url' => '/gpt/ocr', 'visible' => $perms->canCreate('Ocr')],
         ]

@@ -15,6 +15,7 @@ use Yii;
  * @property int|null $status
  * @property int|null $grade
  * @property int|null $level
+ * @property double|null $duration
  * @property int|null $created_at
  * @property int|null $created_by
  * @property int|null $updated_at
@@ -50,6 +51,7 @@ class Question extends BaseModel
                 'updated_at', 'updated_by'
             ], 'integer'],
             [['content'], 'string', 'max' => 1024],
+            [['duration'], 'number'],
         ];
     }
 

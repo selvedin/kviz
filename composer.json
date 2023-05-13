@@ -28,7 +28,8 @@
     "kartik-v/yii2-widget-depdrop": "dev-master",
     "kartik-v/yii2-widget-datepicker": "dev-master",
     "vlucas/phpdotenv": "^5.5",
-    "kartik-v/yii2-widget-fileinput": "dev-master"
+    "kartik-v/yii2-widget-fileinput": "dev-master",
+    "phpoffice/phpspreadsheet": "^1.28"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",

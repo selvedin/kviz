@@ -11,14 +11,10 @@ $this->title = __('Role');
 ?>
 
 <?php $form = ActiveForm::begin(); ?>
-<?= CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [
-        Buttons::List(),
-        $model->isNewRecord ? '' : Buttons::View('id', $model->id_role),
-        Buttons::Save()
-    ],
+<?= CardView::begin($this->title, 'info', [
+    Buttons::List(),
+    $model->isNewRecord ? '' : Buttons::View('id', $model->id_role),
+    Buttons::Save()
 ]) ?>
 
 <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>

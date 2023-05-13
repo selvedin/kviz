@@ -14,11 +14,7 @@ $perms = new Perms();
 $range = range(1, 10);
 ?>
 <div id="questionGeneratorApp">
-  <?= CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [],
-  ]) ?>
+  <?= CardView::begin($this->title, 'info', []) ?>
   <br />
   <div class="row">
     <div class="col-xl-6 col-md-6 mb-4">

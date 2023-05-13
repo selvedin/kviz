@@ -22,7 +22,7 @@ class QuestionSearch extends Question
                 'id', 'question_type', 'content_type', 'status', 'grade', 'level',
                 'created_at', 'created_by', 'updated_at', 'updated_by'
             ], 'integer'],
-            [['content', 'category_id'], 'safe'],
+            [['content', 'category_id', 'duration'], 'safe'],
         ];
     }
 
@@ -70,6 +70,7 @@ class QuestionSearch extends Question
             'status' => $this->status,
             'grade' => $this->grade,
             'level' => $this->level,
+            'duration' => $this->duration,
             'created_at' => $this->created_at,
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at,

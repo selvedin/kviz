@@ -46,4 +46,33 @@ class FileHelper
       FILE_APPEND
     );
   }
+
+  public static function LoadExcelFile($filename, $folder = EXCEL_FILES_PATH)
+  {
+    $id = Yii::$app->user->id;
+    $data = null;
+    $file = Yii::$app->basePath . "/web/$folder/$id/$filename";
+    if (file_exists($file)) {
+      $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+      $data = $reader->load($file);
+    }
+    return $data;
+  }
+
+  public static function UploadFile($folder = EXCEL_FILES_PATH, $filename = 'excelFile')
+  {
+    $f_name = null;
+    if (isset($_FILES[$filename])) {
+      $id = Yii::$app->user->id;
+      $target_dir = "$folder/$id/";
+      if (!file_exists($target_dir))  mkdir($target_dir, 0777, true);
+
+      $target_file = $target_dir . basename($_FILES[$filename]["name"]);
+      if (!move_uploaded_file($_FILES[$filename]["tmp_name"], $target_file))
+        throw new Exception("Sorry, there was an error uploading your file.");
+
+      $f_name = basename($_FILES[$filename]["name"]);
+    }
+    return $f_name;
+  }
 }

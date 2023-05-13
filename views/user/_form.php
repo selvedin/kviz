@@ -30,14 +30,10 @@ if ($model instanceof User)
 ?>
 
 <?php $form = ActiveForm::begin(); ?>
-<?= CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [
-        $passwordButton,
-        Buttons::List(),
-        Buttons::Save()
-    ],
+<?= CardView::begin($this->title, 'info', [
+    $passwordButton,
+    Buttons::List(),
+    Buttons::Save()
 ]) ?>
 
 <div class="row mt-4">

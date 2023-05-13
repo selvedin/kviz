@@ -14,20 +14,16 @@ $perms = new Perms();
 require_once('view/functions.php');
 ?>
 <div id="quizApp">
-    <?= CardView::begin([
-        'title' => $this->title,
-        'type' => 'info',
-        'buttons' => [
-            Buttons::List(),
-            __isUser(Buttons::Update('id', $model->id)),
-            Buttons::Create(),
-            __isUser(Buttons::customButton(
-                Icons::faIcon('blender me-2') .  __('Prepare'),
-                ['quiz/prepare', 'id' => $model->id],
-                [],
-                'btn btn-sm rounded-pill mx-1 text-white btn-warning'
-            )),
-        ],
+    <?= CardView::begin($this->title, 'info', [
+        Buttons::List(),
+        __isUser(Buttons::Update('id', $model->id)),
+        Buttons::Create(),
+        __isUser(Buttons::customButton(
+            Icons::faIcon('blender me-2') .  __('Prepare'),
+            ['quiz/prepare', 'id' => $model->id],
+            [],
+            'btn btn-sm rounded-pill mx-1 text-white btn-warning'
+        )),
     ]) ?>
     <br />
     <div class="row">

@@ -51,16 +51,16 @@ class CardView extends \yii\bootstrap5\Widget
         echo "</div></div></div>";
     }
 
-    public static function begin($config = ['buttons' => [], 'title' => 'Card', 'type' => 'info'])
+    public static function begin($title = 'Card', $type = 'default', $buttons = [])
     {
         echo "<div><div class='row'><div class='col-md-12'>
-        <div class='card card-action'><div class='card-header bg-" . (isset($config['type']) ? $config['type'] : 'default') . " border-bottom'>";
-        echo "<div class='card-action-title'><h5 class='m-0 text-white'>" . $config["title"] . "</h5></div>";
+        <div class='card card-action'><div class='card-header bg-$type border-bottom'>";
+        echo "<div class='card-action-title'><h5 class='m-0'>$title</h5></div>";
         echo "<div class='card-action-element'>";
         echo "<ul class='card-inlinelist list-inline mb-0 '><li class='list-inline-item'>";
-        foreach ($config["buttons"] as $button) echo $button;
+        foreach ($buttons as $button) echo $button;
         echo "</li></ul>";
-        Helper::dropDown($config['buttons']);
+        Helper::dropDown($buttons);
         echo "</div></div>";
         echo "<div class='card-body'>";
     }

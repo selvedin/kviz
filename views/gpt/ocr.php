@@ -23,31 +23,23 @@ $this->title = __('Ocr');
 $perms = new Perms();
 ?>
 <div id="quizApp">
-  <?= CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [
+  <?= CardView::begin(
+    $this->title,
+    'info',
+    [
       Buttons::customButton(__('Existing'), ['gpt/ocr-list'], [], 'dark rounded-pill btn-sm')
-    ],
-  ]) ?>
+    ]
+  ) ?>
   <br />
   <div class="row">
     <div class="col-xl-6 col-md-6 mb-4">
-      <?= CardView::begin([
-        'title' => __('Form'),
-        'type' => 'secondary',
-        'buttons' => []
-      ]) ?>
+      <?= CardView::begin(__('Form'), 'secondary', []) ?>
       <?php require_once('ocr_form.php') ?>
       <?= CardView::end() ?>
     </div>
     <div class="col-xl-6 col-md-6 mb-4">
 
-      <?= CardView::begin([
-        'title' => __('Response'),
-        'type' => 'secondary',
-        'buttons' => []
-      ]) ?>
+      <?= CardView::begin(__('Response'), 'secondary', []) ?>
       <div class="row">
         <div class="col-12 mt-4">
           <?= Html::textarea('ocr_text', $response, ['class' => 'form-control', 'rows' => 22]) ?>

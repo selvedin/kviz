@@ -8,14 +8,10 @@ use app\widgets\CardView;
 
 $this->title = __('Category');
 \yii\web\YiiAsset::register($this);
-echo  CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [
-        Buttons::Create(),
-        Buttons::List(),
-        __isUser(Buttons::Update('id', $model->id)),
-    ],
+echo  CardView::begin($this->title, 'info', [
+    Buttons::Create(),
+    Buttons::List(),
+    __isUser(Buttons::Update('id', $model->id)),
 ]);
 ?>
 <br />

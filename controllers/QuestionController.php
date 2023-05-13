@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\FileHelper;
 use app\models\Categories;
 use app\models\Grade;
 use app\models\Options;
@@ -311,5 +312,77 @@ class QuestionController extends Controller
         if (Yii::$app->user->identity->role->private)
             if ($creator != Yii::$app->user->id) return true;
         return false;
+    }
+
+    /**
+     * Imports questions as ABC format from Excel file and saves them in database.
+     * Creates a new Quiz model assigning the created questions to it.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return string|\yii\web\Response
+     */
+    public function actionImport()
+    {
+        $perms = new Perms();
+        $post_data = [
+            'questionType' => Question::TYPE_SINGLE, 'subject' => null,
+            'grade' => null, 'level' => null, 'numberOfOptions' => 3,
+            'duration' => 5, 'file_name' => '', 'createQuestion' => null
+        ];
+        if (!$perms->canCreate('Quiz')) throw new HttpException(403, __(NO_PERMISSION_MESSAGE));
+        $data = null;
+
+        if ($this->request->isPost) {
+            $post_data = $this->request->post();
+            $subfolder = (int)$post_data['subject'] . '/' . (int)$post_data['grade'] . '/' . (int)$post_data['level'] . '/' . (int)$post_data['questionType'];
+            if ((int)$post_data['createQuestion'] && $post_data['file_name'] != '') {
+                $data = FileHelper::LoadExcelFile($post_data['file_name'], EXCEL_FILES_PATH . '/' . $subfolder);
+                $this->saveQuestions($post_data, $data);
+                return $this->redirect(['index']);
+            } else {
+                $file = FileHelper::UploadFile(EXCEL_FILES_PATH . '/' . $subfolder);
+                $data = FileHelper::LoadExcelFile($file, EXCEL_FILES_PATH . '/' . $subfolder);
+                $post_data['file_name'] = $file;
+            }
+        }
+
+        return $this->render('import', [
+            'model' => $post_data,
+            'data' => $data
+        ]);
+    }
+
+    private function saveQuestions($post_data, $data)
+    {
+        if (!$data) return;
+
+        $sheet = $data->getActiveSheet();
+        $rows = $sheet->toArray();
+        foreach ($rows as $k => $row) {
+            if ($k < 1) continue;
+            $error = false;
+            if (trim($row[0]) == '' || trim($row[1]) == '') $error = true;
+            for ($i = 1; $i < $post_data['numberOfOptions']; $i++) if (trim($row[$i]) == '') $error = true;
+            if ($error) continue;
+            $question = new Question([
+                'content' => trim($row[0]),
+                'question_type' => $post_data['questionType'],
+                'content_type' => 1,
+                'category_id' => $post_data['subject'], // 'subject' => 'category_id
+                'grade' => $post_data['grade'],
+                'level' => $post_data['level'],
+                'duration' => $post_data['duration'],
+                'status' => 1
+            ]);
+            if ($question->save()) {
+                for ($i = 1; $i <= $post_data['numberOfOptions']; $i++) {
+                    $option = new Options([
+                        'question_id' => $question->id,
+                        'content' => $row[$i],
+                        'is_true' => $i == 1 ? 1 : 0
+                    ]);
+                    $option->save();
+                }
+            }
+        }
     }
 }

@@ -8,11 +8,7 @@ $formID = Yii::$app->params['fileFormName'];
 
 ?>
 <div id="filesSidebar">
-  <?= CardView::begin([
-    'buttons' => [UploadFile::widget(['id' => $formID])],
-    'title' => __('Images') . "<span> [{{files.length}}]</span>",
-    'type' => 'primary'
-  ]) ?>
+  <?= CardView::begin(__('Images') . "<span> [{{files.length}}]</span>", 'primary', [UploadFile::widget(['id' => $formID])]) ?>
 
   <div class="progress">
     <div class="progress-bar bg-warning" role="progressbar" style="width:0%;" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100">5%</div>

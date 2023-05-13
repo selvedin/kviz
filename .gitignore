@@ -49,6 +49,7 @@ tests/_support/_generated
 /data
 /docs
 /uploads
+/web/uploads
 db_live.php
 *_old.php
 *_live.php

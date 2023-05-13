@@ -12,13 +12,14 @@ use app\models\search\QuizSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use Yii;
 use yii\web\HttpException;
 use yii\web\Response;
+use Yii;
 
 /**
  * QuizController implements the CRUD actions for Quiz model.
  */
+
 class QuizController extends Controller
 {
     /**
@@ -135,18 +136,20 @@ class QuizController extends Controller
     {
         foreach ($data as $d) {
             if (!QuizConfig::find()->where($this->getWhere($id, $d))->exists()) {
-                $option = new QuizConfig([
+                $config = new QuizConfig([
                     'quiz_id' => $id, 'num_of_questions' => $d['num_of_questions'], 'question_type' => $d['question_type'],
                     'grade' => $d['grade'], 'level' => $d['level'], 'category_id' => $d['category_id']
                 ]);
-                if (!$option->save()) {
+                if (!$config->save()) {
                     $errors = "";
-                    foreach ($option->errors as $error) $errors .= $error[0] . "\n";
+                    foreach ($config->errors as $error) $errors .= $error[0] . "\n";
                     Yii::$app->session->setFlash('error', $errors);
                 } else {
                     $model = Quiz::findOne($id);
                     $model->save();
                 }
+            } else {
+                Yii::$app->session->setFlash('error', __('Configuration is not saved. It can be already saved or missing some parameters.'));
             }
         }
     }

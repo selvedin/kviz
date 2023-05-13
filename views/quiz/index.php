@@ -1,6 +1,7 @@
 <?php
 
 use app\helpers\Buttons;
+use app\helpers\Icons;
 use app\models\Question;
 use app\models\Quiz;
 use app\models\QuizTemp;
@@ -17,7 +18,11 @@ $this->title = __('Quizes');
 <div id='quizApp'>
     <?= CardView::widget([
         'title' => $this->title,
-        'buttons' => [Buttons::Create(), Buttons::ResetList()],
+        'buttons' => [
+            Buttons::Create(),
+            Buttons::customButton(Icons::faIcon('file-excel me-2') . ' ' . __('Create from Excel'), ['create-from-excel'], [], 'success'),
+            Buttons::ResetList()
+        ],
         'content' => GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,

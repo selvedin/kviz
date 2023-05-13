@@ -13,11 +13,7 @@ $perms = Perms::getObjects();
 ActiveForm::begin(['id' => 'permissions-form']);
 ?>
 <div id="permissionsApp">
-  <?= CardView::begin([
-    'title' => $this->title,
-    'type' => 'info',
-    'buttons' => [],
-  ]) ?>
+  <?= CardView::begin($this->title, 'info', []) ?>
   <div class="row">
     <div class="col-md-4">
       <?= Html::label(__('Object') . ':', 'params-object', ['class' => 'control-label']) ?>

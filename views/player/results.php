@@ -5,11 +5,7 @@ use app\widgets\CardView;
 use yii\bootstrap5\Html;
 
 $this->title = __('Results');
-echo  CardView::begin([
-  'title' => $this->title,
-  'type' => 'info',
-  'buttons' => [],
-]);
+echo  CardView::begin($this->title, 'info', []);
 $summary = unserialize($results->summary);
 ?>
 <div class="row">

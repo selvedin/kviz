@@ -2,9 +2,6 @@
 
 namespace app\helpers;
 
-use app\models\Perms;
-use Yii;
-
 class Helper
 {
 

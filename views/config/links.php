@@ -4,7 +4,7 @@ use app\widgets\CardView;
 use yii\bootstrap5\Html;
 
 $this->title = 'Imports';
-echo CardView::begin([ 'title' => 'Imports', 'buttons' => []]);
+echo CardView::begin(__('Imports'), 'info', []);
 if (isset($_GET['key']) && $_GET['key'] == Yii::$app->params['cleanKey'])
   foreach ($objects as $obj => $model) {
     $modelName = "app\\models\\$model";
